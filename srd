@@ -1,0 +1,263 @@
+#!/usr/bin/env ruby
+#-------------------------------------------------------------------------------------------------------------
+#  Sifttter Redux
+#
+#  A modification of Craig Eley's Sifttter that allows for smart installation on a standalone *NIX
+#  device (such as a Raspberry Pi).
+#
+#  Sifttter copyright Craig Eley 2014 <http://craigeley.com>
+#
+#  Copyright (c) 2014
+#  Aaron Bach <bachya1208@gmail.com>
+#  
+#  Permission is hereby granted, free of charge, to any person
+#  obtaining a copy of this software and associated documentation
+#  files (the "Software"), to deal in the Software without
+#  restriction, including without limitation the rights to use,
+#  copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the
+#  Software is furnished to do so, subject to the following
+#  conditions:
+#  
+#  The above copyright notice and this permission notice shall be
+#  included in all copies or substantial portions of the Software.
+#  
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+#  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+#  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+#  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+#  OTHER DEALINGS IN THE SOFTWARE.
+#-------------------------------------------------------------------------------------------------------------
+
+require 'colored'
+require 'fileutils'
+require 'gli'
+require 'singleton'
+require 'yaml'
+
+#|  ======================================================
+#|  CONSTANTS
+#|  Don't change these unless you really know
+#|  what you're doing.
+#|  ======================================================
+DEFAULT_CONFIG_FILE = File.join(ENV['HOME'], '.sr-config')
+DEFAULT_DBUPLOADER_LOCATION_BASE = "/usr/local/opt"
+DEFAULT_SIFTTTER_DESTINATION_LOCATION = File.join(ENV['HOME'], 'sifttter')
+DEFAULT_SIFTTTER_SOURCE_LOCATION = "/Apps/ifttt/sifttter"
+VERSION = 0.1
+
+#|  ======================================================
+#|  CliManager Module
+#|  Singleton to manage common CLI interfacing
+#|  ======================================================
+module CliMessage
+  def self.error(message)
+    puts "---> ERROR: #{message}".red
+  end
+  
+  def self.info(message)
+    puts "---> INFO: #{message}".blue
+  end
+  
+  def self.prompt(message, default)
+    print "#{message} [default: #{default}]: "
+    choice = $stdin.gets.chomp
+    if choice.empty?
+      return default
+    else
+      return choice
+    end
+  end
+  
+  def self.section(message)
+    puts "### #{message}".green
+  end
+  
+  def self.warning(message)
+    puts "---> WARNING: #{message}".yellow
+  end
+end
+
+#|  ======================================================
+#|  ConfigManager Class
+#|  Singleton to manage the YAML config file
+#|  for this script
+#|  ======================================================
+class ConfigManager
+  include Singleton
+  
+  attr_accessor :configFile
+  
+  def _test
+    self.createSection(:test)                           # {:test}
+    self.createSection(:test2)                          # {:test, :test2}
+    self.deleteSection(:test)                           # {:test2}
+    self.addToSection({:firstName => "aaron"}, :test2)  # {:test2=>{:firstName=>"aaron"}}
+    self.addToSection({:lastName => "bach"}, :test2)    # {:test2=>{:firstName=>"aaron", :lastName=>"bach"}}
+    self.addToSection({:beep => "burt"}, :test2)        # {:test2=>{:firstName=>"aaron", :lastName=>"bach", :beep=>"beep"}}
+    self.addToSection({:beep => "burt"}, :test3)        # {:test2=>{:firstName=>"aaron", :lastName=>"bach", :beep=>"beep"}}
+    self.removeFromSection(:beep, :test3)               # {:test2=>{:firstName=>"aaron", :lastName=>"bach", :beep=>"beep"}}
+    self.removeFromSection(:beep, :test2)               # {:test2=>{:firstName=>"aaron", :lastName=>"bach"}}
+    puts "SHOULD SEE:\t{:test2=>{:firstName=>\"aaron\", :lastName=>\"bach\"}}"
+    puts "CONFIG DATA:\t#{@data}"
+  end
+  
+  def initialize
+    @configFile = DEFAULT_CONFIG_FILE
+    
+    if File.exists?(DEFAULT_CONFIG_FILE) 
+      @data = YAML.load_file(DEFAULT_CONFIG_FILE)
+    else
+      @data = {}
+    end
+  end
+  
+  def addToSection(hash, section)
+    unless @data.has_key?(section)
+      CliMessage.warning("Attempting to insert into a non-existing section: #{section}; skipping...")
+      return 
+    end
+
+    @data[section].merge!(hash)
+  end
+  
+  def createSection(section)
+    if @data.has_key?(section)
+      CliMessage.warning("Attempting to create existing section (#{section}); skipping...")
+      return
+    end
+
+    @data.merge!(section => {})
+  end
+  
+  def deleteSection(section)
+    unless @data.has_key?(section)
+      CliMessage.warning("Attempting to delete non-existing section (#{section}); skipping...")
+      return
+    end
+    
+    @data.delete(section)
+  end
+  
+  def removeFromSection(key, section)
+    unless @data.has_key?(section) && @data[section].has_key?(key)
+      CliMessage.warning("Attempting to remove a non-existing key: #{section}.#{key}; skipping...")
+      return
+    end
+    
+    @data[section].delete(key)
+  end
+  
+  def reset
+    @data = {}
+  end
+  
+  def saveConfiguration
+    return File.open(@configFile, 'w') { |f| f.write(@data.to_yaml) }
+  end
+  
+end
+
+#|  ------------------------------------------------------
+#|  Collect preferences
+#|  ------------------------------------------------------
+def collect_preferences
+  
+  CliMessage.section('COLLECTING PREFERENCES...')
+  
+  pref = CliMessage.prompt("Location of Sifttter files in Dropbox", DEFAULT_SIFTTTER_SOURCE_LOCATION)
+  $config.addToSection({:sifttter_source_location => pref}, :sifttter_redux)
+  
+  pref = CliMessage.prompt("Location for downloaded Sifttter files from Dropbox", DEFAULT_SIFTTTER_DESTINATION_LOCATION)
+  $config.addToSection({:sifttter_destination_location => pref}, :sifttter_redux)
+end
+
+#|  ------------------------------------------------------
+#|  Initialization procedures
+#|  ------------------------------------------------------
+def initialize_procedures
+  $config.reset
+  $config.createSection(:sifttter_redux)
+  $config.addToSection({:config_location => $config.configFile}, :sifttter_redux)
+  
+  install_db_uploader 
+  collect_preferences
+  
+  CliMessage.section("INITIALIZATION FINISHED")
+  
+  $config.saveConfiguration
+end
+
+#|  ------------------------------------------------------
+#|  Installs Dropbox Uploader from Github
+#|  ------------------------------------------------------
+def install_db_uploader
+  valid_directory_chosen = false
+  
+  CliMessage.section('DOWNLOADING DROPBOX UPLOADER...')
+  
+  # Create a new configuration section for Dropbox-Uploader
+  $config.createSection(:db_uploader)
+  
+  until valid_directory_chosen
+    # Prompt the user for a location to save Dropbox Uploader. "
+    db_uploader_location = CliMessage.prompt("Location for Dropbox-Uploader", DEFAULT_DBUPLOADER_LOCATION_BASE)
+    db_uploader_location.chop! if db_uploader_location.end_with?('/')
+    db_uploader_location = "/usr/local/opt" if db_uploader_location.empty?
+    
+    # If the entered directory exists, clone the repository.
+    if File.directory?(db_uploader_location)
+      valid_directory_chosen = true
+      db_uploader_location << "/Dropbox-Uploader"
+      
+      # If, for some reason, Dropbox Uploader alread exists at this location,
+      # skip the clone.
+      if File.directory?(db_uploader_location)
+        CliMessage.info("You seem to already have Dropbox Uploader at this location; skipping...")
+      else
+        %x{git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{db_uploader_location}}
+      end
+      
+      # Save config data to YAML.
+      $config.addToSection({:install_location => db_uploader_location}, :db_uploader)
+    else
+      puts "Sorry, but #{db_uploader_location} isn't a valid directory."
+    end
+  end
+end
+
+#|  ======================================================
+#|  MAIN
+#|  ======================================================
+include GLI::App
+$config = ConfigManager.instance
+
+# Set the description as it will be displayed in the help message
+program_desc "Sifttter Redux v#{VERSION}
+
+    A modification of Craig Eley's Sifttter that allows for smart
+    installation on a standalone *NIX device (such as a Raspberry Pi)."
+
+desc 'Execute the script'
+command :exec do |c|
+  
+end
+
+desc 'Install and initialize dependencies'
+command :init do |c|
+  c.action do |global_options, options, args|
+    CliMessage.section('INITIALIZING...')
+
+    if File.exists?($config.configFile)
+      optionReinitialize = CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase
+      initialize_procedures if optionReinitialize == 'y'
+    else
+      initialize_procedures
+    end
+  end
+end
+
+exit run(ARGV)
