@@ -284,7 +284,7 @@ def run_sifttter
   # * To set the Day One entries to starred, just change `starred = false` to true on line 24
   
   uuid = %x{uuidgen}.gsub(/-/,'').strip if OS.mac?
-  uuid = %x{uuid}.gsub(/-/,'').strip if OS.linux
+  uuid = %x{uuid}.gsub(/-/,'').strip if OS.linux?
   
   datestamp = Time.now.utc.iso8601
   starred = false
