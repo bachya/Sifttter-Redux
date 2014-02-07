@@ -316,8 +316,6 @@ def run_sifttter
   cdate = Time.now().strftime('%m/%d/%Y')
   files = %x{find #{DEFAULT_SIFTTTER_DESTINATION_LOCATION} -type f -name '*.txt' | grep -v -i daily | sort}
 
-  puts "DATES: #{today_padded} // #{today_no_padded}"
-
   projects = []
   files.split("\n").each do |file|
   	if File.exists?(file.strip)
