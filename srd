@@ -314,7 +314,7 @@ def run_sifttter
   today_padded = Time.now().strftime('%B %d, %Y')
   today_no_padded = Time.now().strftime('%B %-d, %Y')
   cdate = Time.now().strftime('%m/%d/%Y')
-  files = %x{mdfind -onlyin #{File.join(ENV['HOME'], 'Dropbox/', DEFAULT_SIFTTTER_SOURCE_LOCATION)} 'kMDItemContentModificationDate >= "$time.today(-1)"' | grep -v -i daily | sort}
+  files = %x{find #{File.join(ENV['HOME'], 'Dropbox/', DEFAULT_SIFTTTER_SOURCE_LOCATION)} -type f -name '*.txt' | grep -v -i daily | sort}
 
   projects = []
   files.split("\n").each do |file|
