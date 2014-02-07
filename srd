@@ -283,8 +283,9 @@ def run_sifttter
   # * If you use iCloud you'll can just uncomment lines 26 and 27, and comment line 28
   # * To set the Day One entries to starred, just change `starred = false` to true on line 24
   
-  uuid = %x{uuidgen}.gsub(/-/,'').strip if OS.mac?
-  uuid = %x{uuid}.gsub(/-/,'').strip if OS.linux?
+  uuid_command = "uuidgen" if OS.mac?
+  uuid_command = "uuid" if OS.linux?
+  uuid = %x{#{uuid_command}}.gsub(/-/,'').strip 
   
   datestamp = Time.now.utc.iso8601
   starred = false
