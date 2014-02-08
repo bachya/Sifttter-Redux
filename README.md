@@ -38,7 +38,7 @@ cd Sifttter-Redux
 bundle install
 ```
 
-*(note that you may want to run `bundle install --global` for the sake of `cron` -- see [below](#Cron))*
+*(note that you may want to run `bundle install --global` for the sake of `cron` -- see [below](#Cron-Job))*
 
 Finally, make sure the script is executable and initialize it:
 
@@ -70,7 +70,7 @@ COMMANDS
     init - Install and initialize dependencies
 ```
 
-(##Cron)
+## Cron Job
 
 By installing an entry to the Raspberry Pi's `crontab`, Sifttter Redux can be run automatically on a schedule.
 
