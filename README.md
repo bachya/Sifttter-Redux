@@ -70,7 +70,7 @@ COMMANDS
     init - Install and initialize dependencies
 ```
 
-## Cron Job
+## Cron Job(#Cron-Job)
 
 By installing an entry to the Raspberry Pi's `crontab`, Sifttter Redux can be run automatically on a schedule.
 
