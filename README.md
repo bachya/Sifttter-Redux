@@ -38,7 +38,7 @@ cd Sifttter-Redux
 bundle install
 ```
 
-*(note that you may want to run `bundle install --global` for the sake of `cron` -- see below)*
+*(note that you may want to run `bundle install --global` for the sake of `cron` -- [see below](#cron-job))*
 
 Finally, make sure the script is executable and initialize it:
 
