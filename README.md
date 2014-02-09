@@ -92,6 +92,17 @@ Another option is to install the bundled gems to the global gemset:
 bundle install -- global
 ```
 
+## Known Issues
+
+None at the moment.
+
+## Future Releases
+
+Some functionality I would like to tackle for future releases:
+
+* Interactive cron job installer
+* "Catch Up" mode (if, for some reason, multiple days worth of items pile up, process them)
+
 ## Bugs and Feature Requests
 
 To report bugs with or suggest features/changes for Sifttter Redux, please use the [Issues Page](http://github.com/bachya/Sifttter-Redux/issues).
