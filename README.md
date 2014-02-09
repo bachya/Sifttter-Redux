@@ -81,7 +81,7 @@ One issue that arises is the loading of the bundled gems; because `cron` runs in
 If your Raspberry Pi uses RVM, this `crontab` entry will do:
 
 ```
-55 23 * * * /bin/bash -l -c 'source "$HOME/.rvm/scripts/rvm" && $HOME/Sifttter-Redux/srd exec'
+55 23 * * * /bin/bash -l -c 'source "$HOME/.rvm/scripts/rvm" && "$HOME/Sifttter-Redux/srd" exec'
 ```
 
 ### Globally Installing Bundled Gems
