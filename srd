@@ -43,42 +43,82 @@ require 'yaml'
 
 #|  ======================================================
 #|  CONSTANTS
+#|
 #|  Don't change these unless you really know
 #|  what you're doing.
 #|  ======================================================
-DEFAULT_SRD_CONFIG_FILE = File.join(ENV['HOME'], '.sifttter_redux')
 
+#|  ------------------------------------------------------
+#|  Sifttter and Sifttter Redux Constants
+#|  ------------------------------------------------------
+DEFAULT_SRD_CONFIG_FILE = File.join(ENV['HOME'], '.sifttter_redux')
+DEFAULT_SIFTTTER_DESTINATION_LOCATION = File.join(ENV['HOME'], 'sifttter')
+DEFAULT_SIFTTTER_SOURCE_LOCATION = "/Apps/ifttt/sifttter"
+
+#|  ------------------------------------------------------
+#|  Dropbox Upload Constants
+#|  ------------------------------------------------------
 DEFAULT_DBUPLOADER_CONFIG_FILE = File.join(ENV['HOME'], '.dropbox_uploader')
 DEFAULT_DBUPLOADER_LOCATION_BASE = "/usr/local/opt"
 
-DEFAULT_SIFTTTER_DESTINATION_LOCATION = File.join(ENV['HOME'], 'sifttter')
-DEFAULT_SIFTTTER_SOURCE_LOCATION = "/Apps/ifttt/sifttter"
+#|  ------------------------------------------------------
+#|  Day One Constants
+#|  ------------------------------------------------------
 
 DEFAULT_DAYONE_DESTINATION_PATH = "/Apps/Day\\ One/Journal.dayone/entries"
 DEFAULT_DAYONE_SOURCE_PATH = File.join(DEFAULT_SIFTTTER_DESTINATION_LOCATION, 'dayone')
 
-VERSION = 0.1
+#|  ------------------------------------------------------
+#|  Miscellaneous Constants
+#|  ------------------------------------------------------
+
+VERSION = 0.2 
 
 #|  ======================================================
 #|  OS Module
+#|
 #|  Module to easily find the running operating system
 #|  ======================================================
-
 module OS
-  def OS.windows?
-    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
-  end
 
+  #|  ------------------------------------------------------
+  #|  linux? method
+  #|
+  #|  Returns true if the host OS is Linux (false otherwise).
+  #|  @return Bool
+  #|  ------------------------------------------------------
+  def OS.linux?
+    OS.unix? and not OS.mac?
+  end
+  
+  #|  ------------------------------------------------------
+  #|  mac? method
+  #|
+  #|  Returns true if the host OS is OS X (false otherwise).
+  #|  @return Bool
+  #|  ------------------------------------------------------
   def OS.mac?
    (/darwin/ =~ RUBY_PLATFORM) != nil
   end
 
+  #|  ------------------------------------------------------
+  #|  unix? method
+  #|
+  #|  Returns true if the host OS is Unix (false otherwise).
+  #|  @return Bool
+  #|  ------------------------------------------------------
   def OS.unix?
     !OS.windows?
   end
-
-  def OS.linux?
-    OS.unix? and not OS.mac?
+  
+  #|  ------------------------------------------------------
+  #|  windows? method
+  #|
+  #|  Returns true if the host OS is Windows (false otherwise).
+  #|  @return Bool
+  #|  ------------------------------------------------------
+  def OS.windows?
+    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
   end
 end
 
@@ -87,16 +127,40 @@ end
 #|  Singleton to manage common CLI interfacing
 #|  ======================================================
 module CliMessage
+  
+  #|  ------------------------------------------------------
+  #|  error method
+  #|
+  #|  Outputs a formatted-red error message.
+  #|  @param message The message to output
+  #|  @return Void
+  #|  ------------------------------------------------------
   def self.error(message)
     puts "---> ERROR: #{message}".red
   end
   
+  #|  ------------------------------------------------------
+  #|  info method
+  #|
+  #|  Outputs a formatted-blue informational message.
+  #|  @param message The message to output
+  #|  @return Void
+  #|  ------------------------------------------------------
   def self.info(message)
     puts "---> INFO: #{message}".blue
   end
   
-  def self.prompt(message, default)
-    print "#{message} [default: #{default}]: "
+  #|  ------------------------------------------------------
+  #|  prompt method
+  #|
+  #|  Outputs a prompt, collects the user's response, and
+  #|  returns it.
+  #|  @param prompt The prompt to output
+  #|  @param default The default option
+  #|  @return String
+  #|  ------------------------------------------------------
+  def self.prompt(prompt, default)
+    print "#{prompt} [default: #{default}]: "
     choice = $stdin.gets.chomp
     if choice.empty?
       return default
@@ -105,10 +169,24 @@ module CliMessage
     end
   end
   
+  #|  ------------------------------------------------------
+  #|  section method
+  #|
+  #|  Outputs a formatted-green section message.
+  #|  @param message The message to output
+  #|  @return Void
+  #|  ------------------------------------------------------
   def self.section(message)
     puts "### #{message}".green
   end
   
+  #|  ------------------------------------------------------
+  #|  warning method
+  #|
+  #|  Outputs a formatted-yellow warning message.
+  #|  @param message The message to output
+  #|  @return Void
+  #|  ------------------------------------------------------
   def self.warning(message)
     puts "---> WARNING: #{message}".yellow
   end
@@ -116,6 +194,7 @@ end
 
 #|  ======================================================
 #|  ConfigManager Class
+#|
 #|  Singleton to manage the YAML config file
 #|  for this script
 #|  ======================================================
@@ -124,6 +203,14 @@ class ConfigManager
   
   attr_accessor :configFile
   
+  #|  ------------------------------------------------------
+  #|  initialize method
+  #|
+  #|  Initializes this singleton with data from the config
+  #|  file. If the file doesn't exist, an empty hash is
+  #|  created in anticipation of future config saves.
+  #|  @return Void
+  #|  ------------------------------------------------------
   def initialize
     @configFile = DEFAULT_SRD_CONFIG_FILE
     
@@ -137,10 +224,25 @@ class ConfigManager
     end
   end
   
+  #|  ------------------------------------------------------
+  #|  _dump method
+  #|
+  #|  Convenience method that dumps the configuration hash's
+  #|  data.
+  #|  @return Void
+  #|  ------------------------------------------------------
   def _dump
     puts @data
   end
   
+  #|  ------------------------------------------------------
+  #|  add_to_section method
+  #|
+  #|  Adds a hash to the configuration data.
+  #|  @param hash The hash to add to configuration
+  #|  @param section The section into which the hash goes
+  #|  @return Void
+  #|  ------------------------------------------------------
   def add_to_section(hash, section)
     unless @data.has_key?(section)
       CliMessage.warning("Attempting to insert into a non-existing section: #{section}; skipping...")
@@ -150,6 +252,13 @@ class ConfigManager
     @data[section].merge!(hash)
   end
   
+  #|  ------------------------------------------------------
+  #|  create_section method
+  #|
+  #|  Creates a new section in the configuration hash.
+  #|  @param section The section to create
+  #|  @return Void
+  #|  ------------------------------------------------------
   def create_section(section)
     if @data.has_key?(section)
       CliMessage.warning("Attempting to create existing section (#{section}); skipping...")
@@ -160,6 +269,13 @@ class ConfigManager
     @data.merge!(section => {})
   end
   
+  #|  ------------------------------------------------------
+  #|  delete_section method
+  #|
+  #|  Deletes a section in the configuration hash.
+  #|  @param section The section to delete
+  #|  @return Void
+  #|  ------------------------------------------------------
   def delete_section(section)
     unless @data.has_key?(section)
       CliMessage.warning("Attempting to delete non-existing section (#{section}); skipping...")
@@ -170,6 +286,15 @@ class ConfigManager
     @data.delete(section)
   end
   
+  #|  ------------------------------------------------------
+  #|  remove_singleton_method method
+  #|
+  #|  Removes a hash from the configuration data based on
+  #|  its key.
+  #|  @param hash The hash key remove
+  #|  @param section The section from which the key comes
+  #|  @return Void
+  #|  ------------------------------------------------------
   def remove_from_section(key, section)
     unless @data.has_key?(section) && @data[section].has_key?(key)
       CliMessage.warning("Attempting to remove a non-existing key: #{section}.#{key}; skipping...")
@@ -179,18 +304,37 @@ class ConfigManager
     @data[section].delete(key)
   end
   
+  #|  ------------------------------------------------------
+  #|  reset method
+  #|
+  #|  Clears out the configuration data by resetting the hash.
+  #|  @return Void
+  #|  ------------------------------------------------------
   def reset
     @data = {}
   end
   
+  #|  ------------------------------------------------------
+  #|  save_configuration method
+  #|
+  #|  Saves the configuration data to the filesystem.
+  #|  @return File
+  #|  ------------------------------------------------------
   def save_configuration
     return File.open(@configFile, 'w') { |f| f.write(@data.to_yaml) }
   end
   
 end
 
+#|  ======================================================
+#|  Sifttter Redux
+#|  ======================================================
+
 #|  ------------------------------------------------------
-#|  Collect preferences
+#|  collect_preferences method
+#|
+#|  Collects preferences from the user and stores the
+#|  entered values into a configuration file.
 #|  ------------------------------------------------------
 def collect_preferences
   CliMessage.section('COLLECTING PREFERENCES...')
@@ -206,14 +350,10 @@ def collect_preferences
 end
 
 #|  ------------------------------------------------------
-#|  String replacement method from original Sifttter
-#|  ------------------------------------------------------
-def e_sh(str)
-	str.to_s.gsub(/(?=["\\])/, '\\')
-end
-
-#|  ------------------------------------------------------
-#|  Initialization procedures
+#|  initialize_procedures method
+#|
+#|  Initializes Sifttter Redux by downloading and collecting
+#|  all necessary items and info.
 #|  ------------------------------------------------------
 def initialize_procedures
   $config.reset
@@ -229,7 +369,10 @@ def initialize_procedures
 end
 
 #|  ------------------------------------------------------
-#|  Installs Dropbox Uploader from Github
+#|  install_db_uploader method
+#|
+#|  Installs Dropbox Uploader to a user-specified location
+#|  by cloning the git repository.
 #|  ------------------------------------------------------
 def install_db_uploader
   valid_directory_chosen = false
@@ -266,28 +409,20 @@ def install_db_uploader
   end
 end
 
+#|  ------------------------------------------------------
+#|  run_sifttter method
+#|
+#|  Modified form of Sifttter
+#| 
+#|  Sifttter: An IFTTT-to-Day One Logger by Craig Eley 2014
+#|  Based on tp-dailylog.rb by Brett Terpstra 2012
+#|  ------------------------------------------------------
 def run_sifttter
-  # Sifttter: An IFTTT-to-Day One Logger by Craig Eley 2014 <http://craigeley.com>
-  # Based on tp-dailylog.rb by Brett Terpstra 2012 <http://brettterpstra.com>
-  # 
-  # Notes:
-  # * Uses `mdfind` to locate a specific folder of IFTTT-generated text files changed in the last day
-  # * The location of your folder should be hardcoded in line 53
-  # * Scans leading timestamps in each line matching today's date
-  # * Does not alter text files in any way
-  # * Changes ampersand ('&') to 'and' so the script keeps running
-  # * Does not require the Day One CLI tool
-  # * Only generates report if there are completed tasks found
-  # * Compiles all results into a single Day One entry
-  # * It's configured to locate a Dropbox-synced journal, so
-  # * If you use iCloud you'll can just uncomment lines 26 and 27, and comment line 28
-  # * To set the Day One entries to starred, just change `starred = false` to true on line 24
-  
   uuid_command = "uuidgen" if OS.mac?
   uuid_command = "uuid" if OS.linux?
   uuid = %x{#{uuid_command}}.gsub(/-/,'').strip 
   
-  datestamp = Time.now.utc.iso8601
+  datestamp = Time.now().utc.iso8601
   starred = false
 
   template = ERB.new <<-XMLTEMPLATE
@@ -311,9 +446,9 @@ def run_sifttter
   </plist>
   XMLTEMPLATE
 
-  today_padded = Time.now().strftime('%B %d, %Y')
-  today_no_padded = Time.now().strftime('%B %-d, %Y')
-  cdate = Time.now().strftime('%m/%d/%Y')
+  date_regex = "#{Time.now().strftime('%B')} 0?#{Time.now().strftime('%-d')}, #{Time.now().strftime('%Y')}"
+  time_regex = "\d{1,2}:\d{1,2}\s?[AaPpMm]{2}"
+
   files = %x{find #{DEFAULT_SIFTTTER_DESTINATION_LOCATION} -type f -name '*.txt' | grep -v -i daily | sort}
 
   projects = []
@@ -329,13 +464,9 @@ def run_sifttter
   			if line =~ /&/
   				line.gsub!(/[&]/, 'and')
   			end
-  			if line =~ /#{today_padded}/
+  			if line =~ /#{date_regex}/
   				found_completed = true
-  				project += line.gsub(/@done/,'').gsub(/#{today_padded}.../,'').strip + "\n"
-  			end
-  			if line =~ /#{today_no_padded}/
-  				found_completed = true
-  				project += line.gsub(/@done/,'').gsub(/#{today_no_padded}.../,'').strip + "\n"
+  				project += line.gsub(/@done/,'').gsub(/#{date_regex}\s(-|at)\s/, '').gsub(/#{time_regex}\s-\s/, '').strip + "\n"
   			end
   		end
   	end
@@ -349,7 +480,9 @@ def run_sifttter
   end
 
   if projects.length > 0
-  	entrytext = "# Things done on #{today_padded}\n\n"
+    date_for_title = Time.now().strftime('%B %d, %Y')
+    
+  	entrytext = "# Things done on #{date_for_title}\n\n"
   	projects.each do |project|
   		entrytext += project.gsub(/.txt/, ' ') + "\n\n"
   	end
@@ -360,13 +493,15 @@ def run_sifttter
   	fh = File.new(File.expand_path(DEFAULT_DAYONE_SOURCE_PATH + "/" + uuid + ".doentry"), 'w+')
   	fh.puts template.result(binding)
   	fh.close
-  	puts "Entry logged for #{today_padded}"
+  	puts "Entry logged for #{date_for_title}"
   end
   
 end
 
 #|  ======================================================
-#|  MAIN
+#|  Main Program
+#|
+#|  Bootstraps the CLI and guides the user through use.
 #|  ======================================================
 include GLI::App
 $config = ConfigManager.instance
@@ -377,15 +512,22 @@ program_desc "Sifttter Redux v#{VERSION}
     A modification of Craig Eley's Sifttter that allows for smart
     installation on a standalone *NIX device (such as a Raspberry Pi)."
 
+# Before running "exec", initialize if necessary and store the location
+# of the Dropbox Uploader executable.
 pre do |global_options, command, options, args|
   if !File.exists?(DEFAULT_SRD_CONFIG_FILE)
-    CliMessage.info("It doesn't look like you've initlized Sifttter Redux yet. Doing that now...")
+    CliMessage.info("It doesn't look like you've initlized Sifttter Redux yet. Doing that now()...")
     initialize_procedures
   end
   
   $db_uploader = File.join($config.db_uploader["install_location"], "dropbox_uploader.sh")
 end
 
+#|  ------------------------------------------------------
+#|  exec command
+#|
+#|  Executes the script.
+#|  ------------------------------------------------------
 desc 'Execute the script'
 command :exec do |c|
   c.action do |global_options, options, args|
@@ -400,6 +542,11 @@ command :exec do |c|
   end
 end
 
+#|  ------------------------------------------------------
+#|  init command
+#|
+#|  Initializes the script.
+#|  ------------------------------------------------------
 desc 'Install and initialize dependencies'
 command :init do |c|
   c.action do |global_options, options, args|
