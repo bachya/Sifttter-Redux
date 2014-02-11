@@ -422,7 +422,7 @@ def run_sifttter
   uuid_command = "uuid" if OS.linux?
   uuid = %x{#{uuid_command}}.gsub(/-/,'').strip 
   
-  datestamp = Time.now().utc.iso8601
+  datestamp = Time.now()
   starred = false
 
   template = ERB.new <<-XMLTEMPLATE
