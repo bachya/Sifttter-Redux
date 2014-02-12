@@ -53,7 +53,7 @@ Syntax and usage can be accessed by running `./srd help`:
 
 ```
 NAME
-    srd - Sifttter Redux v0.1
+    srd - Sifttter Redux v1.1
 
     A modification of Craig Eley's Sifttter that allows for smart
     installation on a standalone *NIX device (such as a Raspberry Pi).
