@@ -37,6 +37,7 @@ require 'date'
 require 'erb'
 require 'fileutils'
 require 'gli'
+require 'hpricot'
 require 'singleton'
 require 'time'
 require 'yaml'
@@ -51,27 +52,24 @@ require 'yaml'
 #|  ------------------------------------------------------
 #|  Sifttter and Sifttter Redux Constants
 #|  ------------------------------------------------------
-DEFAULT_SRD_CONFIG_FILE = File.join(ENV['HOME'], '.sifttter_redux')
-DEFAULT_SIFTTTER_DESTINATION_LOCATION = File.join(ENV['HOME'], 'sifttter')
-DEFAULT_SIFTTTER_SOURCE_LOCATION = "/Apps/ifttt/sifttter"
+SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')
+SFT_LOCAL_FILEPATH = "/tmp/sifttter"
+SFT_REMOTE_FILEPATH = "/Apps/ifttt/sifttter"
 
 #|  ------------------------------------------------------
 #|  Dropbox Upload Constants
 #|  ------------------------------------------------------
-DEFAULT_DBUPLOADER_CONFIG_FILE = File.join(ENV['HOME'], '.dropbox_uploader')
-DEFAULT_DBUPLOADER_LOCATION_BASE = "/usr/local/opt"
+DBU_LOCAL_FILEPATH = "/usr/local/opt"
 
 #|  ------------------------------------------------------
 #|  Day One Constants
 #|  ------------------------------------------------------
-
-DEFAULT_DAYONE_DESTINATION_PATH = "/Apps/Day\\ One/Journal.dayone/entries"
-DEFAULT_DAYONE_SOURCE_PATH = File.join(DEFAULT_SIFTTTER_DESTINATION_LOCATION, 'dayone')
+DO_REMOTE_FILEPATH = "/Apps/Day\\ One/Journal.dayone/entries"
+DO_LOCAL_FILEPATH = "/tmp/dayone"
 
 #|  ------------------------------------------------------
 #|  Miscellaneous Constants
 #|  ------------------------------------------------------
-
 VERSION = 1.1
 
 #|  ======================================================
@@ -212,10 +210,10 @@ class ConfigManager
   #|  @return Void
   #|  ------------------------------------------------------
   def initialize
-    @configFile = DEFAULT_SRD_CONFIG_FILE
+    @configFile = SRD_CONFIG_FILEPATH
     
-    if File.exists?(DEFAULT_SRD_CONFIG_FILE) 
-      @data = YAML.load_file(DEFAULT_SRD_CONFIG_FILE)
+    if File.exists?(SRD_CONFIG_FILEPATH) 
+      @data = YAML.load_file(SRD_CONFIG_FILEPATH)
       @data.each do |k, v|
         define_singleton_method(k) { return v }
       end
@@ -339,14 +337,17 @@ end
 def collect_preferences
   CliMessage.section('COLLECTING PREFERENCES...')
   
-  pref = CliMessage.prompt("Location for downloaded Sifttter files from Dropbox", DEFAULT_SIFTTTER_DESTINATION_LOCATION)
-  $config.add_to_section({"sifttter_destination_location" => pref}, "sifttter_redux")
+  pref = CliMessage.prompt("Location for downloaded Sifttter files from Dropbox", SFT_LOCAL_FILEPATH)
+  $config.add_to_section({"sifttter_local_filepath" => pref}, "sifttter_redux")
   
-  pref = CliMessage.prompt("Location of Sifttter files in Dropbox", DEFAULT_SIFTTTER_SOURCE_LOCATION)
-  $config.add_to_section({"sifttter_source_location" => pref}, "sifttter_redux")
+  pref = CliMessage.prompt("Location of Sifttter files in Dropbox", SFT_REMOTE_FILEPATH)
+  $config.add_to_section({"sifttter_remote_filepath" => pref}, "sifttter_redux")
   
-  pref = CliMessage.prompt("Location of Day One files in Dropbox", DEFAULT_DAYONE_DESTINATION_PATH)
-  $config.add_to_section({"dayone_source_location" => pref}, "sifttter_redux")
+  pref = CliMessage.prompt("Location for downloaded Day One files from Dropbox", DO_LOCAL_FILEPATH)
+  $config.add_to_section({"dayone_local_filepath" => pref}, "sifttter_redux")
+  
+  pref = CliMessage.prompt("Location of Day One files in Dropbox", DO_REMOTE_FILEPATH)
+  $config.add_to_section({"dayone_remote_filepath" => pref}, "sifttter_redux")
 end
 
 #|  ------------------------------------------------------
@@ -384,7 +385,7 @@ def install_db_uploader
   
   until valid_directory_chosen
     # Prompt the user for a location to save Dropbox Uploader. "
-    db_uploader_location = CliMessage.prompt("Location for Dropbox-Uploader", DEFAULT_DBUPLOADER_LOCATION_BASE)
+    db_uploader_location = CliMessage.prompt("Location for Dropbox-Uploader", DBU_LOCAL_FILEPATH)
     db_uploader_location.chop! if db_uploader_location.end_with?('/')
     db_uploader_location = "/usr/local/opt" if db_uploader_location.empty?
     
@@ -402,7 +403,7 @@ def install_db_uploader
       end
       
       # Save config data to YAML.
-      $config.add_to_section({"install_location" => db_uploader_location}, "db_uploader")
+      $config.add_to_section({"local_filepath" => db_uploader_location}, "db_uploader")
     else
       puts "Sorry, but #{db_uploader_location} isn't a valid directory."
     end
@@ -422,7 +423,7 @@ def run_sifttter
   uuid_command = "uuid" if OS.linux?
   uuid = %x{#{uuid_command}}.gsub(/-/,'').strip 
   
-  datestamp = Time.now().utc.iso8601
+  datestamp = Time.now()
   starred = false
 
   template = ERB.new <<-XMLTEMPLATE
@@ -449,7 +450,7 @@ def run_sifttter
   date_regex = "#{Time.now().strftime('%B')} 0?#{Time.now().strftime('%-d')}, #{Time.now().strftime('%Y')}"
   time_regex = "\d{1,2}:\d{1,2}\s?[AaPpMm]{2}"
 
-  files = %x{find #{DEFAULT_SIFTTTER_DESTINATION_LOCATION} -type f -name '*.txt' | grep -v -i daily | sort}
+  files = %x{find #{$config.sifttter_redux["sifttter_local_filepath"]} -type f -name '*.txt' | grep -v -i daily | sort}
 
   projects = []
   files.split("\n").each do |file|
@@ -487,15 +488,14 @@ def run_sifttter
   		entrytext += project.gsub(/.txt/, ' ') + "\n\n"
   	end
     
-    FileUtils.rm_rf(DEFAULT_DAYONE_SOURCE_PATH) if Dir.exists?(DEFAULT_DAYONE_SOURCE_PATH)
-    Dir.mkdir(DEFAULT_DAYONE_SOURCE_PATH)
+    FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
+    Dir.mkdir($config.sifttter_redux["dayone_local_filepath"])
     
-  	fh = File.new(File.expand_path(DEFAULT_DAYONE_SOURCE_PATH + "/" + uuid + ".doentry"), 'w+')
+  	fh = File.new(File.expand_path($config.sifttter_redux["dayone_local_filepath"] + "/" + uuid + ".doentry"), 'w+')
   	fh.puts template.result(binding)
   	fh.close
   	puts "Entry logged for #{date_for_title}"
   end
-  
 end
 
 #|  ======================================================
@@ -515,12 +515,12 @@ program_desc "Sifttter Redux v#{VERSION}
 # Before running "exec", initialize if necessary and store the location
 # of the Dropbox Uploader executable.
 pre do |global_options, command, options, args|
-  if !File.exists?(DEFAULT_SRD_CONFIG_FILE)
+  if !File.exists?(SRD_CONFIG_FILEPATH)
     CliMessage.info("It doesn't look like you've initlized Sifttter Redux yet. Doing that now()...")
     initialize_procedures
   end
-  
-  $db_uploader = File.join($config.db_uploader["install_location"], "dropbox_uploader.sh")
+
+  $db_uploader = File.join($config.db_uploader["local_filepath"], "dropbox_uploader.sh")
 end
 
 #|  ------------------------------------------------------
@@ -529,16 +529,59 @@ end
 #|  Executes the script.
 #|  ------------------------------------------------------
 desc 'Execute the script'
-command :exec do |c|
+command :exec do |c|  
+  c.flag(
+    [:from],
+    :desc => 'Run "catch-up" mode with this start date (must be accompanied by --to)',
+  )
+  
+  c.flag(
+    [:to],
+    :desc => 'Run "catch-up" mode with this end date (must be accompanied by --from)',
+  )
+  
   c.action do |global_options, options, args|
-    CliMessage.section('EXECUTING...')
-    
-    CliMessage.info('Launching Dropbox-Uploader...')
-    
-    FileUtils.rm_rf(DEFAULT_SIFTTTER_DESTINATION_LOCATION) if Dir.exists?(DEFAULT_SIFTTTER_DESTINATION_LOCATION)
-    system "#{$db_uploader} download #{DEFAULT_SIFTTTER_SOURCE_LOCATION} #{DEFAULT_SIFTTTER_DESTINATION_LOCATION}"
-    run_sifttter
-    system "#{$db_uploader} upload #{DEFAULT_DAYONE_SOURCE_PATH + "/*"} #{$config.sifttter_redux["dayone_source_location"]}"
+    # Halt if the user specifies either --from or --to, but not both.
+    if (options[:from].nil? ^ options[:to].nil?)
+      CliMessage.error("You can't specify --from with specifying --to (and vice versa)...")
+      exit!
+    end
+
+    if (options[:from])
+      date_startDate = DateTime.parse(options[:from]).to_date rescue nil
+      date_endDate = DateTime.parse(options[:to]).to_date rescue nil
+
+      # Error out if the user has provided an invalid date.
+      if (!date_startDate || !date_endDate)
+        CliMessage.error("Please ensure that you are providing valid dates...")
+        exit!
+      end
+  
+      # Error out of the user has provided a start date that occurs after
+      # the end date.
+      if (date_startDate > date_endDate)
+        CliMessage.error("The start date must be before or equal to the end date...")
+        exit!
+      end
+      
+      CliMessage.info("Creating entries for items between #{date_startDate} and #{date_endDate}...")
+    else
+      # In this case, the user has not specified --from and --to.
+      CliMessage.section('EXECUTING...')
+      CliMessage.info('Launching Dropbox-Uploader...')
+      
+      # Remove the Sifttter downloads directory (if it already exists)
+      FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
+      
+      # Download all Sifttter files from Dropbox.
+      system "#{$db_uploader} download #{$config.sifttter_redux["sifttter_remote_filepath"]} #{$config.sifttter_redux["sifttter_local_filepath"]}"
+      
+      # Run the core Sifttter functionality.
+      run_sifttter
+      
+      # Upload the new Day One entry to Dropbox.
+      system "#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}"
+    end
   end
 end
 
