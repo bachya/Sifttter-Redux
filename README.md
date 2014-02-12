@@ -120,7 +120,7 @@ If your Raspberry Pi uses RVM, this `crontab` entry will do:
 Another option is to install the bundled gems to the global gemset:
 
 ```
-bundle install -- global
+bundle install --global
 ```
 
 ## Known Issues
