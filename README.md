@@ -163,4 +163,4 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 * Craig Eley for Sifttter and for giving me the idea for Sifttter Redux
 * Andrea Fabrizi for her stellar Dropbox Uploader project
-* The Chronic folks for making the aforemention wonderful Chronic gem
+* The Chronic folks for making the aforementioned wonderful Chronic gem
