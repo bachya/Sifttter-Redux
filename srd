@@ -72,7 +72,7 @@ DEFAULT_DAYONE_SOURCE_PATH = File.join(DEFAULT_SIFTTTER_DESTINATION_LOCATION, 'd
 #|  Miscellaneous Constants
 #|  ------------------------------------------------------
 
-VERSION = 0.2 
+VERSION = 1.1
 
 #|  ======================================================
 #|  OS Module
