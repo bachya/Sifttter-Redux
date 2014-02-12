@@ -70,7 +70,28 @@ COMMANDS
     init - Install and initialize dependencies
 ```
 
-## "Catch-up" Mode
+### Initialization
+
+```
+./srd init
+```
+
+Initialization will perform the following steps:
+
+1. Download [Dropbox-Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox-Uploder") to a location of your choice.
+2. Collect some user preferences:
+ 1. The location on your filesystem where Sifttter files will be temporarily stored
+ 2. The location of your Sifttter files in Dropbox
+ 3. The location on your filesystem where Day One files will be temporarily stored
+ 4. The location of your Day One files in Dropbox
+ 
+### Basic Mode
+
+ ```
+ ./srd exec
+ ```
+
+### "Catch-up" Mode
 
 Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal data between a range of dates.
 
@@ -125,12 +146,13 @@ bundle install --global
 
 ## Known Issues
 
-None at the moment.
+* Sifttter Redux makes no effort to see if entries already exist in Day One for a particular date. This means that if you're not careful, you might end up with duplicate entries. A future version will address this.
 
 ## Future Releases
 
 Some functionality I would like to tackle for future releases:
 
+* Checking for existing Day One entries on a particular date
 * Interactive cron job installer
 * Verbose mode
 * Automatic gem bundling
