@@ -53,7 +53,7 @@ Syntax and usage can be accessed by running `./srd help`:
 
 ```
 NAME
-    srd - Sifttter Redux v1.1
+    srd - Sifttter Redux v0.1
 
     A modification of Craig Eley's Sifttter that allows for smart
     installation on a standalone *NIX device (such as a Raspberry Pi).
@@ -69,6 +69,37 @@ COMMANDS
     help - Shows a list of commands or help for one command
     init - Install and initialize dependencies
 ```
+
+## "Catch-up" Mode
+
+Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal data between a range of dates.
+
+To use this mode, simply specify `--from` and `--to` parameters when executing the script:
+
+```
+# Looks for entries from 2/1/2014 to 2/12/2014
+./srd exec --from=2014-02-01 --to=2014-02-12
+```
+
+Even more simply, to create entries from a specific point until yesterday ("yesterday" because you might not be ready to have today's entries scanned):
+
+```
+# Looks for entries from 2/1/2014 to yesterday's date
+./srd exec --from=2014-02-01
+```
+
+Two notes to be aware of:
+
+* `--from` and `--to` are *inclusive* parameters, meaning that those dates will be included when searching for Siftter data.
+* Although you can specify `--from` by itself, you cannot specify `--to` by itself.
+
+Sifttter Redux makes use of the excellent [Chronic gem](https://github.com/mojombo/chronic "Chronic"), which provides natural language parsing for dates and times. This means that you can run commands with more "human" dates:
+
+```
+./srd exec --from="last Thursday" --to="yesterday"
+```
+
+See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Chronic Examples") for more examples.
 
 ## Cron Job
 
@@ -101,7 +132,8 @@ None at the moment.
 Some functionality I would like to tackle for future releases:
 
 * Interactive cron job installer
-* "Catch Up" mode (if, for some reason, multiple days worth of items pile up, process them)
+* Verbose mode
+* Automatic gem bundling
 
 ## Bugs and Feature Requests
 
