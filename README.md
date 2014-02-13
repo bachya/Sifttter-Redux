@@ -180,18 +180,18 @@ If your Raspberry Pi uses RVM, this `crontab` entry will do:
 Another option is to install the bundled gems to the global gemset:
 
 ```
-bundle install --global
+$ bundle install --global
 ```
 
 ## Known Issues
 
 * Sifttter Redux makes no effort to see if entries already exist in Day One for a particular date. This means that if you're not careful, you might end up with duplicate entries. A future version will address this.
+* At indeterminiate times (usually when in catch-up mode), Sifttter Redux will upload a file to Day One that Day One fails to read. Uncertain of the cause at this stage, but it's happened a few times.
 
 ## Future Releases
 
 Some functionality I would like to tackle for future releases:
 
-* Checking for existing Day One entries on a particular date
 * Interactive cron job installer
 * Verbose mode
 * Automatic gem bundling
