@@ -39,9 +39,9 @@ require 'gli'
 require 'time'
 
 # Sifttter Redux classes and Modules
-require File.join(File.dirname(__FILE__), 'lib/ConfigManagerClass.rb')
-require File.join(File.dirname(__FILE__), 'lib/CliManagerModule.rb')
-require File.join(File.dirname(__FILE__), 'lib/OsModule.rb')
+require File.join(File.dirname(__FILE__), 'lib/class_config_manager.rb')
+require File.join(File.dirname(__FILE__), 'lib/module_cli_manager.rb')
+require File.join(File.dirname(__FILE__), 'lib/module_os.rb')
 
 #|  ======================================================
 #|  CONSTANTS
@@ -64,6 +64,82 @@ DO_LOCAL_FILEPATH = "/tmp/dayone"
 
 # Miscellaneous Constants
 VERSION = 1.3
+
+def collect_catch_up_dates(method, options = {})
+  _properties = {
+    :include_today => false,
+    :dates => []
+  }
+  
+  options.each do |k, v|
+    k = k.to_sym
+    raise ArgumentError, "Unknown property: #{k}" unless _properties.key?(k)
+    _properties[k] = v
+  end
+  
+  puts _properties
+  
+  case method
+  when :current
+    if _properties[:include_today]
+      _r = (Date.today - 7..Date.today)
+    else
+      _r =  (Date.today - 7...Date.today)
+    end
+    
+    return _r
+  when :range
+    begin
+      chronic_from_date = Chronic.parse(_properties[:dates][0]).to_date
+    rescue  
+      if (!_properties[:dates][0].nil?)
+        CliMessage.error("Please ensure that you are providing valid dates...") 
+        return
+      end
+
+      nil
+    end
+    
+    begin
+      chronic_to_date = Chronic.parse(_properties[:dates][1]).to_date
+    rescue
+      if (!_properties[:dates][1].nil?)
+        CliMessage.error("Please ensure that you are providing valid dates...") 
+        return
+      end
+      
+      nil
+    end
+
+    if (_properties[:dates][0].nil? && !_properties[:dates][1].nil?)
+      CliMessage.error("You can't specify -t without specifying -f...")
+      return
+    end
+
+    if (!chronic_from_date.nil?)
+      if (chronic_to_date.nil?)
+        if (_properties[:include_today])
+          _r = (chronic_from_date..Date.today)
+        else
+          _r = (chronic_from_date...Date.today)
+        end
+      else
+        if (chronic_from_date > chronic_to_date)
+          CliMessage.error("The start date must be before or equal to the end date...")
+          return
+        end
+        
+        _r = (chronic_from_date..chronic_to_date)
+      end
+    end
+    
+    return _r
+  when :today
+    return (Date.today..Date.today)
+  when :yesterday
+    return (Date.today.prev_day..Date.today.prev_day)
+  end
+end
 
 #|  ------------------------------------------------------
 #|  collect_preferences method
@@ -260,10 +336,12 @@ include GLI::App
 $config = ConfigManager.instance
 
 # Set the description as it will be displayed in the help message
-program_desc "Sifttter Redux v#{VERSION}
+program_desc "Sifttter Redux
 
     A modification of Craig Eley's Sifttter that allows for smart
     installation on a standalone *NIX device (such as a Raspberry Pi)."
+    
+version VERSION
 
 #|  ------------------------------------------------------
 #|  exec command
@@ -309,98 +387,47 @@ command :exec do |c|
   c.action do |global_options, options, args|
     CliMessage.section('EXECUTING...')
     
-    # In this case, the user has attempted to specify some sort of catch-up.
     if (options[:c] || options[:y] || options[:f] || options[:t])
-      
-      # "Previous 7 days" catch-up
       if (options[:c])
-        start_date = Date.today - 7
-        
-        if (options[:i])
-          end_date = Date.today
-        else
-          end_date = Date.today.prev_day
-        end
-        
-      # "Yesterday" catch-up
+        dates = collect_catch_up_dates(:current, {:include_today => options[:i]})
       elsif (options[:y])
-        start_date = Date.today.prev_day
-        end_date = Date.today.prev_day
-        
-      # "Date range" catch-up
+        dates = collect_catch_up_dates(:yesterday)
       elsif (options[:f] || options[:t])
-        _chronic_parsed_from_date = Chronic.parse(options[:f]).to_date rescue nil
-        _chronic_parsed_to_date = Chronic.parse(options[:t]).to_date rescue nil
-        
-        if (_chronic_parsed_from_date.nil? && _chronic_parsed_to_date.nil?)
-          CliMessage.error("Please ensure that you are providing valid dates...")
-          exit!
-        end
-
-        if (_chronic_parsed_from_date.nil? && !_chronic_parsed_to_date.nil?)
-          CliMessage.error("You can't specify -t without specifying -f...")
-          exit!
-        end
-        
-        if (!_chronic_parsed_from_date.nil? && _chronic_parsed_to_date.nil?)
-          start_date = _chronic_parsed_from_date
-
-          if (options[:i])
-            end_date = Date.today
-          else
-            end_date = Date.today.prev_day
-          end
-        else
-          if (_chronic_parsed_from_date.nil? || _chronic_parsed_to_date.nil?)
-            CliMessage.error("Please ensure that you are providing valid dates...")
-            exit!
-          end
-          
-          if (_chronic_parsed_from_date > _chronic_parsed_to_date)
-            CliMessage.error("The start date must be before or equal to the end date...")
-            exit!
-          end
-          
-          start_date = _chronic_parsed_from_date
-          
-          if (_chronic_parsed_to_date > Date.today)
-            CliMessage.warning("Ignoring ending date greater than today and using #{Date.today}...")
-            end_date = Date.today
-          else
-            end_date = _chronic_parsed_to_date
-          end
-        end
+        dates = collect_catch_up_dates(:range, {:include_today => options[:i], :dates => [options[:f], options[:t]]})
       end
     else
-      start_date = Date.today
-      end_date = Date.today
+      dates = collect_catch_up_dates(:today, {:include_today => options[:i]})
     end
-    
-    CliMessage.info("Creating entries for dates from #{start_date} to #{end_date}...")
-
-    download_sifttter_files
-    
-    (start_date..end_date).each do |date|
-      run_sifttter(date)
+    # 
+    # download_sifttter_files
+    # 
+    if (!dates.nil?)
+      CliMessage.info("Creating entries for dates from #{dates.first} to #{dates.last}...")
+      dates.each do |date|
+        # run_sifttter(date)
+        puts date
+      end
+    else
+      exit!
     end
-    
-    # Upload any Day One entries to Dropbox (if there are any).
-    if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
-      CliMessage.info("Uploading Day One entries to Dropbox...", false)
-      output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
-      CliMessage.finish_message('DONE.')
-    end
-    
-    # Remove any downloaded local files that we no longer need.
-    CliMessage.info("Removing downloaded Day One files...", false)
-    FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
-    CliMessage.finish_message('DONE.')
-    
-    CliMessage.info("Removing downloaded Sifttter files...", false)
-    FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
-    CliMessage.finish_message('DONE.')
-      
-    CliMessage.section('EXECUTION COMPLETE!')
+    # 
+    # # Upload any Day One entries to Dropbox (if there are any).
+    # if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
+    #   CliMessage.info("Uploading Day One entries to Dropbox...", false)
+    #   output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
+    #   CliMessage.finish_message('DONE.')
+    # end
+    # 
+    # # Remove any downloaded local files that we no longer need.
+    # CliMessage.info("Removing downloaded Day One files...", false)
+    # FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
+    # CliMessage.finish_message('DONE.')
+    # 
+    # CliMessage.info("Removing downloaded Sifttter files...", false)
+    # FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
+    # CliMessage.finish_message('DONE.')
+    #   
+    # CliMessage.section('EXECUTION COMPLETE!')
   end
 end
 
