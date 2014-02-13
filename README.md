@@ -88,13 +88,14 @@ Initialization will perform the following steps:
  
 ### Basic Mode
 
- ```
- $ ./srd exec
- ```
+```
+# Creates an entry for today 
+$ ./srd exec
+```
 
 ### "Catch-up" Mode
 
-Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal data between a range of dates.
+Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal data before the current day.
 
 There are many ways to use this mode:
 
@@ -103,12 +104,14 @@ There are many ways to use this mode:
 To create entries for the past 7 days (not inclusive of the current day):
 
 ```
+# Creates an entry for each day from from 7 days ago to yesterday
 $ ./srd exec -c
 ```
 
 To include the current day:
 
 ```
+# Creates an entry for each day from 7 days ago to today
 $ ./srd exec -c -i
 ```
 
@@ -117,6 +120,7 @@ $ ./srd exec -c -i
 To create an entry for yesterday:
 
 ```
+# Creates an entry for yesterday
 $ ./srd exec -y
 ```
 
@@ -125,22 +129,22 @@ $ ./srd exec -y
 To create entries for a range of dates:
 
 ```
-# Looks for entries from 2/1/2014 to 2/12/2014
-./srd exec -f 2014-02-01 -to 2014-02-12
+# Creates an entry for each day from 2/1/2014 to 2/12/2014
+$ ./srd exec -f 2014-02-01 -to 2014-02-12
 ```
 
 Even more simply, to create entries from a specific point until yesterday ("yesterday" because you might not be ready to have today's entries scanned):
 
 ```
-# Looks for entries from 2/1/2014 to yesterday's date
-./srd exec -f 2014-02-01
+# Creates an entry for each day from 2/1/2014 to yesterday's date
+$ ./srd exec -f 2014-02-01
 ```
 
 Of course, if you want to include today's date, you can always use the trusty `-i` switch:
 
 ```
-# Looks for entries from 2/1/2014 to today's date
-./srd exec -f 2014-02-01 -i
+# Creates an entry for each day from 2/1/2014 to today's date
+$ ./srd exec -f 2014-02-01 -i
 ```
 
 Two notes to be aware of:
@@ -151,7 +155,8 @@ Two notes to be aware of:
 Sifttter Redux makes use of the excellent [Chronic gem](https://github.com/mojombo/chronic "Chronic"), which provides natural language parsing for dates and times. This means that you can run commands with more "human" dates:
 
 ```
-./srd exec -f "last Thursday" -t "yesterday"
+# Natural language parsing is great! Thanks, Chronic!
+$ ./srd exec -f "last Thursday" -t "yesterday"
 ```
 
 See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Chronic Examples") for more examples.
