@@ -155,9 +155,9 @@ module CliMessage
   #|  ------------------------------------------------------
   def self.section(message, addNewline = true)
     if addNewline
-      puts "#### #{message}".purple
+      puts "#### #{message}".green
     else
-      print "#### #{message}".purple
+      print "#### #{message}".green
     end
     
     @@last_message_type = SECTION
@@ -731,10 +731,11 @@ command :exec do |c|
       dates = collect_catch_up_dates(:today, {:include_today => options[:i]})
     end
     
-    download_sifttter_files
-    
     if (!dates.nil?)
       CliMessage.info("Creating entries for dates from #{dates.first} to #{dates.last}...")
+      
+      download_sifttter_files
+      
       dates.each do |date|
         run_sifttter(date)
       end
