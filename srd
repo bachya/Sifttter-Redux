@@ -32,15 +32,16 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #-------------------------------------------------------------------------------------------------------------
 
+# Gems
 require 'chronic'
-require 'colored'
-require 'date'
-require 'erb'
 require 'fileutils'
 require 'gli'
-require 'singleton'
 require 'time'
-require 'yaml'
+
+# Sifttter Redux classes and Modules
+require File.join(File.dirname(__FILE__), 'lib/ConfigManagerClass.rb')
+require File.join(File.dirname(__FILE__), 'lib/CliManagerModule.rb')
+require File.join(File.dirname(__FILE__), 'lib/OsModule.rb')
 
 #|  ======================================================
 #|  CONSTANTS
@@ -49,335 +50,20 @@ require 'yaml'
 #|  what you're doing.
 #|  ======================================================
 
-#|  ------------------------------------------------------
-#|  Sifttter and Sifttter Redux Constants
-#|  ------------------------------------------------------
+# Sifttter and Sifttter Redux Constants
 SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')
 SFT_LOCAL_FILEPATH = "/tmp/sifttter"
 SFT_REMOTE_FILEPATH = "/Apps/ifttt/sifttter"
 
-#|  ------------------------------------------------------
-#|  Dropbox Upload Constants
-#|  ------------------------------------------------------
+# Dropbox Upload Constants
 DBU_LOCAL_FILEPATH = "/usr/local/opt"
 
-#|  ------------------------------------------------------
-#|  Day One Constants
-#|  ------------------------------------------------------
+# Day One Constants
 DO_REMOTE_FILEPATH = "/Apps/Day\\ One/Journal.dayone/entries"
 DO_LOCAL_FILEPATH = "/tmp/dayone"
 
-#|  ------------------------------------------------------
-#|  Miscellaneous Constants
-#|  ------------------------------------------------------
-VERSION = 1.2
-
-#|  ======================================================
-#|  OS Module
-#|
-#|  Module to easily find the running operating system
-#|  ======================================================
-module OS
-
-  #|  ------------------------------------------------------
-  #|  linux? method
-  #|
-  #|  Returns true if the host OS is Linux (false otherwise).
-  #|  @return Bool
-  #|  ------------------------------------------------------
-  def OS.linux?
-    OS.unix? and not OS.mac?
-  end
-  
-  #|  ------------------------------------------------------
-  #|  mac? method
-  #|
-  #|  Returns true if the host OS is OS X (false otherwise).
-  #|  @return Bool
-  #|  ------------------------------------------------------
-  def OS.mac?
-   (/darwin/ =~ RUBY_PLATFORM) != nil
-  end
-
-  #|  ------------------------------------------------------
-  #|  unix? method
-  #|
-  #|  Returns true if the host OS is Unix (false otherwise).
-  #|  @return Bool
-  #|  ------------------------------------------------------
-  def OS.unix?
-    !OS.windows?
-  end
-  
-  #|  ------------------------------------------------------
-  #|  windows? method
-  #|
-  #|  Returns true if the host OS is Windows (false otherwise).
-  #|  @return Bool
-  #|  ------------------------------------------------------
-  def OS.windows?
-    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
-  end
-end
-
-#|  ======================================================
-#|  CliManager Module
-#|  Singleton to manage common CLI interfacing
-#|  ======================================================
-module CliMessage
-  
-  ERROR   = 1
-  INFO    = 2
-  SECTION = 3
-  WARNING = 4
-  
-  @@last_message_type
-  
-  #|  ------------------------------------------------------
-  #|  error method
-  #|
-  #|  Outputs a formatted-red error message.
-  #|  @param message The message to output
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def self.error(message, addNewline = true)
-    if addNewline
-      puts "---> ERROR: #{message}".red
-    else
-      print "---> ERROR: #{message}".red 
-    end
-    
-    @@last_message_type = ERROR
-  end
-  
-  #|  ------------------------------------------------------
-  #|  finish_message method
-  #|
-  #|  Finishes a previous message by appending "DONE" in the
-  #|  correct color.
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def self.finish_message
-    case @@last_message_type
-    when ERROR
-      puts "DONE".red
-    when INFO
-      puts "DONE".blue
-    when SECTION
-      puts "DONE".green
-    when WARNING
-      puts "DONE".yellow
-    end
-  end
-  
-  #|  ------------------------------------------------------
-  #|  info method
-  #|
-  #|  Outputs a formatted-blue informational message.
-  #|  @param message The message to output
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def self.info(message, addNewline = true)
-    if addNewline
-      puts "---> INFO: #{message}".blue
-    else
-      print "---> INFO: #{message}".blue 
-    end
-    
-    @@last_message_type = INFO
-  end
-  
-  #|  ------------------------------------------------------
-  #|  prompt method
-  #|
-  #|  Outputs a prompt, collects the user's response, and
-  #|  returns it.
-  #|  @param prompt The prompt to output
-  #|  @param default The default option
-  #|  @return String
-  #|  ------------------------------------------------------
-  def self.prompt(prompt, default)
-    print "#{prompt} [default: #{default}]: "
-    choice = $stdin.gets.chomp
-    if choice.empty?
-      return default
-    else
-      return choice
-    end
-  end
-  
-  #|  ------------------------------------------------------
-  #|  section method
-  #|
-  #|  Outputs a formatted-green section message.
-  #|  @param message The message to output
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def self.section(message, addNewline = true)
-    if addNewline
-      puts "### #{message}".green
-    else
-      print "### #{message}".green 
-    end
-    
-    @@last_message_type = SECTION
-  end
-  
-  #|  ------------------------------------------------------
-  #|  warning method
-  #|
-  #|  Outputs a formatted-yellow warning message.
-  #|  @param message The message to output
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def self.warning(message, addNewline = true)
-    if addNewline
-      puts "---> WARNING: #{message}".yellow
-    else
-      print "---> WARNING: #{message}".yellow
-    end
-    
-    @@last_message_type = WARNING
-  end
-end
-
-#|  ======================================================
-#|  ConfigManager Class
-#|
-#|  Singleton to manage the YAML config file
-#|  for this script
-#|  ======================================================
-class ConfigManager
-  include Singleton
-  
-  attr_accessor :configFile
-  
-  #|  ------------------------------------------------------
-  #|  initialize method
-  #|
-  #|  Initializes this singleton with data from the config
-  #|  file. If the file doesn't exist, an empty hash is
-  #|  created in anticipation of future config saves.
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def initialize
-    @configFile = SRD_CONFIG_FILEPATH
-    
-    if File.exists?(SRD_CONFIG_FILEPATH) 
-      @data = YAML.load_file(SRD_CONFIG_FILEPATH)
-      @data.each do |k, v|
-        define_singleton_method(k) { return v }
-      end
-    else
-      @data = {}
-    end
-  end
-  
-  #|  ------------------------------------------------------
-  #|  _dump method
-  #|
-  #|  Convenience method that dumps the configuration hash's
-  #|  data.
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def _dump
-    puts @data
-  end
-  
-  #|  ------------------------------------------------------
-  #|  add_to_section method
-  #|
-  #|  Adds a hash to the configuration data.
-  #|  @param hash The hash to add to configuration
-  #|  @param section The section into which the hash goes
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def add_to_section(hash, section)
-    unless @data.has_key?(section)
-      CliMessage.warning("Attempting to insert into a non-existing section: #{section}; skipping...")
-      return 
-    end
-    
-    @data[section].merge!(hash)
-  end
-  
-  #|  ------------------------------------------------------
-  #|  create_section method
-  #|
-  #|  Creates a new section in the configuration hash.
-  #|  @param section The section to create
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def create_section(section)
-    if @data.has_key?(section)
-      CliMessage.warning("Attempting to create existing section (#{section}); skipping...")
-      return
-    end
-
-    define_singleton_method(section) { return @data[section] }
-    @data.merge!(section => {})
-  end
-  
-  #|  ------------------------------------------------------
-  #|  delete_section method
-  #|
-  #|  Deletes a section in the configuration hash.
-  #|  @param section The section to delete
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def delete_section(section)
-    unless @data.has_key?(section)
-      CliMessage.warning("Attempting to delete non-existing section (#{section}); skipping...")
-      return
-    end
-    
-    remove_singleton_method(section)
-    @data.delete(section)
-  end
-  
-  #|  ------------------------------------------------------
-  #|  remove_singleton_method method
-  #|
-  #|  Removes a hash from the configuration data based on
-  #|  its key.
-  #|  @param hash The hash key remove
-  #|  @param section The section from which the key comes
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def remove_from_section(key, section)
-    unless @data.has_key?(section) && @data[section].has_key?(key)
-      CliMessage.warning("Attempting to remove a non-existing key: #{section}.#{key}; skipping...")
-      return
-    end
-    
-    @data[section].delete(key)
-  end
-  
-  #|  ------------------------------------------------------
-  #|  reset method
-  #|
-  #|  Clears out the configuration data by resetting the hash.
-  #|  @return Void
-  #|  ------------------------------------------------------
-  def reset
-    @data = {}
-  end
-  
-  #|  ------------------------------------------------------
-  #|  save_configuration method
-  #|
-  #|  Saves the configuration data to the filesystem.
-  #|  @return File
-  #|  ------------------------------------------------------
-  def save_configuration
-    return File.open(@configFile, 'w') { |f| f.write(@data.to_yaml) }
-  end
-  
-end
-
-#|  ======================================================
-#|  Sifttter Redux
-#|  ======================================================
+# Miscellaneous Constants
+VERSION = 1.3
 
 #|  ------------------------------------------------------
 #|  collect_preferences method
@@ -412,7 +98,7 @@ def download_sifttter_files
   # Download all Sifttter files from Dropbox.
   CliMessage.info('Downloading Sifttter files...', false)
   output = `#{$db_uploader} download #{$config.sifttter_redux["sifttter_remote_filepath"]} #{$config.sifttter_redux["sifttter_local_filepath"]}`
-  CliMessage.finish_message
+  CliMessage.finish_message('DONE.')
 end
 
 #|  ------------------------------------------------------
@@ -643,42 +329,45 @@ command :exec do |c|
         
       # "Date range" catch-up
       elsif (options[:f] || options[:t])
-        _f = Chronic.parse(options[:f]).to_date rescue nil
-        _t = Chronic.parse(options[:t]).to_date rescue nil
+        _chronic_parsed_from_date = Chronic.parse(options[:f]).to_date rescue nil
+        _chronic_parsed_to_date = Chronic.parse(options[:t]).to_date rescue nil
         
-        if (!_f && !_t)
+        if (_chronic_parsed_from_date.nil? && _chronic_parsed_to_date.nil?)
           CliMessage.error("Please ensure that you are providing valid dates...")
           exit!
         end
 
-        if (!_f && _t)
-          CliMessage.error("You can't specify --to without specifying --from...")
+        if (_chronic_parsed_from_date.nil? && !_chronic_parsed_to_date.nil?)
+          CliMessage.error("You can't specify -t without specifying -f...")
           exit!
-        elsif (_f && !_t)
-          start_date = _f
-          
+        end
+        
+        if (!_chronic_parsed_from_date.nil? && _chronic_parsed_to_date.nil?)
+          start_date = _chronic_parsed_from_date
+
           if (options[:i])
             end_date = Date.today
           else
             end_date = Date.today.prev_day
           end
         else
-          if (!_f || !_t)
+          if (_chronic_parsed_from_date.nil? || _chronic_parsed_to_date.nil?)
             CliMessage.error("Please ensure that you are providing valid dates...")
             exit!
           end
           
-          if (_f > _t)
+          if (_chronic_parsed_from_date > _chronic_parsed_to_date)
             CliMessage.error("The start date must be before or equal to the end date...")
             exit!
           end
           
-          start_date = _f
+          start_date = _chronic_parsed_from_date
           
-          if (_t > Date.today)
+          if (_chronic_parsed_to_date > Date.today)
+            CliMessage.warning("Ignoring ending date greater than today and using #{Date.today}...")
             end_date = Date.today
           else
-            end_date = _t
+            end_date = _chronic_parsed_to_date
           end
         end
       end
@@ -687,7 +376,8 @@ command :exec do |c|
       end_date = Date.today
     end
     
-    # Download Sifttter files from Dropbox.
+    CliMessage.info("Creating entries for dates from #{start_date} to #{end_date}...")
+
     download_sifttter_files
     
     (start_date..end_date).each do |date|
@@ -698,17 +388,17 @@ command :exec do |c|
     if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
       CliMessage.info("Uploading Day One entries to Dropbox...", false)
       output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
-      CliMessage.finish_message
+      CliMessage.finish_message('DONE.')
     end
     
     # Remove any downloaded local files that we no longer need.
     CliMessage.info("Removing downloaded Day One files...", false)
     FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
-    CliMessage.finish_message
+    CliMessage.finish_message('DONE.')
     
     CliMessage.info("Removing downloaded Sifttter files...", false)
     FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
-    CliMessage.finish_message
+    CliMessage.finish_message('DONE.')
       
     CliMessage.section('EXECUTION COMPLETE!')
   end
