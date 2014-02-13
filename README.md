@@ -130,7 +130,7 @@ To create entries for a range of dates:
 
 ```
 # Creates an entry for each day from 2/1/2014 to 2/12/2014
-$ ./srd exec -f 2014-02-01 -to 2014-02-12
+$ ./srd exec -f 2014-02-01 -t 2014-02-12
 ```
 
 Even more simply, to create entries from a specific point until yesterday ("yesterday" because you might not be ready to have today's entries scanned):
@@ -149,7 +149,7 @@ $ ./srd exec -f 2014-02-01 -i
 
 Two notes to be aware of:
 
-* `-f` and `-t` are *inclusive* parameters, meaning that those dates will be included when searching for Siftter data.
+* `-f` and `-t` are *inclusive* parameters, meaning that when specified, those dates will be included when searching for Siftter data.
 * Although you can specify `-f` by itself, you cannot specify `-t` by itself.
 
 Sifttter Redux makes use of the excellent [Chronic gem](https://github.com/mojombo/chronic "Chronic"), which provides natural language parsing for dates and times. This means that you can run commands with more "human" dates:
@@ -193,7 +193,7 @@ $ bundle install --global
 Some functionality I would like to tackle for future releases:
 
 * Interactive cron job installer
-* Verbose mode
+* Verbose mode that more explicity tells the user what's currently going on
 * Automatic gem bundling
 
 ## Bugs and Feature Requests
