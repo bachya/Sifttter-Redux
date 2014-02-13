@@ -70,7 +70,7 @@ DO_LOCAL_FILEPATH = "/tmp/dayone"
 #|  ------------------------------------------------------
 #|  Miscellaneous Constants
 #|  ------------------------------------------------------
-VERSION = 0.3
+VERSION = 1.2
 
 #|  ======================================================
 #|  OS Module
@@ -579,8 +579,11 @@ program_desc "Sifttter Redux v#{VERSION}
     A modification of Craig Eley's Sifttter that allows for smart
     installation on a standalone *NIX device (such as a Raspberry Pi)."
 
-# Before running "exec", initialize if necessary and store the location
-# of the Dropbox Uploader executable.
+#|  ------------------------------------------------------
+#|  exec command
+#|
+#|  Executes the script.
+#|  ------------------------------------------------------
 pre do |global_options, command, options, args|
   if !File.exists?(SRD_CONFIG_FILEPATH)
     CliMessage.info("It doesn't look like you've initlized Sifttter Redux yet. Doing that now()...")
@@ -590,88 +593,125 @@ pre do |global_options, command, options, args|
   $db_uploader = File.join($config.db_uploader["local_filepath"], "dropbox_uploader.sh")
 end
 
-#|  ------------------------------------------------------
-#|  exec command
-#|
-#|  Executes the script.
-#|  ------------------------------------------------------
 desc 'Execute the script'
 command :exec do |c|  
   c.flag(
-    [:from],
-    :desc => 'Run "catch-up" mode with this start date (must be accompanied by --to)',
+    [:f, :from],
+    :desc => 'Run catch-up mode with this start date',
   )
   
   c.flag(
-    [:to],
-    :desc => 'Run "catch-up" mode with this end date (must be accompanied by --from)',
+    [:t, :to],
+    :desc => 'Run catch-up mode with this end date (must be accompanied by --from)',
+  )
+  
+  c.switch(
+    [:c, :current_week],
+    :desc => 'Run catch-up mode for the last 7 days'
+  )
+  
+  c.switch(
+    [:i, :include_today],
+    :desc => 'Include today\'s date in catch-up'
+  )
+  
+  c.switch(
+    [:y, :yesterday],
+    :desc => 'Run catch-up mode for yesterday'
   )
   
   c.action do |global_options, options, args|
     CliMessage.section('EXECUTING...')
     
-    # Halt if the user specifies either --from or --to, but not both.
-    if (options[:from].nil? && !options[:to].nil?)
-      CliMessage.error("You can't specify --to without specifying --from...")
-      exit!
-    end
+    # In this case, the user has attempted to specify some sort of catch-up.
+    if (options[:c] || options[:y] || options[:f] || options[:t])
+      
+      # "Previous 7 days" catch-up
+      if (options[:c])
+        start_date = Date.today - 7
+        
+        if (options[:i])
+          end_date = Date.today
+        else
+          end_date = Date.today.prev_day
+        end
+        
+      # "Yesterday" catch-up
+      elsif (options[:y])
+        start_date = Date.today.prev_day
+        end_date = Date.today.prev_day
+        
+      # "Date range" catch-up
+      elsif (options[:f] || options[:t])
+        _f = Chronic.parse(options[:f]).to_date rescue nil
+        _t = Chronic.parse(options[:t]).to_date rescue nil
+        
+        if (!_f && !_t)
+          CliMessage.error("Please ensure that you are providing valid dates...")
+          exit!
+        end
 
-    if (options[:from])
-      date_startDate = Chronic.parse(options[:from]).to_date rescue nil
-      
-      if (options[:to])
-        date_endDate = Chronic.parse(options[:to]).to_date rescue nil
-      else
-        date_endDate = Chronic.parse("yesterday").to_date
-      end
-
-      # Error out if the user has provided an invalid date.
-      if (date_startDate.nil? || date_endDate.nil?)
-        CliMessage.error("Please ensure that you are providing valid dates...")
-        exit!
-      end
-  
-      # Error out of the user has provided a start date that occurs after
-      # the end date.
-      if (date_startDate > date_endDate)
-        CliMessage.error("The start date must be before or equal to the end date...")
-        exit!
-      end
-      CliMessage.section("CREATING ENTRIES BETWEEN #{date_startDate} AND #{date_endDate}...")
-      
-      # Download Sifttter files from Dropbox.
-      download_sifttter_files
-      
-      (date_startDate..date_endDate).each do |date|        
-        run_sifttter(date)
+        if (!_f && _t)
+          CliMessage.error("You can't specify --to without specifying --from...")
+          exit!
+        elsif (_f && !_t)
+          start_date = _f
+          
+          if (options[:i])
+            end_date = Date.today
+          else
+            end_date = Date.today.prev_day
+          end
+        else
+          if (!_f || !_t)
+            CliMessage.error("Please ensure that you are providing valid dates...")
+            exit!
+          end
+          
+          if (_f > _t)
+            CliMessage.error("The start date must be before or equal to the end date...")
+            exit!
+          end
+          
+          start_date = _f
+          
+          if (_t > Date.today)
+            end_date = Date.today
+          else
+            end_date = _t
+          end
+        end
       end
     else
-      # Download Sifttter files from Dropbox.
-      download_sifttter_files
-      
-      # Run the core Sifttter functionality.
-      run_sifttter(Date.today)
+      start_date = Date.today
+      end_date = Date.today
     end
+    
+    # Download Sifttter files from Dropbox.
+    download_sifttter_files
+    
+    (start_date..end_date).each do |date|
+      run_sifttter(date)
+    end
+    
+    # Upload any Day One entries to Dropbox (if there are any).
+    if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
+      CliMessage.info("Uploading Day One entries to Dropbox...", false)
+      output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
+      CliMessage.finish_message
+    end
+    
+    # Remove any downloaded local files that we no longer need.
+    CliMessage.info("Removing downloaded Day One files...", false)
+    FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
+    CliMessage.finish_message
+    
+    CliMessage.info("Removing downloaded Sifttter files...", false)
+    FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
+    CliMessage.finish_message
+      
+    CliMessage.section('EXECUTION COMPLETE!')
   end
-end
-
-# After running "exec", upload files and perform any needed cleanup.
-post do |global_options, command, options, args|
-  # Upload any Day One entries to Dropbox.
-  CliMessage.info("Uploading Day One entries to Dropbox...", false)
-  output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
-  CliMessage.finish_message
-
-  # Remove any downloaded local files that we no longer need.
-  CliMessage.info("Removing downloaded Day One files...", false)
-  FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
-  CliMessage.finish_message
-
-  CliMessage.info("Removing downloaded Sifttter files...", false)
-  FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
-  CliMessage.finish_message
-  
-  CliMessage.section('EXECUTION COMPLETE!')
 end
 
 #|  ------------------------------------------------------
