@@ -18,9 +18,9 @@ There are three prerequisites needed to run Sifttter Redux:
 These packages must be installed on your system before running Sifttter Redux. To install these packages on Raspbian:
 
 ```
-sudo apt-get install ruby
-sudo apt-get install git-core
-sudo apt-get install uuid
+$ sudo apt-get install ruby
+$ sudo apt-get install git-core
+$ sudo apt-get install uuid
 ```
 
 ## Installation
@@ -28,14 +28,14 @@ sudo apt-get install uuid
 First, clone this repository via git:
 
 ```
-git clone https://github.com/bachya/Sifttter-Redux.git
+$ git clone https://github.com/bachya/Sifttter-Redux.git
 ```
 
 Next, cd into the Sifttter Redux directory and install the necessary gems:
 
 ```
-cd Sifttter-Redux
-bundle install
+$ cd Sifttter-Redux
+$ bundle install
 ```
 
 *(note that you may want to run `bundle install --global` for the sake of `cron` -- [see below](#cron-job))*
@@ -43,8 +43,8 @@ bundle install
 Finally, make sure the script is executable and initialize it:
 
 ```
-chmod +x srd
-./srd init
+$ chmod +x srd
+$ ./srd init
 ```
 
 ## Usage
@@ -52,6 +52,7 @@ chmod +x srd
 Syntax and usage can be accessed by running `./srd help`:
 
 ```
+$ ./srd help
 NAME
     srd - Sifttter Redux v1.1
 
@@ -73,7 +74,7 @@ COMMANDS
 ### Initialization
 
 ```
-./srd init
+$ ./srd init
 ```
 
 Initialization will perform the following steps:
@@ -88,36 +89,69 @@ Initialization will perform the following steps:
 ### Basic Mode
 
  ```
- ./srd exec
+ $ ./srd exec
  ```
 
 ### "Catch-up" Mode
 
 Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal data between a range of dates.
 
-To use this mode, simply specify `--from` and `--to` parameters when executing the script:
+There are many ways to use this mode:
+
+#### 7-Day Catch-up
+
+To create entries for the past 7 days (not inclusive of the current day):
+
+```
+$ ./srd exec -c
+```
+
+To include the current day:
+
+```
+$ ./srd exec -c -i
+```
+
+#### Yesterday Catch-up
+
+To create an entry for yesterday:
+
+```
+$ ./srd exec -y
+```
+
+#### Date Range Catch-up
+
+To create entries for a range of dates:
 
 ```
 # Looks for entries from 2/1/2014 to 2/12/2014
-./srd exec --from=2014-02-01 --to=2014-02-12
+./srd exec -f 2014-02-01 -to 2014-02-12
 ```
 
 Even more simply, to create entries from a specific point until yesterday ("yesterday" because you might not be ready to have today's entries scanned):
 
 ```
 # Looks for entries from 2/1/2014 to yesterday's date
-./srd exec --from=2014-02-01
+./srd exec -f 2014-02-01
+```
+
+Of course, if you want to include today's date, you can always use the trusty `-i` switch:
+
+```
+# Looks for entries from 2/1/2014 to today's date
+./srd exec -f 2014-02-01 -i
 ```
 
 Two notes to be aware of:
 
-* `--from` and `--to` are *inclusive* parameters, meaning that those dates will be included when searching for Siftter data.
-* Although you can specify `--from` by itself, you cannot specify `--to` by itself.
+* `-f` and `-t` are *inclusive* parameters, meaning that those dates will be included when searching for Siftter data.
+* Although you can specify `-f` by itself, you cannot specify `-t` by itself.
 
 Sifttter Redux makes use of the excellent [Chronic gem](https://github.com/mojombo/chronic "Chronic"), which provides natural language parsing for dates and times. This means that you can run commands with more "human" dates:
 
 ```
-./srd exec --from="last Thursday" --to="yesterday"
+./srd exec -f "last Thursday" -t "yesterday"
 ```
 
 See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Chronic Examples") for more examples.
