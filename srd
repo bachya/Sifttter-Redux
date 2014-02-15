@@ -732,8 +732,8 @@ command :exec do |c|
     end
     
     if (!dates.nil?)
-      CliMessage.info("Creating entries for dates from #{dates.first} to #{dates.last}...")
-      
+      CliMessage.info("Creating entries for dates from #{dates.first} to #{dates.reverse_each.first}...")
+
       download_sifttter_files
       
       dates.each do |date|
