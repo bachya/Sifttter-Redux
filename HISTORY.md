@@ -1,3 +1,7 @@
+# 0.2.2
+
+* Fixed a bug caused by caching of old configuration results
+
 # 0.2.1
 
 * Fixed a bug where the config manager would fail on certain platforms.
