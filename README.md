@@ -88,7 +88,7 @@ $ srd exec
 
 Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal on or before today's date.
 
-There are many ways to use this mode:
+There are many ways to use this mode (note that "today" in these examples is **February 15, 2014**):
 
 #### Yesterday Catch-up
 
@@ -141,6 +141,7 @@ $ srd exec -n 12
 ---> INFO: Uploading Day One entries to Dropbox...DONE.
 ---> INFO: Removing downloaded Day One files...DONE.
 ---> INFO: Removing downloaded Sifttter files...DONE.
+#### EXECUTION COMPLETE!
 ```
 
 Note that this option goes until yesterday ("yesterday" because you might not be ready to have today's entries scanned). If you'd rather include today's date, you can always add the `-i` switch:
