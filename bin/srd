@@ -35,10 +35,9 @@
 require 'colored'
 require 'fileutils'
 require 'gli'
+require 'sifttter-redux'
 require 'time'
 require 'yaml'
-
-require 'Sifttter-Redux'
 
 include GLI::App
 
