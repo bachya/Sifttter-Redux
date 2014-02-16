@@ -74,7 +74,14 @@ Initialization will perform the following steps:
 
 ```
 $ srd exec
-# => Sun, 16 Feb 2014 to Sun, 16 Feb 2014
+#### EXECUTING...
+---> INFO: Creating entries for dates from 2014-02-15 to 2014-02-15...
+---> INFO: Downloading Sifttter files...DONE.
+---> SUCCESS: Entry logged for February 15, 2014...
+---> INFO: Uploading Day One entries to Dropbox...DONE.
+---> INFO: Removing downloaded Day One files...DONE.
+---> INFO: Removing downloaded Sifttter files...DONE.
+#### EXECUTION COMPLETE!
 ```
 
 ### "Catch-up" Mode
