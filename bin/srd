@@ -43,8 +43,9 @@ include GLI::App
 
 program_desc "Sifttter Redux
 
-    A modification of Craig Eley's Sifttter that allows for smart
-    installation on a standalone *NIX device (such as a Raspberry Pi)."
+    A modification of Craig Eley's Sifttter (an IFTTT-to-Day One service)
+    that allows for smart installation and automated running on a standalone
+    *NIX device (such as a Raspberry Pi)."
 
 version SifttterRedux::VERSION
 

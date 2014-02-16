@@ -1,3 +1,7 @@
+# 0.2.3
+
+* Updated some help documentation
+
 # 0.2.2
 
 * Fixed a bug caused by caching of old configuration results
