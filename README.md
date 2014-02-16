@@ -15,11 +15,10 @@ There are three prerequisites needed to run Sifttter Redux:
 * Git
 * UUID
 
-These packages must be installed on your system before running Sifttter Redux. To install these packages on Raspbian:
+In addition to Git (which, given you being on this site, I'll assume you have), the following packages must be installed on your system before running Sifttter Redux:
 
 ```
 $ sudo apt-get install ruby
-$ sudo apt-get install git-core
 $ sudo apt-get install uuid
 ```
 
