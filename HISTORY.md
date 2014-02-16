@@ -1,3 +1,7 @@
+# 0.3.1
+
+* Fixed a bug with the gemspec
+
 # 0.3.0
 
 * Added ability to create entries for the past N days (not just 7)
