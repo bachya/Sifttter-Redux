@@ -1,0 +1,6 @@
+require 'Sifttter-Redux/cli-message.rb'
+require 'Sifttter-Redux/config-manager.rb'
+require 'Sifttter-Redux/constants.rb'
+require 'Sifttter-Redux/date-range-maker.rb'
+require 'Sifttter-Redux/methods.rb'
+require 'Sifttter-Redux/os.rb'

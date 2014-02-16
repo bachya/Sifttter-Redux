@@ -1,2 +1,7 @@
 Gemfile.lock
 .bundle
+.DS_Store
+features
+results.html
+README.rdoc
+Sifttter-Redux.rdoc
