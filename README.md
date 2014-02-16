@@ -73,7 +73,6 @@ Initialization will perform the following steps:
 ### Basic Execution
 
 ```
-# Creates an entry for today 
 $ srd exec
 # => Sun, 16 Feb 2014 to Sun, 16 Feb 2014
 ```
