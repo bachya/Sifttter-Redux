@@ -1,4 +1,11 @@
-# 0.2.4 (originall 0.2.3)
+# 0.2.5
+
+* Fixed a bug where execution could prematurely halt if no Day One entries were found
+* Fixed a bug where re-initialization could continue, even if user declines
+* Updated some more help documentation
+* Changed messaging for initialization completion
+
+# 0.2.4 (originally 0.2.3)
 
 * Updated some help documentation
 * Changed message re: no entries found to a warning state 

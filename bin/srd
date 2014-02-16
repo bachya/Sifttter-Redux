@@ -161,7 +161,6 @@ command :exec do |c|
       
       dates.each do |date|
         run_sifttter(date)
-        # puts date
       end
       # Upload any Day One entries to Dropbox (if there are any).
       if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
@@ -179,7 +178,7 @@ command :exec do |c|
       FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
       CliMessage.finish_message('DONE.')
     end
-
+    
     CliMessage.section('EXECUTION COMPLETE!')
   end
 end
@@ -195,10 +194,12 @@ command :init do |c|
     CliMessage.section('INITIALIZING...')
 
     if File.exists?($config.configFile)
-      initialize_procedures if CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase
+      initialize_procedures if CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase == 'y'
     else
       initialize_procedures
     end
+    
+    CliMessage.section('INITIALIZATION COMPLETE!')
   end
 end
 

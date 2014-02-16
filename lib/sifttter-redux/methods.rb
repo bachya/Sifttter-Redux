@@ -53,8 +53,6 @@ def initialize_procedures
   install_db_uploader 
   collect_preferences
   
-  CliMessage.section("INITIALIZATION COMPLETE!")
-  
   $config.save_configuration
 end
 
@@ -68,7 +66,7 @@ end
 def install_db_uploader
   valid_directory_chosen = false
   
-  CliMessage.section('DOWNLOADING DROPBOX UPLOADER...')
+  CliMessage.section('CONFIGURING DROPBOX UPLOADER...')
   
   # Create a new configuration section for Dropbox-Uploader
   $config.create_section("db_uploader")
@@ -87,8 +85,9 @@ def install_db_uploader
       # If, for some reason, Dropbox Uploader alread exists at this location,
       # skip the clone.
       if File.directory?(db_uploader_location)
-        CliMessage.info("You seem to already have Dropbox Uploader at this location; skipping...")
+        CliMessage.warning("Using pre-existing Dropbox Uploader at #{db_uploader_location}...")
       else
+        CliMessage.info("Downloading Dropbox Uploader to #{db_uploader_location}...")
         %x{git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{db_uploader_location}}
       end
       
@@ -171,7 +170,6 @@ def run_sifttter(date)
   
   if projects.length <=0
   	CliMessage.warning("No entries found...")
-    exit!
   end
 
   if projects.length > 0  
