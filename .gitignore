@@ -5,3 +5,4 @@ features
 results.html
 README.rdoc
 Sifttter-Redux.rdoc
+*.gem
