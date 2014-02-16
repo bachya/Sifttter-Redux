@@ -42,10 +42,6 @@ require 'Sifttter-Redux'
 
 include GLI::App
 
-$config = ConfigManager.instance
-$date_range_maker = DateRangeMaker.new
-$db_uploader = File.join($config.db_uploader["local_filepath"], "dropbox_uploader.sh")
-
 program_desc "Sifttter Redux
 
     A modification of Craig Eley's Sifttter that allows for smart
@@ -58,10 +54,15 @@ version SifttterRedux::VERSION
 #|  ======================================================
 
 pre do |global,command,options,args|
+  $config = ConfigManager.instance
+  $date_range_maker = DateRangeMaker.new
+
   if !File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH)
     CliMessage.info("It doesn't look like you've initlized Sifttter Redux yet. Doing that now...")
     initialize_procedures
   end
+  
+  $db_uploader = File.join($config.db_uploader["local_filepath"], "dropbox_uploader.sh")
   true
 end
 

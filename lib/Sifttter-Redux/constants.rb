@@ -1,5 +1,5 @@
 module SifttterRedux
-  VERSION = "0.2.0"
+  VERSION = "0.2.1"
   
   # Sifttter and Sifttter Redux Constants
   SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')

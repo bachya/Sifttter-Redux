@@ -36,7 +36,7 @@ Syntax and usage can be accessed by running `srd help`:
 ```
 $ srd help
 NAME
-    srd - Sifttter Redux v1.1
+    srd - Sifttter Redux
 
     A modification of Craig Eley's Sifttter that allows for smart
     installation on a standalone *NIX device (such as a Raspberry Pi).
@@ -44,8 +44,12 @@ NAME
 SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
+VERSION
+    0.2.1
+
 GLOBAL OPTIONS
-    --help - Show this message
+    --help    - Show this message
+    --version - Display the program version
 
 COMMANDS
     exec - Execute the script
@@ -176,7 +180,7 @@ Some functionality I would like to tackle for future releases:
 
 * Interactive cron job installer
 * Verbose mode that more explicity tells the user what's currently going on
-* Automatic gem bundling
+* Smarter checking of the config file to see if an old version is being used
 
 ## Bugs and Feature Requests
 
