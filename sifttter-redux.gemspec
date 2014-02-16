@@ -9,7 +9,7 @@ spec = Gem::Specification.new do |s|
   s.homepage = 'https://github.com/bachya/sifttter-redux'
   s.platform = Gem::Platform::RUBY
   s.summary = 'Automated IFTTT to Day One engine.'
-  s.description = 'Sifttter Redux is a modification of Craig Eley\'s Sifttter that allows for smart installation on a standalone *NIX device (such as a Raspberry Pi).'
+  s.description = 'A modification of Craig Eley\'s Sifttter (an IFTTT-to-Day One service) that allows for smart installation and automated running on a standalone *NIX device (such as a Raspberry Pi).'
 
   s.files = `git ls-files`.split($/)
   s.test_files = `git ls-files -- test`.split($/)
