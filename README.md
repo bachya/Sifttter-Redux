@@ -205,5 +205,6 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## Credits
 
 * Craig Eley for Sifttter and for giving me the idea for Sifttter Redux
-* Andrea Fabrizi for her stellar Dropbox Uploader project
-* The Chronic folks for making the aforementioned wonderful Chronic gem
+* Dave Copeland for [GLI](https://github.com/davetron5000/gli "GLI")
+* Andrea Fabrizi for [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox Uploader")
+* Tom Preston-Werner and Lee Jarvis for [Chronic](https://github.com/mojombo/chronic "Chronic")
