@@ -92,46 +92,72 @@ desc 'Execute the script'
 command :exec do |c|  
   
   c.flag(
-    [:f, :from],
+    [:f],
     :desc => 'Run catch-up mode with this start date',
   )
   
   c.flag(
-    [:t, :to],
-    :desc => 'Run catch-up mode with this end date (must be accompanied by --from)',
+    [:n],
+    :desc => 'Run catch-up mode for the last N days'
+  )
+    
+  c.flag(
+    [:t],
+    :desc => 'Run catch-up mode with this end date (must be accompanied by -f)',
+  )
+  
+  c.flag(
+    [:w],
+    :desc => 'Run catch-up mode for the last N weeks'
   )
   
   c.switch(
-    [:c, :last_7_days],
-    :desc => 'Run catch-up mode for the last 7 days'
+    [:c],
+    :desc => 'Run catch-up mode for the current week (i.e., the beginning of the week to yesterday)'
   )
   
   c.switch(
-    [:i, :include_today],
+    [:i],
     :desc => 'Include today\'s date in catch-up'
   )
   
   c.switch(
-    [:y, :yesterday],
+    [:y],
     :desc => 'Run catch-up mode for yesterday'
   )
   
   c.action do |global_options, options, args|
     command_complete = false
-    
-    CliMessage.section('EXECUTING...')
 
-    if (options[:c] || options[:y] || options[:f] || options[:t])
+    CliMessage.section('EXECUTING...')
+    
+    if (options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t])
+
+      # Current Week
       if (!command_complete && options[:c])
-        dates = $date_range_maker.last_seven_days(options[:i])
+        dates = $date_range_maker.last_n_weeks(0, {:include_today => options[:i]})
         command_complete = true
       end
       
+      # Last N Days
+      if (!command_complete && options[:n])
+        dates = $date_range_maker.last_n_days(options[:n].to_i, {:include_today => options[:i]})
+        command_complete = true
+      end
+      
+      # Yesterday
       if (!command_complete && options[:y])
         dates = $date_range_maker.yesterday
         command_complete = true
       end
       
+      # Last N Weeks
+      if (!command_complete && options[:w])
+        dates = $date_range_maker.last_n_weeks(options[:w].to_i, {:include_today => options[:i]})
+        command_complete = true
+      end
+      
+      # Specific Range
       if (!command_complete && (options[:f] || options[:t]))
         begin
           dates = $date_range_maker.range({
@@ -162,6 +188,7 @@ command :exec do |c|
       dates.each do |date|
         run_sifttter(date)
       end
+      
       # Upload any Day One entries to Dropbox (if there are any).
       if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
         CliMessage.info("Uploading Day One entries to Dropbox...", false)
