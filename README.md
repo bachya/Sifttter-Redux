@@ -1,7 +1,7 @@
 Sifttter Redux
 ==============
 
-Siftter Redux is a modification of Craig Eley's [Siftter](http://gist.github.com/craigeley/8301817 "Siftter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal. 
+Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal. 
 
 Siftter Redux's primary difference is in its execution method: it intended to run autonomously so that it does not need to be manually activated. This allows IFTTT data to be synchronized to Day One on a schedule.
 
@@ -75,6 +75,7 @@ Initialization will perform the following steps:
 ```
 # Creates an entry for today 
 $ srd exec
+# => Sun, 16 Feb 2014 to Sun, 16 Feb 2014
 ```
 
 ### "Catch-up" Mode
@@ -83,29 +84,51 @@ Sometimes, events occur that prevent Sifttter Redux from running (power loss to 
 
 There are many ways to use this mode:
 
-#### 7-Day Catch-up
-
-To create entries for the past 7 days (not inclusive of the current day):
-
-```
-# Creates an entry for each day from from 7 days ago to yesterday
-$ srd exec -c
-```
-
-To include the current day:
-
-```
-# Creates an entry for each day from 7 days ago to today
-$ srd exec -c -i
-```
-
 #### Yesterday Catch-up
 
 To create an entry for yesterday:
 
 ```
-# Creates an entry for yesterday
 $ srd exec -y
+# => Sat, 15 Feb 2014 to Sat, 15 Feb 2014
+```
+
+#### Last "N" Days Catch-up
+
+Sifttter Redux allows you to specify the number of days back it should look for new entries:
+
+```
+$ srd exec -n 3
+# => Wed, 12 Feb 2014 to Sat, 15 Feb 2014
+
+$ srd exec -n 12
+# => Mon, 03 Feb 2014 to Sat, 15 Feb 2014
+```
+
+Note that this option goes until yesterday ("yesterday" because you might not be ready to have today's entries scanned). If you'd rather include today's date, you can always add the `-i` switch:
+
+```
+$ srd exec -i -n 3
+# => Wed, 12 Feb 2014 to Sun, 16 Feb 2014
+```
+
+#### Last "N" Weeks Catch-up
+
+Sifttter Redux also allows you to specify a number of weeks back that should be scanned for new entries:
+
+```
+$ srd exec -w 1
+# => Sun, 09 Feb 2014 to Sat, 15 Feb 2014
+
+$ srd exec -n 3
+# => Sun, 26 Jan 2014 to Sat, 15 Feb 2014
+```
+
+As you'd expect, you can always add the `-i` switch:
+
+```
+$ srd exec -i -w 3
+# => Sun, 26 Jan 2014 to Sun, 16 Feb 2014
 ```
 
 #### Date Range Catch-up
@@ -113,22 +136,22 @@ $ srd exec -y
 To create entries for a range of dates:
 
 ```
-# Creates an entry for each day from 2/1/2014 to 2/12/2014
 $ srd exec -f 2014-02-01 -t 2014-02-12
+# => Sat, 01 Feb 2014 to Wed, 12 Feb 2014
 ```
 
 Even more simply, to create entries from a specific point until yesterday ("yesterday" because you might not be ready to have today's entries scanned):
 
 ```
-# Creates an entry for each day from 2/1/2014 to yesterday's date
 $ srd exec -f 2014-02-01
+# => Sat, 01 Feb 2014 to Sat, 15 Feb 2014
 ```
 
-Of course, if you want to include today's date, you can always use the trusty `-i` switch:
+Once more, you can use the trusty `-i` switch if you want:
 
 ```
-# Creates an entry for each day from 2/1/2014 to today's date
-$ srd exec -f 2014-02-01 -i
+$ srd exec -i -f 2014-02-01
+# => Sat, 01 Feb 2014 to Sun, 16 Feb 2014
 ```
 
 Two notes to be aware of:

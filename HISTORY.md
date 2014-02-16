@@ -1,3 +1,10 @@
+# 0.3.0
+
+* Added ability to create entries for the past N days (not just 7)
+* Added ability to create entries for the past N weeks
+* Refactorings of existing DateRangeMaker class
+* Additional documentation
+
 # 0.2.5
 
 * Fixed a bug where execution could prematurely halt if no Day One entries were found
@@ -16,13 +23,13 @@
 
 # 0.2.1
 
-* Fixed a bug where the config manager would fail on certain platforms.
-* Fixed a bug where the path to Dropbox Uploader became malformed.
+* Fixed a bug where the config manager would fail on certain platforms
+* Fixed a bug where the path to Dropbox Uploader became malformed
 
 # 0.2.0 
 
-* Implemented catch-up mode.
+* Implemented catch-up mode
 
 # 0.1.0
 
-* Initial release of Sifttter Redux.
+* Initial release of Sifttter Redux
