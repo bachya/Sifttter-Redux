@@ -1,5 +1,6 @@
 # 0.3.1
 
+* Removed reliance on Rails methods for first-and-last-day-of-week calculations
 * Fixed a bug with the gemspec
 
 # 0.3.0

@@ -186,27 +186,28 @@ command :exec do |c|
         CliMessage.info("Creating entries for dates from #{first_date.strftime('%B %d, %Y')} to #{second_date.strftime('%B %d, %Y')}...")
       end
     
-      download_sifttter_files
+      # download_sifttter_files
       
       dates.each do |date|
-        run_sifttter(date)
+        # run_sifttter(date)
+        puts date
       end
       
-      # Upload any Day One entries to Dropbox (if there are any).
-      if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
-        CliMessage.info("Uploading Day One entries to Dropbox...", false)
-        output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
-        CliMessage.finish_message('DONE.')
-      end
-      
-      # Remove any downloaded local files that we no longer need.
-      CliMessage.info("Removing downloaded Day One files...", false)
-      FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
-      CliMessage.finish_message('DONE.')
-      
-      CliMessage.info("Removing downloaded Sifttter files...", false)
-      FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
-      CliMessage.finish_message('DONE.')
+      # # Upload any Day One entries to Dropbox (if there are any).
+      # if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
+      #   CliMessage.info("Uploading Day One entries to Dropbox...", false)
+      #   output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
+      #   CliMessage.finish_message('DONE.')
+      # end
+      # 
+      # # Remove any downloaded local files that we no longer need.
+      # CliMessage.info("Removing downloaded Day One files...", false)
+      # FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
+      # CliMessage.finish_message('DONE.')
+      # 
+      # CliMessage.info("Removing downloaded Sifttter files...", false)
+      # FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
+      # CliMessage.finish_message('DONE.')
     end
     
     CliMessage.section('EXECUTION COMPLETE!')

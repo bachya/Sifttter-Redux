@@ -1,4 +1,3 @@
-require 'active_support/core_ext'
 require 'chronic'
 
 #|  ======================================================
@@ -115,8 +114,8 @@ class DateRangeMaker
       opts[k] = v
     end
     
-    beginning_date = Date.today.at_beginning_of_week
-    end_date = Date.today.at_end_of_week
+    beginning_date = Date.today - Date.today.wday + 1
+    end_date = Date.today - Date.today.wday + 7
     
     # We're currently before the end of the week, so
     # reset the new ending date to today.
@@ -125,9 +124,9 @@ class DateRangeMaker
     end
     
     if (opts[:include_today])
-      _r = (beginning_date - num_weeks.week..end_date)
+      _r = (beginning_date - num_weeks * 7..end_date)
     else
-      _r = (beginning_date - num_weeks.week...end_date)
+      _r = (beginning_date - num_weeks * 7...end_date)
     end
     
     return _r

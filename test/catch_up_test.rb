@@ -1,4 +1,3 @@
-require 'active_support/core_ext'
 require 'date'
 require 'test_helper'
 require File.join(File.dirname(__FILE__), '..', 'lib/sifttter-redux/date-range-maker.rb')
@@ -34,39 +33,39 @@ class DefaultTest < Test::Unit::TestCase
   end
   
   def test_current_week
-    end_date = Date.today.at_end_of_week
-    if Date.today.at_end_of_week > Date.today
+    end_date = Date.today - Date.today.wday + 7
+    if end_date > Date.today
       end_date = Date.today
     end
       
-    assert_equal($drm.last_n_weeks, (Date.today.at_beginning_of_week...end_date))
+    assert_equal($drm.last_n_weeks, (Date.today - Date.today.wday + 1...end_date))
   end
   
   def test_current_week_include_today
-    end_date = Date.today.at_end_of_week
-    if Date.today.at_end_of_week > Date.today
+    end_date = Date.today - Date.today.wday + 7
+    if end_date > Date.today
       end_date = Date.today
     end
       
-    assert_equal($drm.last_n_weeks(0, {:include_today => true}), (Date.today.at_beginning_of_week..end_date))
+    assert_equal($drm.last_n_weeks(0, {:include_today => true}), (Date.today - Date.today.wday + 1..end_date))
   end
   
   def test_last_2_weeks
-    end_date = Date.today.at_end_of_week
-    if Date.today.at_end_of_week > Date.today
+    end_date = Date.today - Date.today.wday + 7
+    if end_date > Date.today
       end_date = Date.today
     end
       
-    assert_equal($drm.last_n_weeks(2), (Date.today.at_beginning_of_week - 2.week...end_date))
+    assert_equal($drm.last_n_weeks(2), (Date.today - Date.today.wday - 13...end_date))
   end
   
   def test_last_2_weeks_include_today
-    end_date = Date.today.at_end_of_week
-    if Date.today.at_end_of_week > Date.today
+    end_date = Date.today - Date.today.wday + 7
+    if end_date > Date.today
       end_date = Date.today
     end
       
-    assert_equal($drm.last_n_weeks(2, {:include_today => true}), (Date.today.at_beginning_of_week - 2.week..end_date))
+    assert_equal($drm.last_n_weeks(2, {:include_today => true}), (Date.today - Date.today.wday - 13..end_date))
   end
   
   def test_range_only_start_date
