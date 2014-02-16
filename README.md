@@ -25,34 +25,16 @@ $ sudo apt-get install uuid
 
 ## Installation
 
-First, clone this repository via git:
-
 ```
-$ git clone https://github.com/bachya/Sifttter-Redux.git
-```
-
-Next, cd into the Sifttter Redux directory and install the necessary gems:
-
-```
-$ cd Sifttter-Redux
-$ bundle install
-```
-
-*(note that you may want to run `bundle install --global` for the sake of `cron` -- [see below](#cron-job))*
-
-Finally, make sure the script is executable and initialize it:
-
-```
-$ chmod +x srd
-$ ./srd init
+gem install sifttter-redux
 ```
 
 ## Usage
 
-Syntax and usage can be accessed by running `./srd help`:
+Syntax and usage can be accessed by running `srd help`:
 
 ```
-$ ./srd help
+$ srd help
 NAME
     srd - Sifttter Redux v1.1
 
@@ -74,7 +56,7 @@ COMMANDS
 ### Initialization
 
 ```
-$ ./srd init
+$ srd init
 ```
 
 Initialization will perform the following steps:
@@ -90,7 +72,7 @@ Initialization will perform the following steps:
 
 ```
 # Creates an entry for today 
-$ ./srd exec
+$ srd exec
 ```
 
 ### "Catch-up" Mode
@@ -105,14 +87,14 @@ To create entries for the past 7 days (not inclusive of the current day):
 
 ```
 # Creates an entry for each day from from 7 days ago to yesterday
-$ ./srd exec -c
+$ srd exec -c
 ```
 
 To include the current day:
 
 ```
 # Creates an entry for each day from 7 days ago to today
-$ ./srd exec -c -i
+$ srd exec -c -i
 ```
 
 #### Yesterday Catch-up
@@ -121,7 +103,7 @@ To create an entry for yesterday:
 
 ```
 # Creates an entry for yesterday
-$ ./srd exec -y
+$ srd exec -y
 ```
 
 #### Date Range Catch-up
@@ -130,21 +112,21 @@ To create entries for a range of dates:
 
 ```
 # Creates an entry for each day from 2/1/2014 to 2/12/2014
-$ ./srd exec -f 2014-02-01 -t 2014-02-12
+$ srd exec -f 2014-02-01 -t 2014-02-12
 ```
 
 Even more simply, to create entries from a specific point until yesterday ("yesterday" because you might not be ready to have today's entries scanned):
 
 ```
 # Creates an entry for each day from 2/1/2014 to yesterday's date
-$ ./srd exec -f 2014-02-01
+$ srd exec -f 2014-02-01
 ```
 
 Of course, if you want to include today's date, you can always use the trusty `-i` switch:
 
 ```
 # Creates an entry for each day from 2/1/2014 to today's date
-$ ./srd exec -f 2014-02-01 -i
+$ srd exec -f 2014-02-01 -i
 ```
 
 Two notes to be aware of:
@@ -156,7 +138,7 @@ Sifttter Redux makes use of the excellent [Chronic gem](https://github.com/mojom
 
 ```
 # Natural language parsing is great! Thanks, Chronic!
-$ ./srd exec -f "last Thursday" -t "yesterday"
+$ srd exec -f "last Thursday" -t "yesterday"
 ```
 
 See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Chronic Examples") for more examples.
