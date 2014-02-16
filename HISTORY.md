@@ -1,6 +1,7 @@
-# 0.2.3
+# 0.2.4 (originall 0.2.3)
 
 * Updated some help documentation
+* Changed message re: no entries found to a warning state 
 
 # 0.2.2
 

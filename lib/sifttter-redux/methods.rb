@@ -170,7 +170,7 @@ def run_sifttter(date)
   end
   
   if projects.length <=0
-  	CliMessage.error("No entries found...")
+  	CliMessage.warning("No entries found...")
     exit!
   end
 
