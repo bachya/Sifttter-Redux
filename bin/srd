@@ -160,12 +160,8 @@ command :exec do |c|
       # Specific Range
       if (!command_complete && (options[:f] || options[:t]))
         begin
-          dates = $date_range_maker.range({
-            :start_date => options[:f],
-            :end_date => options[:t],
-            :include_today => options[:i],
-          })
-
+          dates = $date_range_maker.range(options[:f], options[:t], {:include_today => options[:i]})
+          
           if (dates.last > Date.today)
             CliMessage.warning("Ignoring overextended end date and using today's date (#{Date.today})")
             dates = (dates.first..Date.today)
@@ -181,7 +177,14 @@ command :exec do |c|
     end
     
     if (!dates.nil?)
-      CliMessage.info("Creating entries for dates from #{dates.first} to #{dates.reverse_each.first}...")
+      first_date = dates.first
+      second_date = dates.reverse_each.first
+      
+      if (first_date == second_date)
+        CliMessage.info("Creating entry for #{first_date.strftime('%B %d, %Y')}...")
+      else
+        CliMessage.info("Creating entries for dates from #{first_date.strftime('%B %d, %Y')} to #{second_date.strftime('%B %d, %Y')}...")
+      end
     
       download_sifttter_files
       

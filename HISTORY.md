@@ -4,6 +4,7 @@
 * Added ability to create entries for the past N weeks
 * Refactorings of existing DateRangeMaker class
 * Additional documentation
+* Fixed a bug with using Chronic's language parsing using `-f`
 
 # 0.2.5
 
