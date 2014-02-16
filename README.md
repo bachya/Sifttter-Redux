@@ -182,15 +182,15 @@ Some functionality I would like to tackle for future releases:
 
 ## Bugs and Feature Requests
 
-To report bugs with or suggest features/changes for Sifttter Redux, please use the [Issues Page](http://github.com/bachya/Sifttter-Redux/issues).
+To report bugs with or suggest features/changes for Sifttter Redux, please use the [Issues Page](http://github.com/bachya/sifttter-redux/issues).
 
 Contributions are welcome and encouraged. To contribute:
 
-* [Fork Sifttter Redux](http://github.com/bachya/Sifttter-Redux/fork).
+* [Fork Sifttter Redux](http://github.com/bachya/sifttter-redux/fork).
 * Create a branch for your contribution (`git checkout -b new-feature`).
 * Commit your changes (`git commit -am 'Added this new feature'`).
 * Push to the branch (`git push origin new-feature`).
-* Create a new [Pull Request](http://github.com/bachya/Sifttter-Redux/compare/).
+* Create a new [Pull Request](http://github.com/bachya/sifttter-redux/compare/).
 
 ## License
 

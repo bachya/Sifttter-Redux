@@ -10,7 +10,7 @@ Rake::RDocTask.new do |rd|
   rd.title = 'Your application title'
 end
 
-spec = eval(File.read('Sifttter-Redux.gemspec'))
+spec = eval(File.read('sifttter-redux.gemspec'))
 
 Gem::PackageTask.new(spec) do |pkg|
 end
