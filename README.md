@@ -70,7 +70,7 @@ Initialization will perform the following steps:
  3. The location on your filesystem where Day One files will be temporarily stored
  4. The location of your Day One files in Dropbox
  
-### Basic Mode
+### Basic Execution
 
 ```
 # Creates an entry for today 
@@ -79,7 +79,7 @@ $ srd exec
 
 ### "Catch-up" Mode
 
-Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal data before the current day.
+Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal on or before today's date.
 
 There are many ways to use this mode:
 
