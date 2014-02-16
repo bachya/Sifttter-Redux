@@ -38,6 +38,8 @@ require 'gli'
 require 'time'
 require 'yaml'
 
+require 'Sifttter-Redux'
+
 include GLI::App
 
 $config = ConfigManager.instance
