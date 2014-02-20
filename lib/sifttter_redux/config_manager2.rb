@@ -23,8 +23,8 @@ class ConfigManager
   def initialize
     @configFile = SifttterRedux::SRD_CONFIG_FILEPATH
     
-    if File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH) 
-      @data = YAML.load_file(SifttterRedux::SRD_CONFIG_FILEPATH)
+    if File.exists?(@configFile) 
+      @data = YAML.load_file(@configFile)
       @data.each do |k, v|
         define_singleton_method(k) { return v }
       end
@@ -54,7 +54,7 @@ class ConfigManager
   #|  ------------------------------------------------------
   def add_to_section(hash, section)
     unless @data.has_key?(section)
-      CliMessage.warning("Attempting to insert into a non-existing section: #{section}; skipping...")
+      CliMessage.warning('Attempting to insert into a non-existing section: #{ section }; skipping...')
       return 
     end
     
@@ -70,7 +70,7 @@ class ConfigManager
   #|  ------------------------------------------------------
   def create_section(section)
     if @data.has_key?(section)
-      CliMessage.warning("Attempting to create existing section (#{section}); skipping...")
+      CliMessage.warning('Attempting to create existing section (#{ section }); skipping...')
       return
     end
 
@@ -87,7 +87,7 @@ class ConfigManager
   #|  ------------------------------------------------------
   def delete_section(section)
     unless @data.has_key?(section)
-      CliMessage.warning("Attempting to delete non-existing section (#{section}); skipping...")
+      CliMessage.warning('Attempting to delete non-existing section (#{ section }); skipping...')
       return
     end
     
@@ -106,7 +106,7 @@ class ConfigManager
   #|  ------------------------------------------------------
   def remove_from_section(key, section)
     unless @data.has_key?(section) && @data[section].has_key?(key)
-      CliMessage.warning("Attempting to remove a non-existing key: #{section}.#{key}; skipping...")
+      CliMessage.warning('Attempting to remove a non-existing key: #{ section }.#{ key }; skipping...')
       return
     end
     
@@ -130,7 +130,7 @@ class ConfigManager
   #|  @return File
   #|  ------------------------------------------------------
   def save_configuration
-    return File.open(@configFile, 'w') { |f| f.write(@data.to_yaml) }
+    File.open(@configFile, 'w') { |f| f.write(@data.to_yaml) }
   end
   
 end

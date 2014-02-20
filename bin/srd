@@ -1,15 +1,16 @@
 #!/usr/bin/env ruby
-#-------------------------------------------------------------------------------------------------------------
+# Encoding: utf-8
+#--------------------------------------------------------------------
 #  Sifttter Redux
 #
-#  A modification of Craig Eley's Sifttter that allows for smart installation on a standalone *NIX
-#  device (such as a Raspberry Pi).
+#  A modification of Craig Eley's Sifttter that allows for smart
+#  installation on a standalone *NIX device (such as a Raspberry Pi).
 #
 #  Sifttter copyright Craig Eley 2014 <http://craigeley.com>
 #
 #  Copyright (c) 2014
 #  Aaron Bach <bachya1208@gmail.com>
-#  
+#
 #  Permission is hereby granted, free of charge, to any person
 #  obtaining a copy of this software and associated documentation
 #  files (the "Software"), to deal in the Software without
@@ -18,10 +19,10 @@
 #  copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following
 #  conditions:
-#  
+#
 #  The above copyright notice and this permission notice shall be
 #  included in all copies or substantial portions of the Software.
-#  
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 #  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 #  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -30,14 +31,14 @@
 #  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #  OTHER DEALINGS IN THE SOFTWARE.
-#-------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------
 
 require 'colored'
 require 'fileutils'
 require 'gli'
-require 'sifttter-redux'
+require 'pry'
+require 'sifttter_redux'
 require 'time'
-require 'yaml'
 
 include GLI::App
 
@@ -49,141 +50,341 @@ program_desc "Sifttter Redux
 
 version SifttterRedux::VERSION
 
-#|  ======================================================
-#|  Pre, Post, and Error 
-#|  ======================================================
+#  ======================================================
+#  Pre, Post, and Error
+#  ======================================================
 
-pre do |global,command,options,args|
-  $config = ConfigManager.instance
-  $date_range_maker = DateRangeMaker.new
-
-  if !File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH)
-    CliMessage.info("It doesn't look like you've initlized Sifttter Redux yet. Doing that now...")
+pre do |global, command, options, args|
+  Configuration.load(SifttterRedux::SRD_CONFIG_FILEPATH)
+  
+  unless File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH)
+    CliMessage.info("You haven't initlized Sifttter Redux yet. Doing that now...")
     initialize_procedures
   end
+
+  true
+end
+
+#  ======================================================
+#  METHODS
+#  ======================================================
+
+#  ------------------------------------------------------
+#  collect_preferences method
+#
+#  Collects preferences from the user and stores the
+#  entered values into a configuration file.
+#  @return Void
+#  ------------------------------------------------------
+def collect_preferences
+  CliMessage.section('COLLECTING PREFERENCES...')
+
+  pref_prompts = [
+    {
+      prompt: 'Location for downloaded Sifttter files from Dropbox',
+      default: SifttterRedux::SFT_LOCAL_FILEPATH,
+      key: 'sifttter_local_filepath',
+      section: 'sifttter_redux'
+    },
+    {
+      prompt: 'Location of Sifttter files in Dropbox',
+      default: SifttterRedux::SFT_REMOTE_FILEPATH,
+      key: 'sifttter_remote_filepath',
+      section: 'sifttter_redux'
+    },
+    {
+      prompt: 'Location for downloaded Day One files from Dropbox',
+      default: SifttterRedux::DO_LOCAL_FILEPATH,
+      key: 'dayone_local_filepath',
+      section: 'sifttter_redux'
+    },
+    {
+      prompt: 'Location of Day One files in Dropbox',
+      default: SifttterRedux::DO_REMOTE_FILEPATH,
+      key: 'dayone_remote_filepath',
+      section: 'sifttter_redux'
+    }
+  ]
+  binding.pry
+  pref_prompts.each do |prompt|
+    pref = CliMessage.prompt(prompt[:prompt], prompt[:default])
+    Configuration[:section].merge!(prompt[:key] => pref)
+  end
+end
+
+#  ------------------------------------------------------
+#  download_sifttter_files method
+#
+#  Downloads Sifttter files from Dropbox
+#  @return Void
+#  ------------------------------------------------------
+def download_sifttter_files
+  db_uploader = File.join(Configuration.db_uploader['local_filepath'], 'dropbox_uploader.sh')
+
+  CliMessage.info('Downloading Sifttter files...', false)
+
+  `#{ db_uploader } download #{ Configuration['sifttter_redux']['sifttter_remote_filepath'] } #{ Configuration['sifttter_redux']['sifttter_local_filepath'] }`
+
+  CliMessage.finish_message('DONE.')
+end
+
+#  ------------------------------------------------------
+#  initialize_procedures method
+#
+#  Initializes Sifttter Redux by downloading and collecting
+#  all necessary items and info.
+#  @return Void
+#  ------------------------------------------------------
+def initialize_procedures
+  Configuration.reset
+  Configuration.add_section('sifttter_redux')
+  Configuration['sifttter_redux'].merge!('config_location' => Configuration.config_path)
+
+  install_db_uploader
+  collect_preferences
+
+  Configuration.save
+end
+
+#  ------------------------------------------------------
+#  install_db_uploader method
+#
+#  Installs Dropbox Uploader to a user-specified location
+#  by cloning the git repository.
+#  @return Void
+#  ------------------------------------------------------
+def install_db_uploader
+  valid_directory_chosen = false
+
+  CliMessage.section('CONFIGURING DROPBOX UPLOADER...')
+
+  # Create a new configuration section for Dropbox-Uploader
+  Configuration.add_section('db_uploader')
+
+  until valid_directory_chosen
+    # Prompt the user for a location to save Dropbox Uploader. '
+    db_uploader_location = CliMessage.prompt('Location for Dropbox-Uploader', SifttterRedux::DBU_LOCAL_FILEPATH)
+    db_uploader_location.chop! if db_uploader_location.end_with?('/')
+    db_uploader_location = '/usr/local/opt' if db_uploader_location.empty?
+
+    # If the entered directory exists, clone the repository.
+    if File.directory?(db_uploader_location)
+      valid_directory_chosen = true
+      db_uploader_location << '/Dropbox-Uploader'
+
+      # If, for some reason, Dropbox Uploader alread exists at this location,
+      # skip the clone.
+      if File.directory?(db_uploader_location)
+        CliMessage.warning("Using pre-existing Dropbox Uploader at #{ db_uploader_location }...")
+      else
+        CliMessage.info("Downloading Dropbox Uploader to #{ db_uploader_location }...")
+        %x{git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ db_uploader_location }}
+      end
+
+      # Save config data to YAML.
+      Configuration['db_uploader'].merge!('local_filepath' => db_uploader_location)
+    else
+      puts "Sorry, but #{ db_uploader_location } isn't a valid directory."
+    end
+  end
+end
+
+#  ------------------------------------------------------
+#  run_sifttter method
+#
+#  Modified form of Sifttter
+# 
+#  Sifttter: An IFTTT-to-Day One Logger by Craig Eley 2014
+#  Based on tp-dailylog.rb by Brett Terpstra 2012
+#  @param date The date to use when scanning Sifttter files
+#  @return Void
+#  ------------------------------------------------------
+def run_sifttter(date)
+  uuid_command = "uuidgen" if OS.mac?
+  uuid_command = "uuid" if OS.linux?
+  uuid = %x{#{ uuid_command }}.gsub(/-/,"").strip 
   
-  $db_uploader = File.join($config.db_uploader["local_filepath"], "dropbox_uploader.sh")
-  true
+  date_for_title = date.strftime("%B %d, %Y")
+  datestamp = date.to_time.utc.iso8601
+  starred = false
+
+  template = ERB.new <<-XMLTEMPLATE
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+  	<key>Creation Date</key>
+  	<date><%= datestamp %></date>
+  	<key>Entry Text</key>
+  	<string><%= entrytext %></string>
+  	<key>Starred</key>
+  	<<%= starred %>/>
+  	<key>Tags</key>
+  	<array>
+  		<string>daily logs</string>
+  	</array>
+  	<key>UUID</key>
+  	<string><%= uuid %></string>
+  </dict>
+  </plist>
+  XMLTEMPLATE
+
+  date_regex = "(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })"
+  time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
+
+  files = %x{find #{ config.sifttter_redux["sifttter_local_filepath"] } -type f -name "*.txt" | grep -v -i daily | sort}
+
+  projects = []
+  files.split("\n").each do |file|
+  	if File.exists?(file.strip)
+  		f = File.open(file.strip, encoding: "UTF-8")
+  		lines = f.read
+  		f.close
+  		project = "### " + File.basename(file).gsub(/^.*?\/([^\/]+)$/,"\\1") + "\n"
+
+  		found_completed = false
+  		lines.each_line do |line|
+  			if line =~ /&/
+  				line.gsub!(/[&]/, "and")
+  			end
+  			if line =~ /#{ date_regex }/
+  				found_completed = true
+  				project += line.gsub(/@done/,"").gsub(/#{ date_regex }\s(-|at)\s/, "").gsub(/#{ time_regex }\s-\s/, "").strip + "\n"
+  			end
+  		end
+  	end
+  	if found_completed
+  		projects.push(project)
+  	end
+  end
+  
+  if projects.length <=0
+  	CliMessage.warning("No entries found...")
+  end
+
+  if projects.length > 0  
+  	entrytext = "# Things done on #{ date_for_title }\n\n"
+  	projects.each do |project|
+  		entrytext += project.gsub(/.txt/, " ") + "\n\n"
+  	end
+    
+    Dir.mkdir(config.sifttter_redux["dayone_local_filepath"]) if !Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
+    
+  	fh = File.new(File.expand_path(Configuration['sifttter_redux']['dayone_local_filepath'] + "/" + uuid + ".doentry"), "w+")
+  	fh.puts template.result(binding)
+  	fh.close
+  	CliMessage.success("Entry logged for #{ date_for_title }...")
+  end
 end
 
-post do |global,command,options,args|
-  # Post logic here
-  # Use skips_post before a command to skip this
-  # block on that command only
-end
+#  ======================================================
+#  Commands
+#  ======================================================
 
-on_error do |exception|
-  # Error logic here
-  # return false to skip default error handling
-  true
-end
+#  ------------------------------------------------------
+#  exec command
+#
+#  Executes the script.
+#  ------------------------------------------------------
 
-#|  ======================================================
-#|  Commands
-#|  ======================================================
-
-#|  ------------------------------------------------------
-#|  exec command
-#|
-#|  Executes the script.
-#|  ------------------------------------------------------
-
-desc 'Execute the script'
+desc "Execute the script"
 command :exec do |c|  
+  
+  date_range_maker = DateRangeMaker.instance
   
   c.flag(
     [:f],
-    :desc => 'Run catch-up mode with this start date',
+    :desc => "Run catch-up mode with this start date",
   )
   
   c.flag(
     [:n],
-    :desc => 'Run catch-up mode for the last N days'
+    :desc => "Run catch-up mode for the last N days"
   )
     
   c.flag(
     [:t],
-    :desc => 'Run catch-up mode with this end date (must be accompanied by -f)',
+    :desc => "Run catch-up mode with this end date (must be accompanied by -f)",
   )
   
   c.flag(
     [:w],
-    :desc => 'Run catch-up mode for the last N weeks'
+    :desc => "Run catch-up mode for the last N weeks"
   )
   
   c.switch(
     [:c],
-    :desc => 'Run catch-up mode for the current week (i.e., the beginning of the week to yesterday)'
+    :desc => "Run catch-up mode for the current week (i.e., the beginning of the week to yesterday)"
   )
   
   c.switch(
     [:i],
-    :desc => 'Include today\'s date in catch-up'
+    :desc => "Include today\"s date in catch-up"
   )
   
   c.switch(
     [:y],
-    :desc => 'Run catch-up mode for yesterday'
+    :desc => "Run catch-up mode for yesterday"
   )
   
   c.action do |global_options, options, args|
     command_complete = false
 
-    CliMessage.section('EXECUTING...')
+    CliMessage.section("EXECUTING...")
     
-    if (options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t])
+    if options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t]
 
       # Current Week
-      if (!command_complete && options[:c])
-        dates = $date_range_maker.last_n_weeks(0, {:include_today => options[:i]})
+      if !command_complete && options[:c]
+        dates = date_range_maker.last_n_weeks(0, :include_today => options[:i])
         command_complete = true
       end
       
       # Last N Days
-      if (!command_complete && options[:n])
-        dates = $date_range_maker.last_n_days(options[:n].to_i, {:include_today => options[:i]})
+      if !command_complete && options[:n]
+        dates = date_range_maker.last_n_days(options[:n].to_i, :include_today => options[:i])
         command_complete = true
       end
       
       # Yesterday
-      if (!command_complete && options[:y])
-        dates = $date_range_maker.yesterday
+      if !command_complete && options[:y]
+        dates = date_range_maker.yesterday
         command_complete = true
       end
       
       # Last N Weeks
-      if (!command_complete && options[:w])
-        dates = $date_range_maker.last_n_weeks(options[:w].to_i, {:include_today => options[:i]})
+      if !command_complete && options[:w]
+        dates = date_range_maker.last_n_weeks(options[:w].to_i, :include_today => options[:i])
         command_complete = true
       end
       
       # Specific Range
-      if (!command_complete && (options[:f] || options[:t]))
+      if !command_complete && (options[:f] || options[:t])
         begin
-          dates = $date_range_maker.range(options[:f], options[:t], {:include_today => options[:i]})
+          dates = date_range_maker.range(options[:f], options[:t], :include_today => options[:i])
           
-          if (dates.last > Date.today)
-            CliMessage.warning("Ignoring overextended end date and using today's date (#{Date.today})")
+          if dates.last > Date.today
+            CliMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")
             dates = (dates.first..Date.today)
           end
-        rescue DateRangeMakerError
-          CliMessage.error($!)
+        rescue DateRangeMakerError => e
+          CliMessage.error(e)
         end
         command_complete = true
       end
     else
-      dates = $date_range_maker.today
+      dates = date_range_maker.today
       command_complete = true
     end
     
-    if (!dates.nil?)
+    unless dates.nil?
       first_date = dates.first
       second_date = dates.reverse_each.first
       
-      if (first_date == second_date)
-        CliMessage.info("Creating entry for #{first_date.strftime('%B %d, %Y')}...")
+      if first_date == second_date
+        CliMessage.info("Creating entry for #{ first_date.strftime("%B %d, %Y") }...")
       else
-        CliMessage.info("Creating entries for dates from #{first_date.strftime('%B %d, %Y')} to #{second_date.strftime('%B %d, %Y')}...")
+        CliMessage.info("Creating entries for dates from #{ first_date.strftime("%B %d, %Y") } to #{ second_date.strftime("%B %d, %Y") }...")
       end
     
       download_sifttter_files
@@ -193,43 +394,45 @@ command :exec do |c|
       end
       
       # Upload any Day One entries to Dropbox (if there are any).
-      if (!Dir[$config.sifttter_redux["dayone_local_filepath"] + "/*"].empty?)
+      unless Dir[Configuration['sifttter_redux']['dayone_local_filepath'] + "/*"].empty?
+        db_uploader = File.join(Configuration['db_uploader']['local_filepath'], "dropbox_uploader.sh")
+        
         CliMessage.info("Uploading Day One entries to Dropbox...", false)
-        output = `#{$db_uploader} upload #{$config.sifttter_redux["dayone_local_filepath"] + "/*"} #{$config.sifttter_redux["dayone_remote_filepath"]}`
-        CliMessage.finish_message('DONE.')
+        output = `#{ db_uploader } upload #{ Configuration['sifttter_redux']['dayone_local_filepath'] + "/*" } #{ Configuration['sifttter_redux']['dayone_remote_filepath'] }`
+        CliMessage.finish_message("DONE.")
       end
       
       # Remove any downloaded local files that we no longer need.
       CliMessage.info("Removing downloaded Day One files...", false)
-      FileUtils.rm_rf($config.sifttter_redux["dayone_local_filepath"]) if Dir.exists?($config.sifttter_redux["dayone_local_filepath"])
-      CliMessage.finish_message('DONE.')
+      FileUtils.rm_rf(Configuration['sifttter_redux']['dayone_local_filepath']) if Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
+      CliMessage.finish_message("DONE.")
       
       CliMessage.info("Removing downloaded Sifttter files...", false)
-      FileUtils.rm_rf($config.sifttter_redux["sifttter_local_filepath"]) if Dir.exists?($config.sifttter_redux["sifttter_local_filepath"])
-      CliMessage.finish_message('DONE.')
+      FileUtils.rm_rf(Configuration['sifttter_redux']['sifttter_local_filepath']) if Dir.exists?(Configuration['sifttter_redux']['sifttter_local_filepath'])
+      CliMessage.finish_message("DONE.")
     end
     
-    CliMessage.section('EXECUTION COMPLETE!')
+    CliMessage.section("EXECUTION COMPLETE!")
   end
 end
 
-#|  ------------------------------------------------------
-#|  init command
-#|
-#|  Initializes the script.
-#|  ------------------------------------------------------
-desc 'Install and initialize dependencies'
+#  ------------------------------------------------------
+#  init command
+#
+#  Initializes the script.
+#  ------------------------------------------------------
+desc "Install and initialize dependencies"
 command :init do |c|
   c.action do |global_options, options, args|
-    CliMessage.section('INITIALIZING...')
+    CliMessage.section("INITIALIZING...")
 
-    if File.exists?($config.configFile)
-      initialize_procedures if CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase == 'y'
+    if File.exists?(Configuration.config_path)
+      initialize_procedures if CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase == "y"
     else
       initialize_procedures
     end
     
-    CliMessage.section('INITIALIZATION COMPLETE!')
+    CliMessage.section("INITIALIZATION COMPLETE!")
   end
 end
 

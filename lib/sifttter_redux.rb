@@ -1,12 +1,15 @@
+require "sifttter_redux/cli_message.rb"
+require "sifttter_redux/configuration.rb"
+require "sifttter_redux/date_range_maker.rb"
+require "sifttter_redux/os.rb"
+
 module SifttterRedux
-  VERSION = "0.3.1"
-  
   # Sifttter and Sifttter Redux Constants
-  SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')
+  SRD_CONFIG_FILEPATH = File.join(ENV["HOME"], ".sifttter_redux")
   SFT_LOCAL_FILEPATH = "/tmp/sifttter"
   SFT_REMOTE_FILEPATH = "/Apps/ifttt/sifttter"
 
-  # Dropbox Upload Constants
+  # Dropbox Uploader Constants
   DBU_LOCAL_FILEPATH = "/usr/local/opt"
 
   # Day One Constants

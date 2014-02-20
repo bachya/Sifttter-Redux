@@ -1,6 +1,6 @@
-require 'date'
-require 'test_helper'
-require File.join(File.dirname(__FILE__), '..', 'lib/sifttter-redux/date-range-maker.rb')
+require "date"
+require "test_helper"
+require File.join(File.dirname(__FILE__), "..", "lib/sifttter_redux/date_range_maker.rb")
 
 class DefaultTest < Test::Unit::TestCase
 
@@ -47,7 +47,7 @@ class DefaultTest < Test::Unit::TestCase
       end_date = Date.today
     end
       
-    assert_equal($drm.last_n_weeks(0, {:include_today => true}), (Date.today - Date.today.wday + 1..end_date))
+    assert_equal($drm.last_n_weeks(0, :include_today => true), (Date.today - Date.today.wday + 1..end_date))
   end
   
   def test_last_2_weeks
@@ -65,7 +65,7 @@ class DefaultTest < Test::Unit::TestCase
       end_date = Date.today
     end
       
-    assert_equal($drm.last_n_weeks(2, {:include_today => true}), (Date.today - Date.today.wday - 13..end_date))
+    assert_equal($drm.last_n_weeks(2, :include_today => true), (Date.today - Date.today.wday - 13..end_date))
   end
   
   def test_range_only_start_date
@@ -73,7 +73,7 @@ class DefaultTest < Test::Unit::TestCase
   end
   
   def test_range_only_start_date_include_today
-    assert_equal($drm.range("2014-02-01", nil, {:include_today => true}), (Date.parse("2014-02-01")..Date.today))
+    assert_equal($drm.range("2014-02-01", nil, :include_today => true), (Date.parse("2014-02-01")..Date.today))
   end
   
   def test_range_start_date_and_end_date
