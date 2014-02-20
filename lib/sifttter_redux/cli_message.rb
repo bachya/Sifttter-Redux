@@ -1,3 +1,5 @@
+require 'colored'
+
 module SifttterRedux
   #  ======================================================
   #  CliManager Module
@@ -5,63 +7,47 @@ module SifttterRedux
   #  ======================================================
   module SifttterRedux::CliMessage
   
-    ERROR   = 1
-    INFO    = 2
-    SECTION = 3
-    WARNING = 4
-  
     #  ------------------------------------------------------
     #  error method
     #
     #  Outputs a formatted-red error message.
-    #  @param message The message to output
+    #  @param m The message to output
     #  @return Void
     #  ------------------------------------------------------
-    def self.error(message, addNewline = true)
-      if addNewline
-        puts "---> ERROR: #{ message }".red
-      else
-        print "---> ERROR: #{ message }".red 
-      end
-    
-      @@last_message_type = ERROR
-    end
-  
-    #  ------------------------------------------------------
-    #  finish_message method
-    #
-    #  Finishes a previous message by appending "DONE" in the
-    #  correct color.
-    #  @return Void
-    #  ------------------------------------------------------
-    def self.finish_message(message)
-      case @@last_message_type
-      when ERROR
-        puts message.red
-      when INFO
-        puts message.blue
-      when SECTION
-        puts message.green
-      when WARNING
-        puts message.yellow
-      end
-    end
+    def self.error(m) puts "---> ERROR: #{ m }".red; end
   
     #  ------------------------------------------------------
     #  info method
     #
     #  Outputs a formatted-blue informational message.
-    #  @param message The message to output
+    #  @param m The message to output
     #  @return Void
     #  ------------------------------------------------------
-    def self.info(message, addNewline = true)
-      if addNewline
-        puts "---> INFO: #{ message }".blue
+    def self.info(m) puts "---> INFO: #{ m }".blue; end
+
+    #  ------------------------------------------------------
+    #  info_block method
+    #
+    #  Wraps a block in an opening and closing info message.
+    #  @param m1 The opening message to output
+    #  @param m2 The closing message to output
+    #  @param multiline Whether the message should be multiline
+    #  @return Void
+    #  ------------------------------------------------------
+    def self.info_block(m1, m2 = 'DONE.', multiline = false)
+      if multiline
+        self.info(m1)
       else
-        print "---> INFO: #{ message }".blue 
+        print "---> INFO: #{ m1 }".blue
       end
-    
-      @@last_message_type = INFO
+      
+      yield
+      
+      if multiline
+        self.info(m2)
+      else
+        puts m2.blue
+      end
     end
   
     #  ------------------------------------------------------
@@ -87,51 +73,52 @@ module SifttterRedux
     #  section method
     #
     #  Outputs a formatted-orange section message.
-    #  @param message The message to output
+    #  @param m The message to output
     #  @return Void
     #  ------------------------------------------------------
-    def self.section(message, addNewline = true)
-      if addNewline
-        puts "#### #{ message }".green
-      else
-        print "#### #{ message }".green
-      end
+    def self.section(m) puts "#### #{ m }".green; end
     
-      @@last_message_type = SECTION
+    #  ------------------------------------------------------
+    #  section_block method
+    #
+    #  Wraps a block in an opening and closing section message.
+    #  @param m1 The opening message to output
+    #  @param m2 The closing message to output
+    #  @param multiline Whether the message should be multiline
+    #  @return Void
+    #  ------------------------------------------------------
+    def self.section_block(m1, m2 = 'COMPLETE!', multiline = true)
+      if multiline
+        self.section(m1)
+      else
+        print "#### #{ m1 }".green
+      end
+      
+      yield
+      
+      if multiline
+        self.section(m2)
+      else
+        puts m2.green
+      end
     end
   
     #  ------------------------------------------------------
     #  success method
     #
     #  Outputs a formatted-green success message.
-    #  @param message The message to output
+    #  @param m The message to output
     #  @return Void
     #  ------------------------------------------------------
-    def self.success(message, addNewline = true)
-      if addNewline
-        puts "---> SUCCESS: #{ message }".green
-      else
-        print "---> SUCCESS: #{ message }".green
-      end
-    
-      @@last_message_type = WARNING
-    end
+    def self.success(m) puts "---> SUCCESS: #{ m }".green; end
   
     #  ------------------------------------------------------
     #  warning method
     #
     #  Outputs a formatted-yellow warning message.
-    #  @param message The message to output
+    #  @param m The message to output
     #  @return Void
     #  ------------------------------------------------------
-    def self.warning(message, addNewline = true)
-      if addNewline
-        puts "---> WARNING: #{ message }".yellow
-      else
-        print "---> WARNING: #{ message }".yellow
-      end
-    
-      @@last_message_type = WARNING
-    end
+    def self.warning(m) puts "---> WARNING: #{ m }".yellow; end
   end
 end

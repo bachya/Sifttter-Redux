@@ -33,11 +33,9 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #--------------------------------------------------------------------
 
-require 'colored'
 require 'fileutils'
 require 'gli'
 require 'sifttter_redux'
-require 'time'
 
 include GLI::App
 
@@ -59,103 +57,15 @@ switch(
 #  ======================================================
 
 pre do |global, command, options, args|
-  SifttterRedux::Configuration.load(SifttterRedux::SifttterRedux_CONFIG_FILEPATH)
+  SifttterRedux::Configuration.load(SifttterRedux::SRD_CONFIG_FILEPATH)
   SifttterRedux::DBU.load(File.join(SifttterRedux::Configuration['db_uploader']['local_filepath'], 'dropbox_uploader.sh'))
   
-  unless File.exists?(SifttterRedux::SifttterRedux_CONFIG_FILEPATH)
+  unless File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH)
     SifttterRedux::CliMessage.info("You haven't initlized Sifttter Redux yet. Doing that now...")
     init
   end
 
   true
-end
-
-#  ------------------------------------------------------
-#  run_sifttter method
-#
-#  Modified form of Sifttter
-# 
-#  Sifttter: An IFTTT-to-Day One Logger by Craig Eley 2014
-#  Based on tp-dailylog.rb by Brett Terpstra 2012
-#  @param date The date to use when scanning Sifttter files
-#  @return Void
-#  ------------------------------------------------------
-def run_sifttter(date)
-  uuid_command = "uuidgen" if OS.mac?
-  uuid_command = "uuid" if OS.linux?
-  uuid = %x{#{ uuid_command }}.gsub(/-/,"").strip 
-  
-  date_for_title = date.strftime("%B %d, %Y")
-  datestamp = date.to_time.utc.iso8601
-  starred = false
-
-  template = ERB.new <<-XMLTEMPLATE
-  <?xml version="1.0" encoding="UTF-8"?>
-  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-  <plist version="1.0">
-  <dict>
-  	<key>Creation Date</key>
-  	<date><%= datestamp %></date>
-  	<key>Entry Text</key>
-  	<string><%= entrytext %></string>
-  	<key>Starred</key>
-  	<<%= starred %>/>
-  	<key>Tags</key>
-  	<array>
-  		<string>daily logs</string>
-  	</array>
-  	<key>UUID</key>
-  	<string><%= uuid %></string>
-  </dict>
-  </plist>
-  XMLTEMPLATE
-
-  date_regex = "(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })"
-  time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
-
-  files = %x{find #{ SifttterRedux::Configuration.sifttter_redux["sifttter_local_filepath"] } -type f -name "*.txt" | grep -v -i daily | sort}
-
-  projects = []
-  files.split("\n").each do |file|
-  	if File.exists?(file.strip)
-  		f = File.open(file.strip, encoding: "UTF-8")
-  		lines = f.read
-  		f.close
-  		project = "### " + File.basename(file).gsub(/^.*?\/([^\/]+)$/,"\\1") + "\n"
-
-  		found_completed = false
-  		lines.each_line do |line|
-  			if line =~ /&/
-  				line.gsub!(/[&]/, "and")
-  			end
-  			if line =~ /#{ date_regex }/
-  				found_completed = true
-  				project += line.gsub(/@done/,"").gsub(/#{ date_regex }\s(-|at)\s/, "").gsub(/#{ time_regex }\s-\s/, "").strip + "\n"
-  			end
-  		end
-  	end
-  	if found_completed
-  		projects.push(project)
-  	end
-  end
-  
-  if projects.length <=0
-  	SifttterRedux::CliMessage.warning("No entries found...")
-  end
-
-  if projects.length > 0  
-  	entrytext = "# Things done on #{ date_for_title }\n\n"
-  	projects.each do |project|
-  		entrytext += project.gsub(/.txt/, " ") + "\n\n"
-  	end
-    
-    Dir.mkdir(config.sifttter_redux["dayone_local_filepath"]) if !Dir.exists?(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'])
-    
-  	fh = File.new(File.expand_path(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/" + uuid + ".doentry"), "w+")
-  	fh.puts template.result(binding)
-  	fh.close
-  	SifttterRedux::CliMessage.success("Entry logged for #{ date_for_title }...")
-  end
 end
 
 #  ======================================================
@@ -212,97 +122,95 @@ command :exec do |c|
   )
   
   c.action do |global_options, options, args|
+    
     SifttterRedux.verbose = global_options[:verbose] || options[:verbose]
     
-    command_complete = false
+    SifttterRedux::CliMessage.section_block('EXECUTING...', 'EXECUTION COMPLETE') do
+      if options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t]
     
-    SifttterRedux::CliMessage.section("EXECUTING...")
+        command_complete = false
     
-    if options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t]
-    
-      # Current Week
-      if !command_complete && options[:c]
-        dates = SifttterRedux::DateRangeMaker.last_n_weeks(0, options[:i])
-        command_complete = true
-      end
-      
-      # Last N Days
-      if !command_complete && options[:n]
-        dates = SifttterRedux::DateRangeMaker.last_n_days(options[:n].to_i, options[:i])
-        command_complete = true
-      end
-      
-      # Yesterday
-      if !command_complete && options[:y]
-        dates = SifttterRedux::DateRangeMaker.yesterday
-        command_complete = true
-      end
-      
-      # Last N Weeks
-      if !command_complete && options[:w]
-        dates = SifttterRedux::DateRangeMaker.last_n_weeks(options[:w].to_i, options[:i])
-        command_complete = true
-      end
-      
-      # Specific Range
-      if !command_complete && (options[:f] || options[:t])
-        begin
-          dates = SifttterRedux::DateRangeMaker.range(options[:f], options[:t], options[:i])
-          
-          if dates.last > Date.today
-            SifttterRedux::CliMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")
-            dates = (dates.first..Date.today)
-          end
-        rescue ArgumentError => e
-          SifttterRedux::CliMessage.error(e)
+        # Current Week
+        if !command_complete && options[:c]
+          dates = SifttterRedux::DateRangeMaker.last_n_weeks(0, options[:i])
+          command_complete = true
         end
+      
+        # Last N Days
+        if !command_complete && options[:n]
+          dates = SifttterRedux::DateRangeMaker.last_n_days(options[:n].to_i, options[:i])
+          command_complete = true
+        end
+      
+        # Yesterday
+        if !command_complete && options[:y]
+          dates = SifttterRedux::DateRangeMaker.yesterday
+          command_complete = true
+        end
+      
+        # Last N Weeks
+        if !command_complete && options[:w]
+          dates = SifttterRedux::DateRangeMaker.last_n_weeks(options[:w].to_i, options[:i])
+          command_complete = true
+        end
+      
+        # Specific Range
+        if !command_complete && (options[:f] || options[:t])
+          begin
+            dates = SifttterRedux::DateRangeMaker.range(options[:f], options[:t], options[:i])
+          
+            if dates.last > Date.today
+              SifttterRedux::CliMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")
+              dates = (dates.first..Date.today)
+            end
+          rescue ArgumentError => e
+            SifttterRedux::CliMessage.error(e)
+          end
+          command_complete = true
+        end
+      else
+        dates = SifttterRedux::DateRangeMaker.today
         command_complete = true
       end
-    else
-      dates = SifttterRedux::DateRangeMaker.today
-      command_complete = true
+    
+      unless dates.nil?
+        first_date = dates.first
+        second_date = dates.reverse_each.first
+      
+        if first_date == second_date
+          SifttterRedux::CliMessage.info("Creating entry for #{ first_date.strftime("%B %d, %Y") }...")
+        else
+          SifttterRedux::CliMessage.info("Creating entries for dates from #{ first_date.strftime("%B %d, %Y") } to #{ second_date.strftime("%B %d, %Y") }...")
+        end
+    
+        SifttterRedux::DBU.set_local_target('/tmp/sifttter')
+        SifttterRedux::DBU.set_remote_target('/Apps/ifttt/sifttter')
+        SifttterRedux::DBU.set_message('Downloading Sifttter files...')
+        SifttterRedux::DBU.download
+      
+        dates.each do |date|
+          SifttterRedux::Sifttter.run(date)
+        end
+      
+        # Upload any Day One entries to Dropbox (if there are any).
+        unless Dir[SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/*"].empty?
+          SifttterRedux::DBU.set_local_target("#{SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath']}/*")
+          SifttterRedux::DBU.set_remote_target(SifttterRedux::Configuration['sifttter_redux']['dayone_remote_filepath'])
+          SifttterRedux::DBU.set_message('Uploading Day One entries to Dropbox...')
+          SifttterRedux::DBU.upload
+        end
+      
+        # Remove any downloaded local files that we no longer need.
+        dirs = [
+          SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'],
+          SifttterRedux::Configuration['sifttter_redux']['sifttter_local_filepath']
+        ]
+      
+        SifttterRedux::CliMessage.info_block('Removing temporary local files...') { dirs.each { |d| FileUtils.rm_rf(d) } }
+      end
     end
-    
-    unless dates.nil?
-      first_date = dates.first
-      second_date = dates.reverse_each.first
-      
-      if first_date == second_date
-        SifttterRedux::CliMessage.info("Creating entry for #{ first_date.strftime("%B %d, %Y") }...")
-      else
-        SifttterRedux::CliMessage.info("Creating entries for dates from #{ first_date.strftime("%B %d, %Y") } to #{ second_date.strftime("%B %d, %Y") }...")
-      end
-    
-      SifttterRedux::DBU.set_local_target('/tmp/sifttter')
-      SifttterRedux::DBU.set_remote_target('/Apps/ifttt/sifttter')
-      SifttterRedux::DBU.set_message('Downloading Sifttter files...')
-      SifttterRedux::DBU.download
-      
-      dates.each do |date|
-        run_sifttter(date)
-      end
-      
-      # Upload any Day One entries to Dropbox (if there are any).
-      unless Dir[SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/*"].empty?
-        db_uploader = File.join(SifttterRedux::Configuration['db_uploader']['local_filepath'], "dropbox_uploader.sh")
-        
-        SifttterRedux::CliMessage.info("Uploading Day One entries to Dropbox...", false)
-        output = `#{ db_uploader } upload #{ SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/*" } #{ SifttterRedux::Configuration['sifttter_redux']['dayone_remote_filepath'] }`
-        SifttterRedux::CliMessage.finish_message("DONE.")
-      end
-      
-      # Remove any downloaded local files that we no longer need.
-      SifttterRedux::CliMessage.info("Removing downloaded Day One files...", false)
-      FileUtils.rm_rf(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath']) if Dir.exists?(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'])
-      SifttterRedux::CliMessage.finish_message("DONE.")
-      
-      SifttterRedux::CliMessage.info("Removing downloaded Sifttter files...", false)
-      FileUtils.rm_rf(SifttterRedux::Configuration['sifttter_redux']['sifttter_local_filepath']) if Dir.exists?(SifttterRedux::Configuration['sifttter_redux']['sifttter_local_filepath'])
-      SifttterRedux::CliMessage.finish_message("DONE.")
-    end
-    
-    SifttterRedux::CliMessage.section("EXECUTION COMPLETE!")
   end
+  
 end
 
 #  ------------------------------------------------------
@@ -313,15 +221,15 @@ end
 desc "Install and initialize dependencies"
 command :init do |c|
   c.action do |global_options, options, args|
-    SifttterRedux::CliMessage.section("INITIALIZING...")
-
-    if File.exists?(SifttterRedux::Configuration.config_path)
-      init if SifttterRedux::CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase == "y"
-    else
-      init
+    
+    SifttterRedux::CliMessage.section_block('INITIALIZING...', 'INITIALIZATION COMPLETE') do
+      if File.exists?(SifttterRedux::Configuration.config_path)
+        SifttterRedux.init if SifttterRedux::CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase == "y"
+      else
+        SifttterRedux.init
+      end
     end
     
-    SifttterRedux::CliMessage.section("INITIALIZATION COMPLETE!")
   end
 end
 
