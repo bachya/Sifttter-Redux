@@ -9,14 +9,6 @@ module SifttterRedux
   #  ======================================================
   module Configuration
   
-    #  ======================================================
-    #  SectionError Class
-    #
-    #  Custom exception for adding/removing bad sections to
-    #  the configuration data.
-    #  ======================================================
-    class SectionError < StandardError; end
-  
     #  ------------------------------------------------------
     #  [] method
     #
@@ -39,7 +31,7 @@ module SifttterRedux
       unless self.section_exists?(section_name)
         @data[section_name] = {}
       else
-        raise SectionError, "Can't create pre-existing section #{section_name}"
+        CliMessage.warning("Can't create already-existing section: #{section_name}")
       end
     end
   
@@ -64,7 +56,7 @@ module SifttterRedux
       if self.section_exists?(section_name)
         @data.delete(section_name)
       else
-        raise SectionError, "Can't delete non-existing section #{section_name}"
+        CliMessage.warning("Can't delete non-existing section: #{section_name}")
       end
     end
   
@@ -127,5 +119,6 @@ module SifttterRedux
     def self.to_s
       puts @data
     end
+    
   end
 end

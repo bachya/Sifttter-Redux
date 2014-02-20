@@ -25,6 +25,4 @@ spec = Gem::Specification.new do |s|
   s.add_runtime_dependency('chronic', '0.10.2')
   s.add_runtime_dependency('colored','1.2')
   s.add_runtime_dependency('gli','2.9.0')
-  s.add_runtime_dependency('open4','~> 0')
-  s.add_runtime_dependency('ruby-progressbar','~> 0')
 end
