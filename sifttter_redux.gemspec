@@ -11,8 +11,8 @@ spec = Gem::Specification.new do |s|
   s.summary = 'Automated IFTTT to Day One engine.'
   s.description = 'A customized IFTTT-to-Day One service that allows for smart installation and automated running on a standalone *NIX device (such as a Raspberry Pi).'
 
-  s.files = `git ls-files`.split($/)
-  s.test_files = `git ls-files -- test`.split($/)
+  s.files = `git ls-files`.split("\n")
+  s.test_files = `git ls-files -- test`.split("\n")
   s.require_paths << 'lib'
   s.bindir = 'bin'
   s.executables << 'srd'
@@ -21,9 +21,10 @@ spec = Gem::Specification.new do |s|
   s.rdoc_options = ['--charset=UTF-8']
   s.extra_rdoc_files = %w[README.md HISTORY.md LICENSE]
   
-  s.add_development_dependency('pry', '~> 0')
   s.add_development_dependency('rake', '~> 0')
   s.add_runtime_dependency('chronic', '0.10.2')
   s.add_runtime_dependency('colored','1.2')
   s.add_runtime_dependency('gli','2.9.0')
+  s.add_runtime_dependency('open4','~> 0')
+  s.add_runtime_dependency('ruby-progressbar','~> 0')
 end

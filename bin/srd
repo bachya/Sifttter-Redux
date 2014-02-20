@@ -55,7 +55,7 @@ version SifttterRedux::VERSION
 #  ======================================================
 
 pre do |global, command, options, args|
-  Configuration.load(SifttterRedux::SRD_CONFIG_FILEPATH)
+  SifttterRedux::Configuration.load(SifttterRedux::SRD_CONFIG_FILEPATH)
   
   unless File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH)
     CliMessage.info("You haven't initlized Sifttter Redux yet. Doing that now...")
@@ -78,7 +78,7 @@ end
 #  ------------------------------------------------------
 def collect_preferences
   CliMessage.section('COLLECTING PREFERENCES...')
-
+  
   pref_prompts = [
     {
       prompt: 'Location for downloaded Sifttter files from Dropbox',
@@ -105,10 +105,10 @@ def collect_preferences
       section: 'sifttter_redux'
     }
   ]
-  binding.pry
+  
   pref_prompts.each do |prompt|
     pref = CliMessage.prompt(prompt[:prompt], prompt[:default])
-    Configuration[:section].merge!(prompt[:key] => pref)
+    SifttterRedux::Configuration[prompt[:section]].merge!(prompt[:key] => pref)
   end
 end
 
@@ -119,11 +119,11 @@ end
 #  @return Void
 #  ------------------------------------------------------
 def download_sifttter_files
-  db_uploader = File.join(Configuration.db_uploader['local_filepath'], 'dropbox_uploader.sh')
+  db_uploader = File.join(SifttterRedux::Configuration.db_uploader['local_filepath'], 'dropbox_uploader.sh')
 
   CliMessage.info('Downloading Sifttter files...', false)
 
-  `#{ db_uploader } download #{ Configuration['sifttter_redux']['sifttter_remote_filepath'] } #{ Configuration['sifttter_redux']['sifttter_local_filepath'] }`
+  `#{ db_uploader } download #{ SifttterRedux::Configuration['sifttter_redux']['sifttter_remote_filepath'] } #{ SifttterRedux::Configuration['sifttter_redux']['sifttter_local_filepath'] }`
 
   CliMessage.finish_message('DONE.')
 end
@@ -136,14 +136,14 @@ end
 #  @return Void
 #  ------------------------------------------------------
 def initialize_procedures
-  Configuration.reset
-  Configuration.add_section('sifttter_redux')
-  Configuration['sifttter_redux'].merge!('config_location' => Configuration.config_path)
+  SifttterRedux::Configuration.reset
+  SifttterRedux::Configuration.add_section('sifttter_redux')
+  SifttterRedux::Configuration['sifttter_redux'].merge!('config_location' => SifttterRedux::Configuration.config_path)
 
   install_db_uploader
   collect_preferences
 
-  Configuration.save
+  SifttterRedux::Configuration.save
 end
 
 #  ------------------------------------------------------
@@ -159,7 +159,7 @@ def install_db_uploader
   CliMessage.section('CONFIGURING DROPBOX UPLOADER...')
 
   # Create a new configuration section for Dropbox-Uploader
-  Configuration.add_section('db_uploader')
+  SifttterRedux::Configuration.add_section('db_uploader')
 
   until valid_directory_chosen
     # Prompt the user for a location to save Dropbox Uploader. '
@@ -182,7 +182,7 @@ def install_db_uploader
       end
 
       # Save config data to YAML.
-      Configuration['db_uploader'].merge!('local_filepath' => db_uploader_location)
+      SifttterRedux::Configuration['db_uploader'].merge!('local_filepath' => db_uploader_location)
     else
       puts "Sorry, but #{ db_uploader_location } isn't a valid directory."
     end
@@ -268,9 +268,9 @@ def run_sifttter(date)
   		entrytext += project.gsub(/.txt/, " ") + "\n\n"
   	end
     
-    Dir.mkdir(config.sifttter_redux["dayone_local_filepath"]) if !Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
+    Dir.mkdir(config.sifttter_redux["dayone_local_filepath"]) if !Dir.exists?(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'])
     
-  	fh = File.new(File.expand_path(Configuration['sifttter_redux']['dayone_local_filepath'] + "/" + uuid + ".doentry"), "w+")
+  	fh = File.new(File.expand_path(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/" + uuid + ".doentry"), "w+")
   	fh.puts template.result(binding)
   	fh.close
   	CliMessage.success("Entry logged for #{ date_for_title }...")
@@ -394,21 +394,21 @@ command :exec do |c|
       end
       
       # Upload any Day One entries to Dropbox (if there are any).
-      unless Dir[Configuration['sifttter_redux']['dayone_local_filepath'] + "/*"].empty?
-        db_uploader = File.join(Configuration['db_uploader']['local_filepath'], "dropbox_uploader.sh")
+      unless Dir[SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/*"].empty?
+        db_uploader = File.join(SifttterRedux::Configuration['db_uploader']['local_filepath'], "dropbox_uploader.sh")
         
         CliMessage.info("Uploading Day One entries to Dropbox...", false)
-        output = `#{ db_uploader } upload #{ Configuration['sifttter_redux']['dayone_local_filepath'] + "/*" } #{ Configuration['sifttter_redux']['dayone_remote_filepath'] }`
+        output = `#{ db_uploader } upload #{ SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/*" } #{ SifttterRedux::Configuration['sifttter_redux']['dayone_remote_filepath'] }`
         CliMessage.finish_message("DONE.")
       end
       
       # Remove any downloaded local files that we no longer need.
       CliMessage.info("Removing downloaded Day One files...", false)
-      FileUtils.rm_rf(Configuration['sifttter_redux']['dayone_local_filepath']) if Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
+      FileUtils.rm_rf(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath']) if Dir.exists?(SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'])
       CliMessage.finish_message("DONE.")
       
       CliMessage.info("Removing downloaded Sifttter files...", false)
-      FileUtils.rm_rf(Configuration['sifttter_redux']['sifttter_local_filepath']) if Dir.exists?(Configuration['sifttter_redux']['sifttter_local_filepath'])
+      FileUtils.rm_rf(SifttterRedux::Configuration['sifttter_redux']['sifttter_local_filepath']) if Dir.exists?(SifttterRedux::Configuration['sifttter_redux']['sifttter_local_filepath'])
       CliMessage.finish_message("DONE.")
     end
     
@@ -426,7 +426,7 @@ command :init do |c|
   c.action do |global_options, options, args|
     CliMessage.section("INITIALIZING...")
 
-    if File.exists?(Configuration.config_path)
+    if File.exists?(SifttterRedux::Configuration.config_path)
       initialize_procedures if CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase == "y"
     else
       initialize_procedures
