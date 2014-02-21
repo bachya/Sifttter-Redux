@@ -21,6 +21,12 @@ class CliMessageTest < Test::Unit::TestCase
       SifttterRedux::CliMessage.info_block('start', 'end', true) { puts 'body' }
     end
   end
+  
+  def test_info_block_no_block
+    assert_raise ArgumentError do
+      SifttterRedux::CliMessage.info_block('start', 'end', true)
+    end
+  end
 
   def test_prompt
     assert_equal(SifttterRedux::CliMessage.prompt('Pick the default option', 'default'), 'default')

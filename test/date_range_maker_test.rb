@@ -76,7 +76,7 @@ class DateRangeMakerTest < Test::Unit::TestCase
   end
 
   def test_range_bad_dates
-    assert_raise ArgumentError do
+    assert_raise ArgumentError do 
       SifttterRedux::DateRangeMaker.range("Bad Start Date", "Bad End Date")
     end
   end
