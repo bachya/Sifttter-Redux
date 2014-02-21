@@ -2,7 +2,6 @@
 #  String Class
 #  ======================================================
 class String
-
   #  ----------------------------------------------------
   #  colorize method
   #
@@ -63,5 +62,4 @@ class String
   def yellow
     colorize(33)
   end
-
 end

@@ -39,10 +39,11 @@ require 'sifttter_redux'
 
 include GLI::App
 version SifttterRedux::VERSION
-program_desc "Sifttter Redux
+program_desc 'Sifttter Redux
 
-    A customized IFTTT-to-Day One service that allows for smart installation
-    and automated running on a standalone *NIX device (such as a Raspberry Pi)."
+    A customized IFTTT-to-Day One service that allows for
+    smart installation and automated running on a standalone
+    *NIX device (such as a Raspberry Pi).'
 
 #  ======================================================
 #  Global Flags and Switches
@@ -50,7 +51,7 @@ program_desc "Sifttter Redux
 
 switch(
   [:verbose],
-  :desc => 'Turns on verbose output'
+  desc: 'Turns on verbose output'
 )
 
 #  ======================================================
@@ -59,13 +60,14 @@ switch(
 
 pre do |global, command, options, args|
   SifttterRedux::Configuration.load(SifttterRedux::SRD_CONFIG_FILEPATH)
-  SifttterRedux::DBU.load(File.join(SifttterRedux::Configuration['db_uploader']['local_filepath'], 'dropbox_uploader.sh'))
+  SifttterRedux::DBU.load(
+    File.join(
+      SifttterRedux::Configuration['db_uploader']['local_filepath'],
+      'dropbox_uploader.sh'
+    )
+  )
 
-  unless File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH)
-    SifttterRedux::CliMessage.info("You haven't initlized Sifttter Redux yet. Doing that now...")
-    init
-  end
-
+  init unless File.exists?(SifttterRedux::SRD_CONFIG_FILEPATH)
   true
 end
 
@@ -79,47 +81,47 @@ end
 #  Executes the script.
 #  ------------------------------------------------------
 
-desc "Execute the script"
+desc 'Execute the script'
 command :exec do |c|
 
   c.flag(
     [:f],
-    :desc => "Run catch-up mode with this start date",
+    desc: 'Run catch-up mode with this start date'
   )
 
   c.flag(
     [:n],
-    :desc => "Run catch-up mode for the last N days"
+    desc: 'Run catch-up mode for the last N days'
   )
 
   c.flag(
     [:t],
-    :desc => "Run catch-up mode with this end date (must be accompanied by -f)",
+    desc: 'Run catch-up mode with this end date (must also have -f)'
   )
 
   c.flag(
     [:w],
-    :desc => "Run catch-up mode for the last N weeks"
+    desc: 'Run catch-up mode for the last N weeks'
   )
 
   c.switch(
     [:c],
-    :desc => "Run catch-up mode for the current week (i.e., the beginning of the week to yesterday)"
+    desc: 'Run catch-up mode from the beginning of the week to yesterday'
   )
 
   c.switch(
     [:i],
-    :desc => "Include today\"s date in catch-up"
+    desc: "Include today's date in catch-up"
   )
 
   c.switch(
     [:verbose],
-    :desc => 'Turns on verbose output'
+    desc: 'Turns on verbose output'
   )
 
   c.switch(
     [:y],
-    :desc => "Run catch-up mode for yesterday"
+    desc: 'Run catch-up mode for yesterday'
   )
 
   c.action do |global_options, options, args|
@@ -158,7 +160,7 @@ command :exec do |c|
         # Specific Range
         if !command_complete && (options[:f] || options[:t])
           begin
-            dates = SifttterRedux::DateRangeMaker.range(options[:f], options[:t], options[:i])
+            dates = SifttterRedux::DateRangeMaker.from_to(options[:f], options[:t], options[:i])
 
             if dates.last > Date.today
               SifttterRedux::CliMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")
@@ -167,11 +169,9 @@ command :exec do |c|
           rescue ArgumentError => e
             SifttterRedux::CliMessage.error(e)
           end
-          command_complete = true
         end
       else
         dates = SifttterRedux::DateRangeMaker.today
-        command_complete = true
       end
 
       unless dates.nil?
@@ -179,14 +179,16 @@ command :exec do |c|
         second_date = dates.reverse_each.first
 
         if first_date == second_date
-          SifttterRedux::CliMessage.info("Creating entry for #{ first_date.strftime("%B %d, %Y") }...")
+          date_string = first_date.strftime('%B %d, %Y')
+          SifttterRedux::CliMessage.info("Creating entry for #{ date_string }...")
         else
-          SifttterRedux::CliMessage.info("Creating entries for dates from #{ first_date.strftime("%B %d, %Y") } to #{ second_date.strftime("%B %d, %Y") }...")
+          date_string = "#{ first_date.strftime('%B %d, %Y') } to #{ second_date.strftime('%B %d, %Y') }"
+          SifttterRedux::CliMessage.info("Creating entries for dates from #{ date_string }...")
         end
 
-        SifttterRedux::DBU.set_local_target('/tmp/sifttter')
-        SifttterRedux::DBU.set_remote_target('/Apps/ifttt/sifttter')
-        SifttterRedux::DBU.set_message('Downloading Sifttter files...')
+        SifttterRedux::DBU.local_target = '/tmp/sifttter'
+        SifttterRedux::DBU.remote_target = '/Apps/ifttt/sifttter'
+        SifttterRedux::DBU.message = 'Downloading Sifttter files...'
         SifttterRedux::DBU.download
 
         dates.each do |date|
@@ -194,10 +196,10 @@ command :exec do |c|
         end
 
         # Upload any Day One entries to Dropbox (if there are any).
-        unless Dir[SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + "/*"].empty?
-          SifttterRedux::DBU.set_local_target("#{SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath']}/*")
-          SifttterRedux::DBU.set_remote_target(SifttterRedux::Configuration['sifttter_redux']['dayone_remote_filepath'])
-          SifttterRedux::DBU.set_message('Uploading Day One entries to Dropbox...')
+        unless Dir[SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath'] + '/*'].empty?
+          SifttterRedux::DBU.local_target = "#{SifttterRedux::Configuration['sifttter_redux']['dayone_local_filepath']}/*"
+          SifttterRedux::DBU.remote_target = SifttterRedux::Configuration['sifttter_redux']['dayone_remote_filepath']
+          SifttterRedux::DBU.message = 'Uploading Day One entries to Dropbox...'
           SifttterRedux::DBU.upload
         end
 
@@ -219,13 +221,13 @@ end
 #
 #  Initializes the script.
 #  ------------------------------------------------------
-desc "Install and initialize dependencies"
+desc 'Install and initialize dependencies'
 command :init do |c|
   c.action do |global_options, options, args|
 
     SifttterRedux::CliMessage.section_block('INITIALIZING...') do
       if File.exists?(SifttterRedux::Configuration.config_path)
-        SifttterRedux.init if SifttterRedux::CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", "N").downcase == "y"
+        SifttterRedux.init if SifttterRedux::CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", 'N').downcase == 'y'
       else
         SifttterRedux.init
       end

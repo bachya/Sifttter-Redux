@@ -5,7 +5,6 @@ module SifttterRedux
   #  Module to easily find the running operating system
   #  ======================================================
   module OS
-
     #  ----------------------------------------------------
     #  linux? method
     #
@@ -13,7 +12,7 @@ module SifttterRedux
     #  @return Bool
     #  ----------------------------------------------------
     def OS.linux?
-      OS.unix? and not OS.mac?
+      self.unix? and not self.mac?
     end
 
     #  ----------------------------------------------------
@@ -23,7 +22,7 @@ module SifttterRedux
     #  @return Bool
     #  ----------------------------------------------------
     def OS.mac?
-     (/darwin/ =~ RUBY_PLATFORM) != nil
+      !(/darwin/ =~ RUBY_PLATFORM).nil?
     end
 
     #  ----------------------------------------------------
@@ -33,7 +32,7 @@ module SifttterRedux
     #  @return Bool
     #  ----------------------------------------------------
     def OS.unix?
-      !OS.windows?
+      !self.windows?
     end
 
     #  ----------------------------------------------------
@@ -43,8 +42,7 @@ module SifttterRedux
     #  @return Bool
     #  ----------------------------------------------------
     def OS.windows?
-      (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+      !(/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM).nil?
     end
-
   end
 end

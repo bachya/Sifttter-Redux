@@ -5,7 +5,6 @@ module SifttterRedux
   #  Wrapper module for the Dropbox Uploader project
   #  ======================================================
   module DBU
-
     DEFAULT_MESSAGE = 'RUNNING DROPBOX UPLOADER'
 
     #  ----------------------------------------------------
@@ -16,16 +15,16 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.download
-      unless (@local_path.nil? || @remote_path.nil?)
+      if !@local_path.nil? && !@remote_path.nil?
         CliMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
           if SifttterRedux.verbose
-            system "#{@dbu} download #{@remote_path} #{@local_path}"
+            system "#{ @dbu } download #{ @remote_path } #{ @local_path }"
           else
-            exec = `#{@dbu} download #{@remote_path} #{@local_path}`
+            exec = `#{ @dbu } download #{ @remote_path } #{ @local_path }`
           end
         end
       else
-        fail ArgumentError, "Local and remote DBU targets cannot be nil"
+        fail ArgumentError, 'Local and remote DBU targets cannot be nil'
       end
     end
 
@@ -54,7 +53,7 @@ module SifttterRedux
             if File.directory?(path)
               CliMessage.warning("Using pre-existing Dropbox Uploader at #{ path }...")
             else
-              CliMessage.info_block('Downloading Dropbox Uploader to #{ path }...', 'Done.', true) do
+              CliMessage.info_block("Downloading Dropbox Uploader to #{ path }...", 'Done.', true) do
                 system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ path }"
               end
             end
@@ -87,7 +86,7 @@ module SifttterRedux
     #  @param path A local filepath
     #  @return Void
     #  ----------------------------------------------------
-    def self.set_local_target(path)
+    def self.local_target=(path)
       @local_path = path
     end
 
@@ -99,7 +98,7 @@ module SifttterRedux
     #  @param message The string to display
     #  @return Void
     #  ----------------------------------------------------
-    def self.set_message(message)
+    def self.message=(message)
       @message = message
     end
 
@@ -111,7 +110,7 @@ module SifttterRedux
     #  @param path A remote Dropbox filepath
     #  @return Void
     #  ----------------------------------------------------
-    def self.set_remote_target(path)
+    def self.remote_target=(path)
       @remote_path = path
     end
 
@@ -123,18 +122,17 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.upload
-      unless (@local_path.nil? || @remote_path.nil?)
+      if !@local_path.nil? && !@remote_path.nil?
         CliMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
           if SifttterRedux.verbose
-            system "#{@dbu} upload #{@local_path} #{@remote_path}"
+            system "#{ @dbu } upload #{ @local_path } #{ @remote_path }"
           else
-            exec = `#{@dbu} upload #{@local_path} #{@remote_path}`
+            exec = `#{ @dbu } upload #{ @local_path } #{ @remote_path }`
           end
         end
       else
-        fail ArgumentError, "Local and remote DBU targets cannot be nil"
+        fail ArgumentError, 'Local and remote DBU targets cannot be nil'
       end
     end
-
   end
 end

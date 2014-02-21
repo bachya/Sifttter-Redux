@@ -65,7 +65,7 @@ module SifttterRedux
     #  @param options Miscellaneous options hash
     #  @return Range
     #  ------------------------------------------------------
-    def self.range(start_date, end_date, include_today = false)
+    def self.from_to(start_date, end_date, include_today = false)
       fail ArgumentError, "You can't specify -t without specifying -f" if start_date.nil? && !end_date.nil?
 
       begin
@@ -84,7 +84,7 @@ module SifttterRedux
 
       fail ArgumentError, 'The start date must be before or equal to the end date' if chronic_end_date && chronic_start_date > chronic_end_date
 
-      if !chronic_start_date.nil?
+      unless chronic_start_date.nil?
         if chronic_end_date.nil?
           if include_today
             (chronic_start_date..Date.today)
@@ -116,6 +116,5 @@ module SifttterRedux
     def self.yesterday
       (Date.today - 1..Date.today - 1)
     end
-
   end
 end

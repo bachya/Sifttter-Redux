@@ -4,7 +4,6 @@ module SifttterRedux
   #  Singleton to manage common CLI interfacing
   #  ======================================================
   module CliMessage
-
     #  ----------------------------------------------------
     #  error method
     #
@@ -12,7 +11,9 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.error(m) puts "---> ERROR: #{ m }".red; end
+    def self.error(m)
+      puts "---> ERROR: #{ m }".red
+    end
 
     #  ----------------------------------------------------
     #  info method
@@ -21,7 +22,9 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.info(m) puts "---> INFO: #{ m }".blue; end
+    def self.info(m)
+      puts "---> INFO: #{ m }".blue
+    end
 
     #  ----------------------------------------------------
     #  info_block method
@@ -34,7 +37,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.info_block(m1, m2 = 'Done.', multiline = false)
       if multiline
-        self.info(m1)
+        info(m1)
       else
         print "---> INFO: #{ m1 }".blue
       end
@@ -42,7 +45,7 @@ module SifttterRedux
       yield
 
       if multiline
-        self.info(m2)
+        info(m2)
       else
         puts m2.blue
       end
@@ -74,7 +77,9 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.section(m) puts "#### #{ m }".purple; end
+    def self.section(m)
+      puts "#### #{ m }".purple
+    end
 
     #  ----------------------------------------------------
     #  section_block method
@@ -88,7 +93,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.section_block(m, multiline = true)
       if multiline
-        self.section(m)
+        section(m)
       else
         print "#### #{ m }".purple
       end
@@ -103,7 +108,9 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.success(m) puts "---> SUCCESS: #{ m }".green; end
+    def self.success(m)
+      puts "---> SUCCESS: #{ m }".green
+    end
 
     #  ----------------------------------------------------
     #  warning method
@@ -112,7 +119,8 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.warning(m) puts "---> WARNING: #{ m }".yellow; end
-
+    def self.warning(m)
+      puts "---> WARNING: #{ m }".yellow
+    end
   end
 end

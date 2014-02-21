@@ -1,10 +1,10 @@
-require "sifttter_redux/cli_message.rb"
-require "sifttter_redux/configuration.rb"
-require "sifttter_redux/date_range_maker.rb"
-require "sifttter_redux/extensions.rb"
-require "sifttter_redux/dbu.rb"
-require "sifttter_redux/os.rb"
-require "sifttter_redux/sifttter.rb"
+require 'sifttter_redux/cli_message.rb'
+require 'sifttter_redux/configuration.rb'
+require 'sifttter_redux/date_range_maker.rb'
+require 'sifttter_redux/extensions.rb'
+require 'sifttter_redux/dbu.rb'
+require 'sifttter_redux/os.rb'
+require 'sifttter_redux/sifttter.rb'
 
 #  ======================================================
 #  SifttterRedux Module
@@ -19,12 +19,12 @@ module SifttterRedux
   #  ----------------------------------------------------
   #  Constants
   #  ----------------------------------------------------
-  DBU_LOCAL_FILEPATH = "/usr/local/opt"
+  DBU_LOCAL_FILEPATH = '/usr/local/opt'
   DO_REMOTE_FILEPATH = "/Apps/Day\\ One/Journal.dayone/entries"
-  DO_LOCAL_FILEPATH = "/tmp/dayone"
-  SRD_CONFIG_FILEPATH = File.join(ENV["HOME"], ".sifttter_redux")
-  SFT_LOCAL_FILEPATH = "/tmp/sifttter"
-  SFT_REMOTE_FILEPATH = "/Apps/ifttt/sifttter"
+  DO_LOCAL_FILEPATH = '/tmp/dayone'
+  SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')
+  SFT_LOCAL_FILEPATH = '/tmp/sifttter'
+  SFT_REMOTE_FILEPATH = '/Apps/ifttt/sifttter'
 
   @verbose_output = true
 

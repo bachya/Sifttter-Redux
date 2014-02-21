@@ -8,7 +8,6 @@ module SifttterRedux
   #  into which they get stored.
   #  ======================================================
   module Configuration
-
     #  ----------------------------------------------------
     #  [] method
     #
@@ -28,7 +27,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.add_section(section_name)
-      unless self.section_exists?(section_name)
+      if !self.section_exists?(section_name)
         @data[section_name] = {}
       else
         CliMessage.warning("Can't create already-existing section: #{section_name}")
@@ -42,7 +41,7 @@ module SifttterRedux
     #  @return String
     #  ----------------------------------------------------
     def self.config_path
-      @configPath
+      @config_path
     end
 
     #  ----------------------------------------------------
@@ -69,7 +68,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.load(path)
-      @configPath = path
+      @config_path = path
 
       if File.exists?(path)
         @data = YAML.load_file(path)
@@ -96,7 +95,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.save
-      File.open(@configPath, 'w') { |f| f.write(@data.to_yaml) }
+      File.open(@config_path, 'w') { |f| f.write(@data.to_yaml) }
     end
 
     #  ----------------------------------------------------
@@ -107,7 +106,7 @@ module SifttterRedux
     #  @return Bool
     #  ----------------------------------------------------
     def self.section_exists?(section_name)
-      @data.has_key?(section_name)
+      @data.key?(section_name)
     end
 
     #  ----------------------------------------------------
@@ -119,6 +118,5 @@ module SifttterRedux
     def self.to_s
       puts @data
     end
-
   end
 end

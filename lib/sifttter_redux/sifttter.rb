@@ -1,8 +1,8 @@
 module SifttterRedux
   #  ======================================================
-  #  DBU Module
+  #  Sifttter Module
   #
-  #  Wrapper module for the Dropbox Uploader project
+  #  Wrapper module for Sifttter itself
   #  ======================================================
   module Sifttter
     using SifttterRedux::OS
@@ -18,11 +18,11 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.run(date)
-      uuid_command = "uuidgen" if OS.mac?
-      uuid_command = "uuid" if OS.linux?
-      uuid = %x{#{ uuid_command }}.gsub(/-/,"").strip
+      uuid_command = 'uuidgen' if OS.mac?
+      uuid_command = 'uuid' if OS.linux?
+      uuid = %x{#{ uuid_command }}.gsub(/-/, '').strip
 
-      date_for_title = date.strftime("%B %d, %Y")
+      date_for_title = date.strftime('%B %d, %Y')
       datestamp = date.to_time.utc.iso8601
       starred = false
 
@@ -54,16 +54,16 @@ module SifttterRedux
 
       projects = []
       files.split("\n").each do |file|
-      	if File.exists?(file.strip)
-      		f = File.open(file.strip, encoding: "UTF-8")
+        if File.exists?(file.strip)
+      		f = File.open(file.strip, encoding: 'UTF-8')
       		lines = f.read
       		f.close
-      		project = "### " + File.basename(file).gsub(/^.*?\/([^\/]+)$/,"\\1") + "\n"
+      		project = '### ' + File.basename(file).gsub(/^.*?\/([^\/]+)$/, "\\1") + "\n"
 
       		found_completed = false
       		lines.each_line do |line|
       			if line =~ /&/
-      				line.gsub!(/[&]/, "and")
+      				line.gsub!(/[&]/, 'and')
       			end
       			if line =~ /#{ date_regex }/
       				found_completed = true
@@ -77,13 +77,13 @@ module SifttterRedux
       end
 
       if projects.length <=0
-      	CliMessage.warning("No entries found...")
+      	CliMessage.warning('No entries found...')
       end
 
       if projects.length > 0
       	entrytext = "# Things done on #{ date_for_title }\n\n"
       	projects.each do |project|
-      		entrytext += project.gsub(/.txt/, " ") + "\n\n"
+      		entrytext += project.gsub(/.txt/, ' ') + "\n\n"
       	end
 
         Dir.mkdir(Configuration['sifttter_redux']['dayone_local_filepath']) if !Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
@@ -94,6 +94,5 @@ module SifttterRedux
       	CliMessage.success("Entry logged for #{ date_for_title }...")
       end
     end
-
   end
 end
