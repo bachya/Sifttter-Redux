@@ -38,12 +38,14 @@ require 'gli'
 require 'sifttter_redux'
 
 include GLI::App
-version SifttterRedux::VERSION
+
 program_desc 'Sifttter Redux
 
     A customized IFTTT-to-Day One service that allows for
     smart installation and automated running on a standalone
     *NIX device (such as a Raspberry Pi).'
+    
+version SifttterRedux::VERSION
 
 #  ======================================================
 #  Global Flags and Switches

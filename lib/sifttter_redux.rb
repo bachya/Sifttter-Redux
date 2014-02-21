@@ -5,6 +5,7 @@ require 'sifttter_redux/extensions.rb'
 require 'sifttter_redux/dbu.rb'
 require 'sifttter_redux/os.rb'
 require 'sifttter_redux/sifttter.rb'
+require 'sifttter_redux/version.rb'
 
 #  ======================================================
 #  SifttterRedux Module

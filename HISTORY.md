@@ -1,3 +1,7 @@
+# 0.3.3 (2014-02-20)
+
+* Fixed a bug in which the SifttterRedux module wouldn't load
+
 # 0.3.2 (2014-02-20)
 
 * Added verbose flag
