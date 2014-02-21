@@ -1,3 +1,7 @@
+# 0.3.5 (2014-02-21)
+
+* Updated documentation and usage message
+
 # 0.3.4 (2014-02-21)
 
 * Automatically configure Dropbox Uploader during init (if needed)

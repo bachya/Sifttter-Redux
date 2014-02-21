@@ -36,18 +36,20 @@ $ srd help
 NAME
     srd - Sifttter Redux
 
-    A modification of Craig Eley's Sifttter that allows for smart
-    installation on a standalone *NIX device (such as a Raspberry Pi).
+    A customized IFTTT-to-Day One service that allows for
+    smart installation and automated running on a standalone
+    *NIX device (such as a Raspberry Pi).
 
 SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-    0.2.1
+    0.3.5
 
 GLOBAL OPTIONS
-    --help    - Show this message
-    --version - Display the program version
+    --help         - Show this message
+    --[no-]verbose - Turns on verbose output
+    --version      - Display the program version
 
 COMMANDS
     exec - Execute the script
