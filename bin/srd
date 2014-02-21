@@ -162,7 +162,7 @@ command :exec do |c|
         # Specific Range
         if !command_complete && (options[:f] || options[:t])
           begin
-            dates = SifttterRedux::DateRangeMaker.from_to(options[:f], options[:t], options[:i])
+            dates = SifttterRedux::DateRangeMaker.range(options[:f], options[:t], options[:i])
 
             if dates.last > Date.today
               SifttterRedux::CliMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")

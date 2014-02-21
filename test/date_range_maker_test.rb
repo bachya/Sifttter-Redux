@@ -1,9 +1,8 @@
 require "date"
 require "test_helper"
-require File.join(File.dirname(__FILE__), "..", "lib/sifttter_redux/date_from_to_maker.rb")
+require File.join(File.dirname(__FILE__), "..", "lib/sifttter_redux/date_range_maker.rb")
 
-class DefaultTest < Test::Unit::TestCase
-
+class DateRangeMakerTest < Test::Unit::TestCase
   def test_today
     assert_equal(SifttterRedux::DateRangeMaker.today, (Date.today..Date.today))
   end
@@ -64,37 +63,37 @@ class DefaultTest < Test::Unit::TestCase
     assert_equal(SifttterRedux::DateRangeMaker.last_n_weeks(2, true), (Date.today - Date.today.wday - 13..end_date))
   end
 
-  def test_from_to_only_start_date
-    assert_equal(SifttterRedux::DateRangeMaker.from_to("2014-02-01", nil), (Date.parse("2014-02-01")...Date.today))
+  def test_range_only_start_date
+    assert_equal(SifttterRedux::DateRangeMaker.range("2014-02-01", nil), (Date.parse("2014-02-01")...Date.today))
   end
 
-  def test_from_to_only_start_date_include_today
-    assert_equal(SifttterRedux::DateRangeMaker.from_to("2014-02-01", nil, true), (Date.parse("2014-02-01")..Date.today))
+  def test_range_only_start_date_include_today
+    assert_equal(SifttterRedux::DateRangeMaker.range("2014-02-01", nil, true), (Date.parse("2014-02-01")..Date.today))
   end
 
-  def test_from_to_start_date_and_end_date
-    assert_equal(SifttterRedux::DateRangeMaker.from_to("2014-02-01", "2014-02-05"), (Date.parse("2014-02-01")..Date.parse("2014-02-05")))
+  def test_range_start_date_and_end_date
+    assert_equal(SifttterRedux::DateRangeMaker.range("2014-02-01", "2014-02-05"), (Date.parse("2014-02-01")..Date.parse("2014-02-05")))
   end
 
-  def test_from_to_bad_dates
+  def test_range_bad_dates
     assert_raise ArgumentError do
-      SifttterRedux::DateRangeMaker.from_to("Bad Start Date", "Bad End Date")
+      SifttterRedux::DateRangeMaker.range("Bad Start Date", "Bad End Date")
     end
   end
 
-  def test_from_to_end_date_with_no_start_date
+  def test_range_end_date_with_no_start_date
     assert_raise ArgumentError do
-      SifttterRedux::DateRangeMaker.from_to(nil, Date.today)
+      SifttterRedux::DateRangeMaker.range(nil, Date.today)
     end
   end
 
-  def test_from_to_end_date_before_start_date
+  def test_range_end_date_before_start_date
     assert_raise ArgumentError do
-      SifttterRedux::DateRangeMaker.from_to(Date.today, Date.today - 1)
+      SifttterRedux::DateRangeMaker.range(Date.today, Date.today - 1)
     end
   end
 
-  def test_from_to_negative_look_back
+  def test_range_negative_look_back
     assert_raise ArgumentError do
       SifttterRedux::DateRangeMaker.last_n_days(-5)
     end

@@ -1,3 +1,5 @@
+require File.join(File.dirname(__FILE__), 'string_extensions.rb')
+
 module SifttterRedux
   #  ======================================================
   #  CliManager Module

@@ -65,7 +65,7 @@ module SifttterRedux
     #  @param options Miscellaneous options hash
     #  @return Range
     #  ------------------------------------------------------
-    def self.from_to(start_date, end_date, include_today = false)
+    def self.range(start_date, end_date, include_today = false)
       fail ArgumentError, "You can't specify -t without specifying -f" if start_date.nil? && !end_date.nil?
 
       begin
