@@ -1,3 +1,9 @@
+# 0.3.4 (2014-02-21)
+
+* Automatically configure Dropbox Uploader during init (if needed)
+* Fixed several small bugs
+* Added more test cases
+
 # 0.3.3 (2014-02-20)
 
 * Fixed a bug in which the SifttterRedux module wouldn't load
