@@ -18,6 +18,24 @@ module SifttterRedux
     def self.[](section_name)
       @data[section_name]
     end
+    
+    #  ----------------------------------------------------
+    #  []= method
+    #
+    #  Assigns the passed hash to the section. NOTE THAT THE
+    #  PREVIOUS CONTENTS OF THAT SECTION ARE DELETED.
+    #  @param section_name The section in which to look
+    #  @param hash The Hash that gets merged into the section
+    #  @return Void
+    #  ----------------------------------------------------
+    def self.[]=(section_name, hash)
+      if hash.is_a?(Hash)
+        @data[section_name] = {}
+        @data[section_name].merge!(hash)
+      else
+        fail ArgumentError, "Parameter is not a Hash: #{hash}"
+      end
+    end
 
     #  ----------------------------------------------------
     #  add_section method
@@ -57,6 +75,16 @@ module SifttterRedux
       else
         CliMessage.warning("Can't delete non-existing section: #{section_name}")
       end
+    end
+    
+    #  ----------------------------------------------------
+    #  dump method
+    #
+    #  Returns the data Hash
+    #  @return Hash
+    #  ----------------------------------------------------
+    def self.dump
+      @data
     end
 
     #  ----------------------------------------------------
@@ -107,16 +135,6 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.section_exists?(section_name)
       @data.key?(section_name)
-    end
-
-    #  ----------------------------------------------------
-    #  to_s method
-    #
-    #  Method to output this Module as a String.
-    #  @return Void
-    #  ----------------------------------------------------
-    def self.to_s
-      puts @data
     end
   end
 end

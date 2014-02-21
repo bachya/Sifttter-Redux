@@ -22,11 +22,7 @@ class CliMessageTest < Test::Unit::TestCase
     end
   end
 
-  def test_prompt_custom
-    assert_equal(SifttterRedux::CliMessage.prompt("Input the word 'Friday'", 'Monday'), 'Friday')
-  end
-
-  def test_prompt_default
+  def test_prompt
     assert_equal(SifttterRedux::CliMessage.prompt('Pick the default option', 'default'), 'default')
   end
 
