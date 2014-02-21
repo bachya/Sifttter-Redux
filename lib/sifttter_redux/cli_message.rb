@@ -38,18 +38,22 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.info_block(m1, m2 = 'Done.', multiline = false)
-      if multiline
-        info(m1)
-      else
-        print "---> INFO: #{ m1 }".blue
-      end
+      if block_given?
+        if multiline
+          info(m1)
+        else
+          print "---> INFO: #{ m1 }".blue
+        end
 
-      yield
+        yield
 
-      if multiline
-        info(m2)
+        if multiline
+          info(m2)
+        else
+          puts m2.blue
+        end
       else
-        puts m2.blue
+        fail ArgumentError, 'Did not specify a valid block'
       end
     end
 
@@ -94,13 +98,17 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.section_block(m, multiline = true)
-      if multiline
-        section(m)
-      else
-        print "#### #{ m }".purple
-      end
+      if block_given?
+        if multiline
+          section(m)
+        else
+          print "#### #{ m }".purple
+        end
 
-      yield
+        yield
+      else
+        fail ArgumentError, 'Did not specify a valid block'
+      end
     end
 
     #  ----------------------------------------------------
