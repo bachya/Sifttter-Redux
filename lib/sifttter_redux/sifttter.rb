@@ -6,12 +6,12 @@ module SifttterRedux
   #  ======================================================
   module Sifttter
     using SifttterRedux::OS
-    
+
     #  ----------------------------------------------------
     #  run_sifttter method
     #
     #  Modified form of Sifttter
-    # 
+    #
     #  Sifttter: An IFTTT-to-Day One Logger by Craig Eley
     #  Based on tp-dailylog.rb by Brett Terpstra 2012
     #  @param date The date to use when scanning Sifttter
@@ -20,8 +20,8 @@ module SifttterRedux
     def self.run(date)
       uuid_command = "uuidgen" if OS.mac?
       uuid_command = "uuid" if OS.linux?
-      uuid = %x{#{ uuid_command }}.gsub(/-/,"").strip 
-  
+      uuid = %x{#{ uuid_command }}.gsub(/-/,"").strip
+
       date_for_title = date.strftime("%B %d, %Y")
       datestamp = date.to_time.utc.iso8601
       starred = false
@@ -75,19 +75,19 @@ module SifttterRedux
       		projects.push(project)
       	end
       end
-  
+
       if projects.length <=0
       	CliMessage.warning("No entries found...")
       end
 
-      if projects.length > 0  
+      if projects.length > 0
       	entrytext = "# Things done on #{ date_for_title }\n\n"
       	projects.each do |project|
       		entrytext += project.gsub(/.txt/, " ") + "\n\n"
       	end
-    
+
         Dir.mkdir(Configuration['sifttter_redux']['dayone_local_filepath']) if !Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
-    
+
       	fh = File.new(File.expand_path(Configuration['sifttter_redux']['dayone_local_filepath'] + '/' + uuid + '.doentry'), 'w+')
       	fh.puts template.result(binding)
       	fh.close

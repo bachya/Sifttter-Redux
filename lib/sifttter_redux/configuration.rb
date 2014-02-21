@@ -8,7 +8,7 @@ module SifttterRedux
   #  into which they get stored.
   #  ======================================================
   module Configuration
-  
+
     #  ----------------------------------------------------
     #  [] method
     #
@@ -19,7 +19,7 @@ module SifttterRedux
     def self.[](section_name)
       @data[section_name]
     end
-  
+
     #  ----------------------------------------------------
     #  add_section method
     #
@@ -34,7 +34,7 @@ module SifttterRedux
         CliMessage.warning("Can't create already-existing section: #{section_name}")
       end
     end
-  
+
     #  ----------------------------------------------------
     #  config_path method
     #
@@ -44,7 +44,7 @@ module SifttterRedux
     def self.config_path
       @configPath
     end
-  
+
     #  ----------------------------------------------------
     #  delete_section method
     #
@@ -59,7 +59,7 @@ module SifttterRedux
         CliMessage.warning("Can't delete non-existing section: #{section_name}")
       end
     end
-  
+
     #  ----------------------------------------------------
     #  load method
     #
@@ -70,14 +70,14 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.load(path)
       @configPath = path
-    
+
       if File.exists?(path)
         @data = YAML.load_file(path)
       else
         @data = {}
       end
     end
-  
+
     #  ----------------------------------------------------
     #  reset method
     #
@@ -87,7 +87,7 @@ module SifttterRedux
     def self.reset
       @data = {}
     end
-  
+
     #  ----------------------------------------------------
     #  save method
     #
@@ -98,7 +98,7 @@ module SifttterRedux
     def self.save
       File.open(@configPath, 'w') { |f| f.write(@data.to_yaml) }
     end
-  
+
     #  ----------------------------------------------------
     #  section_exists? method
     #
@@ -109,7 +109,7 @@ module SifttterRedux
     def self.section_exists?(section_name)
       @data.has_key?(section_name)
     end
-  
+
     #  ----------------------------------------------------
     #  to_s method
     #
@@ -119,6 +119,6 @@ module SifttterRedux
     def self.to_s
       puts @data
     end
-    
+
   end
 end

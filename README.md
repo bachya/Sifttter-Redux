@@ -1,7 +1,7 @@
 Sifttter Redux
 ==============
 
-Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal. 
+Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal.
 
 Siftter Redux's primary difference is in its execution method: it intended to run autonomously so that it does not need to be manually activated. This allows IFTTT data to be synchronized to Day One on a schedule.
 
@@ -69,7 +69,7 @@ Initialization will perform the following steps:
  2. The location of your Sifttter files in Dropbox
  3. The location on your filesystem where Day One files will be temporarily stored
  4. The location of your Day One files in Dropbox
- 
+
 ### Basic Execution
 
 ```

@@ -15,7 +15,7 @@ module SifttterRedux
     def OS.linux?
       OS.unix? and not OS.mac?
     end
-  
+
     #  ----------------------------------------------------
     #  mac? method
     #
@@ -35,7 +35,7 @@ module SifttterRedux
     def OS.unix?
       !OS.windows?
     end
-  
+
     #  ----------------------------------------------------
     #  windows? method
     #
@@ -45,6 +45,6 @@ module SifttterRedux
     def OS.windows?
       (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
     end
-    
+
   end
 end

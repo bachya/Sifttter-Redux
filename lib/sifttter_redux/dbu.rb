@@ -5,7 +5,7 @@ module SifttterRedux
   #  Wrapper module for the Dropbox Uploader project
   #  ======================================================
   module DBU
-    
+
     DEFAULT_MESSAGE = 'RUNNING DROPBOX UPLOADER'
 
     #  ----------------------------------------------------
@@ -28,7 +28,7 @@ module SifttterRedux
         fail ArgumentError, "Local and remote DBU targets cannot be nil"
       end
     end
-    
+
     #  ----------------------------------------------------
     #  install_wizard method
     #
@@ -38,14 +38,14 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.install_wizard
       valid_directory_chosen = false
-      
+
       CliMessage.section_block('CONFIGURING DROPBOX UPLOADER...') do
         until valid_directory_chosen
           # Prompt the user for a location to save Dropbox Uploader. '
           path = CliMessage.prompt('Location for Dropbox-Uploader', DBU_LOCAL_FILEPATH)
           path.chop! if path.end_with?('/')
           path = '/usr/local/opt' if path.empty?
-        
+
           # If the entered directory exists, clone the repository.
           if File.directory?(path)
             valid_directory_chosen = true
@@ -114,7 +114,7 @@ module SifttterRedux
     def self.set_remote_target(path)
       @remote_path = path
     end
-    
+
     #  ----------------------------------------------------
     #  upload method
     #
@@ -135,6 +135,6 @@ module SifttterRedux
         fail ArgumentError, "Local and remote DBU targets cannot be nil"
       end
     end
-    
+
   end
 end

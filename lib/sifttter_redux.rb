@@ -15,7 +15,7 @@ require "sifttter_redux/sifttter.rb"
 module SifttterRedux
   using CliMessage
   using Configuration
-  
+
   #  ----------------------------------------------------
   #  Constants
   #  ----------------------------------------------------
@@ -25,9 +25,9 @@ module SifttterRedux
   SRD_CONFIG_FILEPATH = File.join(ENV["HOME"], ".sifttter_redux")
   SFT_LOCAL_FILEPATH = "/tmp/sifttter"
   SFT_REMOTE_FILEPATH = "/Apps/ifttt/sifttter"
-  
+
   @verbose_output = true
-  
+
   #  ----------------------------------------------------
   #  initialize_procedures method
   #
@@ -43,7 +43,7 @@ module SifttterRedux
 
     # Run the wizard to download Dropbox Uploader.
     DBU::install_wizard
-  
+
     # Collect other misc. preferences.
     CliMessage.section_block('COLLECTING PREFERENCES...') do
       pref_prompts = [
@@ -72,7 +72,7 @@ module SifttterRedux
           section: 'sifttter_redux'
         }
       ]
-  
+
       pref_prompts.each do |prompt|
         pref = CliMessage.prompt(prompt[:prompt], prompt[:default])
         Configuration[prompt[:section]].merge!(prompt[:key] => pref)
@@ -81,7 +81,7 @@ module SifttterRedux
 
     Configuration.save
   end
-  
+
   #  ----------------------------------------------------
   #  verbose method
   #
@@ -91,7 +91,7 @@ module SifttterRedux
   def self.verbose
     @verbose_output
   end
-  
+
   #  ----------------------------------------------------
   #  verbose= method
   #
@@ -101,5 +101,5 @@ module SifttterRedux
   def self.verbose=(verbose)
     @verbose_output = verbose
   end
-  
+
 end

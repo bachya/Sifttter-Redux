@@ -27,7 +27,7 @@
 # 0.2.4 (originally 0.2.3)
 
 * Updated some help documentation
-* Changed message re: no entries found to a warning state 
+* Changed message re: no entries found to a warning state
 
 # 0.2.2
 
@@ -38,7 +38,7 @@
 * Fixed a bug where the config manager would fail on certain platforms
 * Fixed a bug where the path to Dropbox Uploader became malformed
 
-# 0.2.0 
+# 0.2.0
 
 * Implemented catch-up mode
 

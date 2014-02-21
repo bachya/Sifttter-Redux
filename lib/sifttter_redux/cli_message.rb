@@ -4,7 +4,7 @@ module SifttterRedux
   #  Singleton to manage common CLI interfacing
   #  ======================================================
   module CliMessage
-  
+
     #  ----------------------------------------------------
     #  error method
     #
@@ -13,7 +13,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.error(m) puts "---> ERROR: #{ m }".red; end
-  
+
     #  ----------------------------------------------------
     #  info method
     #
@@ -38,16 +38,16 @@ module SifttterRedux
       else
         print "---> INFO: #{ m1 }".blue
       end
-      
+
       yield
-      
+
       if multiline
         self.info(m2)
       else
         puts m2.blue
       end
     end
-  
+
     #  ----------------------------------------------------
     #  prompt method
     #
@@ -66,7 +66,7 @@ module SifttterRedux
         return choice
       end
     end
-  
+
     #  ----------------------------------------------------
     #  section method
     #
@@ -75,7 +75,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.section(m) puts "#### #{ m }".purple; end
-    
+
     #  ----------------------------------------------------
     #  section_block method
     #
@@ -92,10 +92,10 @@ module SifttterRedux
       else
         print "#### #{ m }".purple
       end
-      
+
       yield
     end
-  
+
     #  ----------------------------------------------------
     #  success method
     #
@@ -104,7 +104,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.success(m) puts "---> SUCCESS: #{ m }".green; end
-  
+
     #  ----------------------------------------------------
     #  warning method
     #
@@ -113,6 +113,6 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.warning(m) puts "---> WARNING: #{ m }".yellow; end
-    
+
   end
 end
