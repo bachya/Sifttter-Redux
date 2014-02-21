@@ -5,6 +5,7 @@ module SifttterRedux
   #  Wrapper module for the Dropbox Uploader project
   #  ======================================================
   module DBU
+    CONFIG_FILEPATH = File.join(ENV['HOME'], '.dropbox_uploader')
     DEFAULT_MESSAGE = 'RUNNING DROPBOX UPLOADER'
 
     #  ----------------------------------------------------
@@ -57,6 +58,9 @@ module SifttterRedux
                 system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ path }"
               end
             end
+            
+            # If the user has never configured Dropbox Uploader, have them do it here.
+            system "#{ @dbu }" unless File.exists?(CONFIG_FILEPATH)
 
             Configuration.add_section('db_uploader')
             Configuration['db_uploader'].merge!('local_filepath' => path)
