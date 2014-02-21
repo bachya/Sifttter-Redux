@@ -1,6 +1,7 @@
 require "sifttter_redux/cli_message.rb"
 require "sifttter_redux/configuration.rb"
 require "sifttter_redux/date_range_maker.rb"
+require "sifttter_redux/extensions.rb"
 require "sifttter_redux/dbu.rb"
 require "sifttter_redux/os.rb"
 require "sifttter_redux/sifttter.rb"
@@ -15,9 +16,9 @@ module SifttterRedux
   using CliMessage
   using Configuration
   
-  #  ------------------------------------------------------
+  #  ----------------------------------------------------
   #  Constants
-  #  ------------------------------------------------------
+  #  ----------------------------------------------------
   DBU_LOCAL_FILEPATH = "/usr/local/opt"
   DO_REMOTE_FILEPATH = "/Apps/Day\\ One/Journal.dayone/entries"
   DO_LOCAL_FILEPATH = "/tmp/dayone"
@@ -27,13 +28,13 @@ module SifttterRedux
   
   @verbose_output = true
   
-  #  ------------------------------------------------------
+  #  ----------------------------------------------------
   #  initialize_procedures method
   #
-  #  Initializes Sifttter Redux by downloading and collecting
-  #  all necessary items and info.
+  #  Initializes Sifttter Redux by downloading and
+  #  collecting all necessary items and info.
   #  @return Void
-  #  ------------------------------------------------------
+  #  ----------------------------------------------------
   def self.init
     # Re-initialize the configuration data.
     Configuration.reset
@@ -44,7 +45,7 @@ module SifttterRedux
     DBU::install_wizard
   
     # Collect other misc. preferences.
-    CliMessage.section_block('COLLECTING PREFERENCES...', 'PREFERENCES COLLECTED') do
+    CliMessage.section_block('COLLECTING PREFERENCES...') do
       pref_prompts = [
         {
           prompt: 'Location for downloaded Sifttter files from Dropbox',
@@ -81,11 +82,24 @@ module SifttterRedux
     Configuration.save
   end
   
+  #  ----------------------------------------------------
+  #  verbose method
+  #
+  #  Returns the verbosity state.
+  #  @return Bool
+  #  ----------------------------------------------------
   def self.verbose
     @verbose_output
   end
   
+  #  ----------------------------------------------------
+  #  verbose= method
+  #
+  #  Sets the verbosity state.
+  #  @return Void
+  #  ----------------------------------------------------
   def self.verbose=(verbose)
     @verbose_output = verbose
   end
+  
 end

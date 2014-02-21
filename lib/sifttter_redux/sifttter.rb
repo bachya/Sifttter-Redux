@@ -7,16 +7,16 @@ module SifttterRedux
   module Sifttter
     using SifttterRedux::OS
     
-    #  ------------------------------------------------------
+    #  ----------------------------------------------------
     #  run_sifttter method
     #
     #  Modified form of Sifttter
     # 
-    #  Sifttter: An IFTTT-to-Day One Logger by Craig Eley 2014
+    #  Sifttter: An IFTTT-to-Day One Logger by Craig Eley
     #  Based on tp-dailylog.rb by Brett Terpstra 2012
-    #  @param date The date to use when scanning Sifttter files
+    #  @param date The date to use when scanning Sifttter
     #  @return Void
-    #  ------------------------------------------------------
+    #  ----------------------------------------------------
     def self.run(date)
       uuid_command = "uuidgen" if OS.mac?
       uuid_command = "uuid" if OS.linux?

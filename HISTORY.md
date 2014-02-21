@@ -1,3 +1,9 @@
+# 0.3.2 (2014-02-20)
+
+* Added verbose flag
+* Big refactorings = much nicer, more modular code
+* Removed dependency on colored gem
+
 # 0.3.1
 
 * Removed reliance on Rails methods for first-and-last-day-of-week calculations

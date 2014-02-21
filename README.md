@@ -385,8 +385,8 @@ $ bundle install --global
 
 Some functionality I would like to tackle for future releases:
 
+* Plugin architecture for services that IFTTT doesn't support
 * Interactive cron job installer
-* Verbose mode that more explicity tells the user what's currently going on
 * Smarter checking of the config file to see if an old version is being used
 
 ## Bugs and Feature Requests
