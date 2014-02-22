@@ -387,6 +387,7 @@ $ bundle install --global
 
 * Sifttter Redux makes no effort to see if entries already exist in Day One for a particular date. This means that if you're not careful, you might end up with duplicate entries. A future version will address this.
 * Multiline updates aren't caught by Sifttter Redux; it counts on content being on single lines.
+* If the contents of ~/.dropbox_uploader should ever be incorrect, Sifttter Redux fails without warning. Working on a fix, but it's slow-going.
 
 # Future Releases
 
