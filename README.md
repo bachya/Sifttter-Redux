@@ -365,7 +365,7 @@ See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Ch
 
 By installing an entry to a `crontab`, Sifttter Redux can be run automatically on a schedule. The aim of this project was to use a Raspberry Pi; as such, the instructions below are specifically catered to that platform. That said, it should be possible to install and configure on any *NIX platform.
 
-One issue that arises is the loading of the bundled gems; because `cron` runs in a limited environment, it does not automatically know where to find installed gems.
+One issue that arises is the loading of the bundled gems; because cron runs in a limited environment, it does not automatically know where to find installed gems.
 
 ## Using RVM
 
