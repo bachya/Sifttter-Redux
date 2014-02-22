@@ -3,9 +3,14 @@ Sifttter Redux
 
 Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal.
 
-Siftter Redux's primary difference is in its execution method: it intended to run autonomously so that it does not need to be manually activated. This allows IFTTT data to be synchronized to Day One on a schedule.
+Siftter Redux has several fundamental differences:
 
-The aim of this project was to use a Raspberry Pi; as such, the instructions below are specifically catered to that platform. That said, it should be possible to install and configure on any *NIX platform.
+* Interactive logging of today's events, or events in the past
+* "Catch Up" mode for logging several days' events at once
+* Packaged as a command line app, complete with documentation and help
+* Easy installation on cron for automated running
+
+For the fourth bullet point, the aim of this project was to use a Raspberry Pi; as such, the instructions below are specifically catered to that platform. That said, it should be possible to install and configure on any *NIX platform.
 
 # Prerequisites
 
