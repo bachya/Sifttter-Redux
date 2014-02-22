@@ -13,8 +13,6 @@ require 'sifttter_redux/version.rb'
 #  ======================================================
 
 module SifttterRedux
-  using CliMessage
-  using Configuration
 
   #  ----------------------------------------------------
   #  Constants
