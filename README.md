@@ -5,12 +5,10 @@ Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/
 
 Siftter Redux has several fundamental differences:
 
-* Interactive logging of today's events, or events in the past
+* Interactive logging of today's events or events in the past
 * "Catch Up" mode for logging several days' events at once
 * Packaged as a command line app, complete with documentation and help
 * Easy installation on cron for automated running
-
-For the fourth bullet point, the aim of this project was to use a Raspberry Pi; as such, the instructions below are specifically catered to that platform. That said, it should be possible to install and configure on any *NIX platform.
 
 # Prerequisites
 
@@ -365,7 +363,7 @@ See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Ch
 
 # Cron Job
 
-By installing an entry to the Raspberry Pi's `crontab`, Sifttter Redux can be run automatically on a schedule.
+By installing an entry to a `crontab`, Sifttter Redux can be run automatically on a schedule. The aim of this project was to use a Raspberry Pi; as such, the instructions below are specifically catered to that platform. That said, it should be possible to install and configure on any *NIX platform.
 
 One issue that arises is the loading of the bundled gems; because `cron` runs in a limited environment, it does not automatically know where to find installed gems.
 
