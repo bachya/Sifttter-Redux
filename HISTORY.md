@@ -1,3 +1,7 @@
+# 0.3.6 (2014-02-21)
+
+* Added logging via Methadone (key interactions logged to ~/.sifttter\_redux\_log)
+
 # 0.3.5 (2014-02-21)
 
 * Updated documentation and usage message

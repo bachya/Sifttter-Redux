@@ -383,7 +383,7 @@ $ bundle install --global
 # Known Issues
 
 * Sifttter Redux makes no effort to see if entries already exist in Day One for a particular date. This means that if you're not careful, you might end up with duplicate entries. A future version will address this.
-* At indeterminiate times (usually when in catch-up mode), Sifttter Redux will upload a file to Day One that Day One fails to read. Uncertain of the cause at this stage, but it's happened a few times.
+* Multiline updates aren't caught by Sifttter Redux; it counts on content being on single lines.
 
 # Future Releases
 
@@ -392,6 +392,7 @@ Some functionality I would like to tackle for future releases:
 * Plugin architecture for services that IFTTT doesn't support
 * Interactive cron job installer
 * Smarter checking of the config file to see if an old version is being used
+* Multiline Sifttter entries
 
 # Bugs and Feature Requests
 
@@ -420,6 +421,6 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 # Credits
 
 * Craig Eley for [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter") and for giving me the idea for Sifttter Redux
-* Dave Copeland for [GLI](https://github.com/davetron5000/gli "GLI")
+* Dave Copeland for [GLI](https://github.com/davetron5000/gli "GLI") and [Methadone]("https://github.com/davetron5000/methadone" Methadone)
 * Andrea Fabrizi for [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox Uploader")
 * Tom Preston-Werner and Lee Jarvis for [Chronic](https://github.com/mojombo/chronic "Chronic")

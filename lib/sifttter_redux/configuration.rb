@@ -33,7 +33,9 @@ module SifttterRedux
         @data[section_name] = {}
         @data[section_name].merge!(hash)
       else
-        fail ArgumentError, "Parameter is not a Hash: #{hash}"
+        error = "Parameter is not a Hash: #{hash}"
+        Methadone::CLILogging.error(error)
+        fail ArgumentError, error
       end
     end
 
@@ -48,7 +50,7 @@ module SifttterRedux
       if !self.section_exists?(section_name)
         @data[section_name] = {}
       else
-        CliMessage.warning("Can't create already-existing section: #{section_name}")
+        CLIMessage.warning("Can't create already-existing section: #{section_name}")
       end
     end
 
@@ -73,7 +75,7 @@ module SifttterRedux
       if self.section_exists?(section_name)
         @data.delete(section_name)
       else
-        CliMessage.warning("Can't delete non-existing section: #{section_name}")
+        CLIMessage.warning("Can't delete non-existing section: #{section_name}")
       end
     end
     

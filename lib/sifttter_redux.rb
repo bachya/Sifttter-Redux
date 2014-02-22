@@ -21,6 +21,7 @@ module SifttterRedux
   DO_REMOTE_FILEPATH = "/Apps/Day\\ One/Journal.dayone/entries"
   DO_LOCAL_FILEPATH = '/tmp/dayone'
   SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')
+  SRD_LOG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux_log')
   SFT_LOCAL_FILEPATH = '/tmp/sifttter'
   SFT_REMOTE_FILEPATH = '/Apps/ifttt/sifttter'
 
@@ -43,7 +44,7 @@ module SifttterRedux
     DBU::install_wizard
 
     # Collect other misc. preferences.
-    CliMessage.section_block('COLLECTING PREFERENCES...') do
+    CLIMessage.section_block('COLLECTING PREFERENCES...') do
       pref_prompts = [
         {
           prompt: 'Location for downloaded Sifttter files from Dropbox',
@@ -72,11 +73,13 @@ module SifttterRedux
       ]
 
       pref_prompts.each do |prompt|
-        pref = CliMessage.prompt(prompt[:prompt], prompt[:default])
+        pref = CLIMessage.prompt(prompt[:prompt], prompt[:default])
         Configuration[prompt[:section]].merge!(prompt[:key] => pref)
       end
     end
-
+    
+    Methadone::CLILogging.info("Configuration values: #{ Configuration.dump }")
+    
     Configuration.save
   end
 

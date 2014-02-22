@@ -17,7 +17,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.download
       if !@local_path.nil? && !@remote_path.nil?
-        CliMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+        CLIMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
           if SifttterRedux.verbose
             system "#{ @dbu } download #{ @remote_path } #{ @local_path }"
           else
@@ -25,7 +25,9 @@ module SifttterRedux
           end
         end
       else
-        fail ArgumentError, 'Local and remote DBU targets cannot be nil'
+        error = 'Local and remote DBU targets cannot be nil'
+        Methadone::CLILogging.error(error)
+        fail ArgumentError, error
       end
     end
 
@@ -39,10 +41,10 @@ module SifttterRedux
     def self.install_wizard
       valid_directory_chosen = false
 
-      CliMessage.section_block('CONFIGURING DROPBOX UPLOADER...') do
+      CLIMessage.section_block('CONFIGURING DROPBOX UPLOADER...') do
         until valid_directory_chosen
           # Prompt the user for a location to save Dropbox Uploader. '
-          path = CliMessage.prompt('Location for Dropbox-Uploader', DBU_LOCAL_FILEPATH)
+          path = CLIMessage.prompt('Location for Dropbox-Uploader', DBU_LOCAL_FILEPATH)
           path.chop! if path.end_with?('/')
           path = '/usr/local/opt' if path.empty?
 
@@ -52,15 +54,15 @@ module SifttterRedux
             path << '/Dropbox-Uploader'
 
             if File.directory?(path)
-              CliMessage.warning("Using pre-existing Dropbox Uploader at #{ path }...")
+              CLIMessage.warning("Using pre-existing Dropbox Uploader at #{ path }...")
             else
-              CliMessage.info_block("Downloading Dropbox Uploader to #{ path }...", 'Done.', true) do
+              CLIMessage.info_block("Downloading Dropbox Uploader to #{ path }...", 'Done.', true) do
                 system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ path }"
               end
             end
             
             # If the user has never configured Dropbox Uploader, have them do it here.
-            system "#{ @dbu }" unless File.exists?(CONFIG_FILEPATH)
+            CLIMessage.info_block('Initializing Dropbox Uploader...') { system "#{ @dbu }" } unless File.exists?(CONFIG_FILEPATH)
 
             Configuration.add_section('db_uploader')
             Configuration['db_uploader'].merge!('local_filepath' => path)
@@ -127,7 +129,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.upload
       if !@local_path.nil? && !@remote_path.nil?
-        CliMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+        CLIMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
           if SifttterRedux.verbose
             system "#{ @dbu } upload #{ @local_path } #{ @remote_path }"
           else
@@ -135,7 +137,9 @@ module SifttterRedux
           end
         end
       else
-        fail ArgumentError, 'Local and remote DBU targets cannot be nil'
+        error = 'Local and remote DBU targets cannot be nil'
+        Methadone::CLILogging.error(error)
+        fail ArgumentError, error
       end
     end
   end

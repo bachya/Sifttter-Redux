@@ -5,7 +5,7 @@ module SifttterRedux
   #  CliManager Module
   #  Singleton to manage common CLI interfacing
   #  ======================================================
-  module CliMessage
+  module CLIMessage
     #  ----------------------------------------------------
     #  error method
     #
@@ -13,7 +13,8 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.error(m)
+    def self.error(m, log = true)
+      Methadone::CLILogging.error(m) if log
       puts "---> ERROR: #{ m }".red
     end
 
@@ -24,7 +25,8 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.info(m)
+    def self.info(m, log = true)
+      Methadone::CLILogging.info(m) if log
       puts "---> INFO: #{ m }".blue
     end
 
@@ -37,10 +39,10 @@ module SifttterRedux
     #  @param multiline Whether the message should be multiline
     #  @return Void
     #  ----------------------------------------------------
-    def self.info_block(m1, m2 = 'Done.', multiline = false)
+    def self.info_block(m1, m2 = 'Done.', multiline = false, log = true)
       if block_given?
         if multiline
-          info(m1)
+          info(m1, log)
         else
           print "---> INFO: #{ m1 }".blue
         end
@@ -48,12 +50,14 @@ module SifttterRedux
         yield
 
         if multiline
-          info(m2)
+          info(m2, log)
         else
           puts m2.blue
         end
       else
-        fail ArgumentError, 'Did not specify a valid block'
+        error = 'Did not specify a valid block'
+        Methadone::CLILogging.error(error) if log
+        fail ArgumentError, error
       end
     end
 
@@ -83,7 +87,8 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.section(m)
+    def self.section(m, log = true)
+      Methadone::CLILogging.info(m) if log
       puts "#### #{ m }".purple
     end
 
@@ -97,17 +102,19 @@ module SifttterRedux
     #  @param multiline A multiline message or not
     #  @return Void
     #  ----------------------------------------------------
-    def self.section_block(m, multiline = true)
+    def self.section_block(m, multiline = true, log = true)
       if block_given?
         if multiline
-          section(m)
+          section(m, log)
         else
           print "#### #{ m }".purple
         end
 
         yield
       else
-        fail ArgumentError, 'Did not specify a valid block'
+        error = 'Did not specify a valid block'
+        Methadone::CLILogging.error(error) if log
+        fail ArgumentError, error
       end
     end
 
@@ -118,7 +125,8 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.success(m)
+    def self.success(m, log = true)
+      Methadone::CLILogging.info(m) if log
       puts "---> SUCCESS: #{ m }".green
     end
 
@@ -129,7 +137,8 @@ module SifttterRedux
     #  @param m The message to output
     #  @return Void
     #  ----------------------------------------------------
-    def self.warning(m)
+    def self.warning(m, log = true)
+      Methadone::CLILogging.warn(m) if log
       puts "---> WARNING: #{ m }".yellow
     end
   end

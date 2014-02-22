@@ -35,9 +35,11 @@
 
 require 'fileutils'
 require 'gli'
+require 'methadone'
 require 'sifttter_redux'
 
 include GLI::App
+include Methadone::CLILogging
 include SifttterRedux
 
 program_desc 'Sifttter Redux
@@ -62,14 +64,18 @@ switch(
 #  ======================================================
 
 pre do |global, command, options, args|
+  # Load SifttterRedux configuration module.
   Configuration.load(SRD_CONFIG_FILEPATH)
-  DBU.load(
-    File.join(
-      Configuration['db_uploader']['local_filepath'],
-      'dropbox_uploader.sh'
-    )
-  )
+  
+  # Load Dropbox Uploader module.
+  DBU.load(File.join(Configuration['db_uploader']['local_filepath'], 'dropbox_uploader.sh'))
 
+  # Load Methadone CLILogging module.
+  Methadone::CLILogging.change_logger(Methadone::CLILogger.new(
+    File.open(SRD_LOG_FILEPATH, 'a+')
+  ))
+
+  # Initialize if the config file doesn't exist.
   init unless File.exists?(SRD_CONFIG_FILEPATH)
   true
 end
@@ -131,7 +137,7 @@ command :exec do |c|
 
     SifttterRedux.verbose = global_options[:verbose] || options[:verbose]
 
-    CliMessage.section_block('EXECUTING...') do
+    CLIMessage.section_block('EXECUTING...') do
       if options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t]
 
         command_complete = false
@@ -166,11 +172,11 @@ command :exec do |c|
             dates = DateRangeMaker.range(options[:f], options[:t], options[:i])
 
             if dates.last > Date.today
-              CliMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")
+              CLIMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")
               dates = (dates.first..Date.today)
             end
           rescue ArgumentError => e
-            CliMessage.error(e)
+            CLIMessage.error(e)
           end
         end
       else
@@ -183,10 +189,10 @@ command :exec do |c|
 
         if first_date == second_date
           date_string = first_date.strftime('%B %d, %Y')
-          CliMessage.info("Creating entry for #{ date_string }...")
+          CLIMessage.info("Creating entry for #{ date_string }...")
         else
           date_string = "#{ first_date.strftime('%B %d, %Y') } to #{ second_date.strftime('%B %d, %Y') }"
-          CliMessage.info("Creating entries for dates from #{ date_string }...")
+          CLIMessage.info("Creating entries for dates from #{ date_string }...")
         end
 
         DBU.local_target = '/tmp/sifttter'
@@ -212,7 +218,7 @@ command :exec do |c|
           Configuration['sifttter_redux']['sifttter_local_filepath']
         ]
 
-        CliMessage.info_block('Removing temporary local files...') { dirs.each { |d| FileUtils.rm_rf(d) } }
+        CLIMessage.info_block('Removing temporary local files...') { dirs.each { |d| FileUtils.rm_rf(d) } }
       end
     end
   end
@@ -227,15 +233,13 @@ end
 desc 'Install and initialize dependencies'
 command :init do |c|
   c.action do |global_options, options, args|
-
-    CliMessage.section_block('INITIALIZING...') do
+    CLIMessage.section_block('INITIALIZING...') do
       if File.exists?(Configuration.config_path)
-        SifttterRedux.init if CliMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", 'N').downcase == 'y'
+        SifttterRedux.init if CLIMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", 'N').downcase == 'y'
       else
         SifttterRedux.init
       end
     end
-
   end
 end
 

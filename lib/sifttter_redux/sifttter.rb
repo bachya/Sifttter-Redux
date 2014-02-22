@@ -77,7 +77,7 @@ module SifttterRedux
       end
 
       if projects.length <=0
-      	CliMessage.warning('No entries found...')
+      	CLIMessage.warning('No entries found...')
       end
 
       if projects.length > 0
@@ -91,7 +91,7 @@ module SifttterRedux
       	fh = File.new(File.expand_path(Configuration['sifttter_redux']['dayone_local_filepath'] + '/' + uuid + '.doentry'), 'w+')
       	fh.puts template.result(binding)
       	fh.close
-      	CliMessage.success("Entry logged for #{ date_for_title }...")
+      	CLIMessage.success("Entry logged for #{ date_for_title }...")
       end
     end
   end

@@ -1,5 +1,5 @@
-require "test_helper"
-require File.join(File.dirname(__FILE__), "..", "lib/sifttter_redux/configuration.rb")
+require 'test_helper'
+require File.join(File.dirname(__FILE__), '..', 'lib/sifttter_redux/configuration.rb')
 
 class ConfigurationTest < Test::Unit::TestCase
   
