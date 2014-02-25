@@ -1,3 +1,7 @@
+# 0.3.6 (2014-02-25)
+
+* Fixed a bug in which Sifttter-Redux would fail on Ruby 2.0.0 (and potentially others)
+
 # 0.3.6 (2014-02-21)
 
 * Added logging via Methadone (key interactions logged to ~/.sifttter\_redux\_log)

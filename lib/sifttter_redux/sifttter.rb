@@ -5,7 +5,7 @@ module SifttterRedux
   #  Wrapper module for Sifttter itself
   #  ======================================================
   module Sifttter
-    using SifttterRedux::OS
+    include SifttterRedux::OS
 
     #  ----------------------------------------------------
     #  run_sifttter method
