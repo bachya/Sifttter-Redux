@@ -1,4 +1,4 @@
-# 0.3.6 (2014-02-25)
+# 0.3.7 (2014-02-25)
 
 * Fixed a bug in which Sifttter-Redux would fail on Ruby 2.0.0 (and potentially others)
 
