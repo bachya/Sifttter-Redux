@@ -19,7 +19,7 @@ spec = Gem::Specification.new do |s|
   
   s.license = 'MIT'
   s.rdoc_options = ['--charset=UTF-8']
-  s.extra_rdoc_files = %w[README.md HISTORY.md LICENSE]
+  s.extra_rdoc_files = %w[README.md HISTORY.md LICENSE.txt]
   
   s.add_development_dependency('rake', '~> 0')
   s.add_runtime_dependency('chronic', '0.10.2')
