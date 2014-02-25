@@ -1,3 +1,8 @@
+# 0.3.9 (2014-02-25)
+
+* Smarter checking for initialization before execution
+* Fixed a bug in which the config file wouldn't be properly written to
+
 # 0.3.8 (2014-02-25)
 
 * Upgraded to Methadone 1.3.2 in gemspec

@@ -61,12 +61,11 @@ module SifttterRedux
               end
             end
 
+            # If the user has never configured Dropbox Uploader, have them do it here.
+            CLIMessage.info_block('Initializing Dropbox Uploader...') { system "#{ File.join(path, 'dropbox_uploader.sh') }" } unless File.exists?(CONFIG_FILEPATH)
+
             Configuration.add_section('db_uploader')
             Configuration['db_uploader'].merge!('local_filepath' => path)
-            load(File.join(path, 'dropbox_uploader.sh'))
-            
-            # If the user has never configured Dropbox Uploader, have them do it here.
-            CLIMessage.info_block('Initializing Dropbox Uploader...') { system "#{ @dbu }" } unless File.exists?(CONFIG_FILEPATH)
           else
             puts "Sorry, but #{ path } isn't a valid directory."
           end

@@ -67,11 +67,17 @@ pre do |global, command, options, args|
   # Load SifttterRedux configuration module.
   Configuration.load(SRD_CONFIG_FILEPATH)
 
-  # Load Dropbox Uploader module.
-  DBU.load(File.join(Configuration['db_uploader']['local_filepath'], 'dropbox_uploader.sh')) if File.exists?(SRD_CONFIG_FILEPATH)
-
   # Load Methadone CLILogging module.
   Methadone::CLILogging.change_logger(Methadone::CLILogger.new(SRD_LOG_FILEPATH, SRD_LOG_FILEPATH))
+
+  # Force the user to initialize if they try to execute first.
+  if command.name_for_help[0] == 'exec' && !File.exists?(SRD_CONFIG_FILEPATH)
+    CLIMessage.info('You need to initialize Sifttter Redux first...')
+    SifttterRedux.init
+  end
+  
+  # Load Dropbox Uploader module.
+  DBU.load(File.join(Configuration['db_uploader']['local_filepath'], 'dropbox_uploader.sh')) if File.exists?(SRD_CONFIG_FILEPATH)
   
   true
 end
