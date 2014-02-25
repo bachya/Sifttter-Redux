@@ -1,3 +1,9 @@
+# 0.3.8 (2014-02-25)
+
+* Upgraded to Methadone 1.3.2 in gemspec
+* Redirected all Methadone logging to file
+* Fixed a bug in which initailization would fail under certain circumstances
+
 # 0.3.7 (2014-02-25)
 
 * Fixed a bug in which Sifttter-Redux would fail on Ruby 2.0.0 (and potentially others)
