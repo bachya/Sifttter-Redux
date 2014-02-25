@@ -3,6 +3,7 @@
 * Upgraded to Methadone 1.3.2 in gemspec
 * Redirected all Methadone logging to file
 * Fixed a bug in which initailization would fail under certain circumstances
+* Fixed a bug in which Dropbox Uploader would fail to initialize properly
 
 # 0.3.7 (2014-02-25)
 

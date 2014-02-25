@@ -16,7 +16,13 @@ module SifttterRedux
     #  @return Hash
     #  ----------------------------------------------------
     def self.[](section_name)
-      @data[section_name]
+      if section_exists?(section_name)
+        @data[section_name]
+      else
+        error = "Section does not exist: #{section_name}"
+        Methadone::CLILogging.error(error)
+        fail ArgumentError, error
+      end
     end
     
     #  ----------------------------------------------------
