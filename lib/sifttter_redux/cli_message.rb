@@ -70,14 +70,17 @@ module SifttterRedux
     #  @param default The default option
     #  @return String
     #  ----------------------------------------------------
-    def self.prompt(prompt, default)
+    def self.prompt(prompt, default, log = true)
       print "#{ prompt } [default: #{ default }]: "
       choice = $stdin.gets.chomp
       if choice.empty?
-        return default
+        r = default
       else
-        return choice
+        r = choice
       end
+
+      Methadone::CLILogging.info("Answer to '#{prompt}': #{r}") if log
+      r
     end
 
     #  ----------------------------------------------------

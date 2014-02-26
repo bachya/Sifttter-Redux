@@ -31,10 +31,6 @@ class CLIMessageTest < Test::Unit::TestCase
     end
   end
 
-  # def test_prompt
-  #   assert_equal(SifttterRedux::CLIMessage.prompt('Pick the default option', 'default'), 'default')
-  # end
-
   def test_section_message
     assert_output('#### test'.purple + "\n") { SifttterRedux::CLIMessage.section('test', false) }
   end
