@@ -197,8 +197,8 @@ command :exec do |c|
           CLIMessage.info("Creating entries for dates from #{ date_string }...")
         end
 
-        DBU.local_target = '/tmp/sifttter'
-        DBU.remote_target = '/Apps/ifttt/sifttter'
+        DBU.local_target = Configuration['sifttter_redux']['sifttter_local_filepath']
+        DBU.remote_target = Configuration['sifttter_redux']['sifttter_remote_filepath']
         DBU.message = 'Downloading Sifttter files...'
         DBU.download
 
