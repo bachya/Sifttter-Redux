@@ -48,4 +48,20 @@ class CLIMessageTest < Test::Unit::TestCase
   def test_warning_message
     assert_output('---> WARNING: test'.yellow + "\n") { SifttterRedux::CLIMessage.warning('test', false) }
   end
+  
+  def test_prompt
+    with_stdin do |answer|
+      answer.puts 'default'
+      assert_equal(SifttterRedux::CLIMessage.prompt('Hit enter to give the default response', 'default'), 'default')
+    end
+  end
+  
+  def with_stdin
+    stdin = $stdin             # remember $stdin
+    $stdin, write = IO.pipe    # create pipe assigning its "read end" to $stdin
+    yield write                # pass pipe's "write end" to block
+  ensure
+    write.close                # close pipe
+    $stdin = stdin             # restore $stdin
+  end
 end
