@@ -1,3 +1,7 @@
+# 0.4.0 (2014-02-26)
+
+* Removed some hardcoded values
+
 # 0.3.9 (2014-02-25)
 
 * Smarter checking for initialization before execution
