@@ -1,4 +1,4 @@
-Sifttter Redux
+Sifttter Redux [![Build Status](https://travis-ci.org/bachya/Sifttter-Redux.png?branch=master)](https://travis-ci.org/bachya/Sifttter-Redux)
 ==============
 
 Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal.
