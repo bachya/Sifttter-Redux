@@ -40,8 +40,8 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.install_wizard(already_initialized = false)
       CLIMessage::section_block('CONFIGURING DROPBOX UPLOADER...') do
-        # Prompt the user for a location to save Dropbox Uploader. '
-        path = CLIMessage::prompt('Location for Dropbox-Uploader', already_initialized ? Configuration['db_uploader']['base_filepath'] : DBU_LOCAL_FILEPATH)
+        # Prompt the user for a location to save Dropbox Uploader.
+        path = CLIMessage::prompt('Location for Dropbox-Uploader', already_initialized && !Configuration['db_uploader']['base_filepath'].nil? ? Configuration['db_uploader']['base_filepath'] : DBU_LOCAL_FILEPATH)
         path.chop! if path.end_with?('/')
 
         # If the entered directory exists, clone the repository.

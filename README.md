@@ -412,7 +412,7 @@ $ bundle install --global
 
 # Future Releases
 
-Enhancement requests (my own or those submitted by others) can be found on the [Isses](https://github.com/bachya/Sifttter-Redux/issues?labels=enhancement&state=open "Open Enhancements") page.
+Enhancement requests (my own or those submitted by others) can be found on the [Issues Page](https://github.com/bachya/Sifttter-Redux/issues?labels=enhancement&state=open "Open Enhancements").
 
 # Bugs and Feature Requests
 
