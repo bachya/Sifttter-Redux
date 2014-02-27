@@ -404,15 +404,9 @@ Another option is to install the bundled gems to the global gemset:
 $ bundle install --global
 ```
 
-# Known Issues
+# Known Issues & Future Releases
 
-* Sifttter Redux makes no effort to see if entries already exist in Day One for a particular date. This means that if you're not careful, you might end up with duplicate entries. A future version will address this.
-* Multiline updates aren't caught by Sifttter Redux; it counts on content being on single lines.
-* If the contents of `~/.dropbox_uploader` should ever be incorrect, Sifttter Redux fails without warning. Working on a fix, but it's slow-going.
-
-# Future Releases
-
-Enhancement requests (my own or those submitted by others) can be found on the [Issues Page](https://github.com/bachya/Sifttter-Redux/issues?labels=enhancement&state=open "Open Enhancements").
+Bugs, issues, and enhancement requests (my own or those submitted by others) can be found on the [Issues Page](https://github.com/bachya/Sifttter-Redux/issues "Open Items").
 
 # Bugs and Feature Requests
 
