@@ -47,7 +47,7 @@ SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-    0.4.0
+    0.4.1
 
 GLOBAL OPTIONS
     --help         - Show this message
@@ -58,6 +58,27 @@ COMMANDS
     exec - Execute the script
     help - Shows a list of commands or help for one command
     init - Install and initialize dependencies
+```
+
+Note that each command's options can be revealed by adding the `--help` switch after the command. For example:
+
+```
+$ srd exec --help
+NAME
+    exec - Execute the script
+
+SYNOPSIS
+    srd [global options] exec [command options]
+
+COMMAND OPTIONS
+    -c             - Run catch-up mode from the beginning of the week to yesterday
+    -f arg         - Run catch-up mode with this start date (default: none)
+    -i             - Include today's date in catch-up
+    -n arg         - Run catch-up mode for the last N days (default: none)
+    -t arg         - Run catch-up mode with this end date (must also have -f) (default: none)
+    --[no-]verbose - Turns on verbose output
+    -w arg         - Run catch-up mode for the last N weeks (default: none)
+    -y             - Run catch-up mode for yesterday
 ```
 
 ## Initialization

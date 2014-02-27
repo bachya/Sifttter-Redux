@@ -64,20 +64,33 @@ switch(
 #  ======================================================
 
 pre do |global, command, options, args|
+  
   # Load SifttterRedux configuration module.
-  Configuration.load(SRD_CONFIG_FILEPATH)
+  Configuration::load(SRD_CONFIG_FILEPATH)
 
   # Load Methadone CLILogging module.
-  Methadone::CLILogging.change_logger(Methadone::CLILogger.new(SRD_LOG_FILEPATH, SRD_LOG_FILEPATH))
+  Methadone::CLILogging::change_logger(Methadone::CLILogger.new(SRD_LOG_FILEPATH, SRD_LOG_FILEPATH))  
 
-  # Force the user to initialize if they try to execute first.
-  if command.name_for_help[0] == 'exec' && !File.exists?(SRD_CONFIG_FILEPATH)
-    CLIMessage.info('You need to initialize Sifttter Redux first...')
-    SifttterRedux.init
+  if File.exists?(SRD_CONFIG_FILEPATH)
+    # If the config file needs updating, force the user to do that first.
+    if Configuration['sifttter_redux']['version'].nil? || Gem::Version.new(Configuration['sifttter_redux']['version']) < Gem::Version.new(NEWEST_CONFIG_VERSION)
+      CLIMessage::info('This version needs to make some config changes.')
+      CLIMessage::info("Don't worry; when prompted, original values to existing config options will be presented.")
+      CLIMessage::prompt("Press enter to continue")
+
+      SifttterRedux::init
+      exit!
+    end
+  else
+    # Force the user to initialize if they try to execute first.
+    CLIMessage::info('You need to initialize Sifttter Redux first...') unless command.name_for_help[0] == 'init'
+
+    SifttterRedux::init
+    exit!
   end
   
   # Load Dropbox Uploader module.
-  DBU.load(File.join(Configuration['db_uploader']['local_filepath'], 'dropbox_uploader.sh')) if File.exists?(SRD_CONFIG_FILEPATH)
+  DBU.load(Configuration['db_uploader']['exe_filepath']) if File.exists?(SRD_CONFIG_FILEPATH)
   
   true
 end
@@ -139,7 +152,7 @@ command :exec do |c|
 
     SifttterRedux.verbose = global_options[:verbose] || options[:verbose]
 
-    CLIMessage.section_block('EXECUTING...') do
+    CLIMessage::section_block('EXECUTING...') do
       if options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t]
 
         command_complete = false
@@ -174,11 +187,11 @@ command :exec do |c|
             dates = DateRangeMaker.range(options[:f], options[:t], options[:i])
 
             if dates.last > Date.today
-              CLIMessage.warning("Ignoring overextended end date and using today's date (#{ Date.today })")
+              CLIMessage::warning("Ignoring overextended end date and using today's date (#{ Date.today })")
               dates = (dates.first..Date.today)
             end
           rescue ArgumentError => e
-            CLIMessage.error(e)
+            CLIMessage::error(e)
           end
         end
       else
@@ -191,10 +204,10 @@ command :exec do |c|
 
         if first_date == second_date
           date_string = first_date.strftime('%B %d, %Y')
-          CLIMessage.info("Creating entry for #{ date_string }...")
+          CLIMessage::info("Creating entry for #{ date_string }...")
         else
           date_string = "#{ first_date.strftime('%B %d, %Y') } to #{ second_date.strftime('%B %d, %Y') }"
-          CLIMessage.info("Creating entries for dates from #{ date_string }...")
+          CLIMessage::info("Creating entries for dates from #{ date_string }...")
         end
 
         DBU.local_target = Configuration['sifttter_redux']['sifttter_local_filepath']
@@ -208,7 +221,7 @@ command :exec do |c|
 
         # Upload any Day One entries to Dropbox (if there are any).
         unless Dir[Configuration['sifttter_redux']['dayone_local_filepath'] + '/*'].empty?
-          DBU.local_target = "#{Configuration['sifttter_redux']['dayone_local_filepath']}/*"
+          DBU.local_target = "#{ Configuration['sifttter_redux']['dayone_local_filepath'] }/*"
           DBU.remote_target = Configuration['sifttter_redux']['dayone_remote_filepath']
           DBU.message = 'Uploading Day One entries to Dropbox...'
           DBU.upload
@@ -220,7 +233,7 @@ command :exec do |c|
           Configuration['sifttter_redux']['sifttter_local_filepath']
         ]
 
-        CLIMessage.info_block('Removing temporary local files...') { dirs.each { |d| FileUtils.rm_rf(d) } }
+        CLIMessage::info_block('Removing temporary local files...') { dirs.each { |d| FileUtils.rm_rf(d) } }
       end
     end
   end
@@ -234,12 +247,18 @@ end
 #  ------------------------------------------------------
 desc 'Install and initialize dependencies'
 command :init do |c|
+  
+  c.switch(
+    [:s],
+    desc: 'Run init from scratch (i.e., clear out all values from configuration)'
+  )
+  
   c.action do |global_options, options, args|
-    CLIMessage.section_block('INITIALIZING...') do
-      if File.exists?(Configuration.config_path)
-        SifttterRedux.init if CLIMessage.prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", 'N').downcase == 'y'
+    CLIMessage::section_block('INITIALIZING...') do
+      if File.exists?(Configuration::config_path) && !options[:s]
+        SifttterRedux::init(true) if CLIMessage::prompt("It looks like you've already initialized Sifttter Redux. Do you want to re-initialize?", 'N').downcase == 'y'
       else
-        SifttterRedux.init
+        SifttterRedux::init
       end
     end
   end

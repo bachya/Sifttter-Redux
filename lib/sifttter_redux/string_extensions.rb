@@ -10,7 +10,7 @@ class String
   #  @return Void
   #  ----------------------------------------------------
   def colorize(color_code)
-    "\e[#{color_code}m#{self}\e[0m"
+    "\e[#{ color_code }m#{ self }\e[0m"
   end
 
   #  ----------------------------------------------------
