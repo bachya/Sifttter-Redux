@@ -1,3 +1,7 @@
+# 0.4.2 (2014-02-26)
+
+* Fixed regression with Dropbox-Uploader
+
 # 0.4.1 (2014-02-26)
 
 * Added `-s` flag to `init` command for initialization from scratch

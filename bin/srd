@@ -78,7 +78,7 @@ pre do |global, command, options, args|
       CLIMessage::info("Don't worry; when prompted, original values to existing config options will be presented.")
       CLIMessage::prompt("Press enter to continue")
 
-      SifttterRedux::init
+      SifttterRedux::init(true)
       exit!
     end
   else
