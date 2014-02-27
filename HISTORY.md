@@ -1,3 +1,9 @@
+# 0.4.1 (2014-02-26)
+
+* Added `-s` flag to `init` command for initialization from scratch
+* Added gem version to config file (for reference going forward)
+* Added message to prompt users to re-init on upgrade
+
 # 0.4.0 (2014-02-26)
 
 * Removed some hardcoded values
