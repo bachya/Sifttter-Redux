@@ -17,7 +17,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.download
       if !@local_path.nil? && !@remote_path.nil?
-        CLIMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+        CLIMessage::info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
           if SifttterRedux.verbose
             system "#{ @dbu } download #{ @remote_path } #{ @local_path }"
           else
@@ -38,37 +38,32 @@ module SifttterRedux
     #  local filesystem.
     #  @return Void
     #  ----------------------------------------------------
-    def self.install_wizard
-      valid_directory_chosen = false
+    def self.install_wizard(already_initialized = false)
+      CLIMessage::section_block('CONFIGURING DROPBOX UPLOADER...') do
+        # Prompt the user for a location to save Dropbox Uploader. '
+        path = CLIMessage::prompt('Location for Dropbox-Uploader', already_initialized ? Configuration['db_uploader']['base_filepath'] : DBU_LOCAL_FILEPATH)
+        path.chop! if path.end_with?('/')
 
-      CLIMessage.section_block('CONFIGURING DROPBOX UPLOADER...') do
-        until valid_directory_chosen
-          # Prompt the user for a location to save Dropbox Uploader. '
-          path = CLIMessage.prompt('Location for Dropbox-Uploader', DBU_LOCAL_FILEPATH)
-          path.chop! if path.end_with?('/')
-          path = '/usr/local/opt' if path.empty?
+        # If the entered directory exists, clone the repository.
+        if File.directory?(path)
+          dbu_path = File.join(path, 'Dropbox-Uploader')
+          executable_path = File.join(dbu_path, 'dropbox_uploader.sh')
 
-          # If the entered directory exists, clone the repository.
-          if File.directory?(path)
-            valid_directory_chosen = true
-            path << '/Dropbox-Uploader'
-
-            if File.directory?(path)
-              CLIMessage.warning("Using pre-existing Dropbox Uploader at #{ path }...")
-            else
-              CLIMessage.info_block("Downloading Dropbox Uploader to #{ path }...", 'Done.', true) do
-                system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ path }"
-              end
-            end
-
-            # If the user has never configured Dropbox Uploader, have them do it here.
-            CLIMessage.info_block('Initializing Dropbox Uploader...') { system "#{ File.join(path, 'dropbox_uploader.sh') }" } unless File.exists?(CONFIG_FILEPATH)
-
-            Configuration.add_section('db_uploader')
-            Configuration['db_uploader'].merge!('local_filepath' => path)
+          if File.directory?(dbu_path)
+            CLIMessage::warning("Using pre-existing Dropbox Uploader at #{ dbu_path }...")
           else
-            puts "Sorry, but #{ path } isn't a valid directory."
+            CLIMessage::info_block("Downloading Dropbox Uploader to #{ dbu_path }...", 'Done.', true) do
+              system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ dbu_path }"
+            end
           end
+
+          # If the user has never configured Dropbox Uploader, have them do it here.
+          CLIMessage::info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" } unless File.exists?(CONFIG_FILEPATH)
+
+          Configuration::add_section('db_uploader') unless Configuration::section_exists?('db_uploader')
+          Configuration['db_uploader'].merge!('base_filepath' => path, 'dbu_filepath' => dbu_path, 'exe_filepath' => executable_path)
+        else
+          CLIMessage::error("Sorry, but #{ path } isn't a valid directory.")
         end
       end
     end
@@ -129,7 +124,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.upload
       if !@local_path.nil? && !@remote_path.nil?
-        CLIMessage.info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+        CLIMessage::info_block(@message ||= DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
           if SifttterRedux.verbose
             system "#{ @dbu } upload #{ @local_path } #{ @remote_path }"
           else
