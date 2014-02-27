@@ -412,12 +412,7 @@ $ bundle install --global
 
 # Future Releases
 
-Some functionality I would like to tackle for future releases:
-
-* Plugin architecture for services that IFTTT doesn't support
-* Interactive cron job installer
-* Smarter checking of the config file to see if an old version is being used
-* Multiline Sifttter entries
+Enhancement requests (my own or those submitted by others) can be found on the [Isses](https://github.com/bachya/Sifttter-Redux/issues?labels=enhancement&state=open "Open Enhancements") page.
 
 # Bugs and Feature Requests
 
