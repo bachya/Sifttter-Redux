@@ -1,3 +1,7 @@
+# 0.4.4 (2014-02-28)
+
+* Fixed a prompt error when providing Dropbox-Uploader with a bad path
+
 # 0.4.3 (2014-02-26)
 
 * Fixed regression with Dropbox-Uploader

@@ -39,31 +39,37 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.install_wizard(already_initialized = false)
+      valid_path_chosen = false
+      
       CLIMessage::section_block('CONFIGURING DROPBOX UPLOADER...') do
-        # Prompt the user for a location to save Dropbox Uploader.
-        path = CLIMessage::prompt('Location for Dropbox-Uploader', already_initialized && !Configuration['db_uploader']['base_filepath'].nil? ? Configuration['db_uploader']['base_filepath'] : DBU_LOCAL_FILEPATH)
-        path.chop! if path.end_with?('/')
+        until valid_path_chosen
+          # Prompt the user for a location to save Dropbox Uploader.
+          path = CLIMessage::prompt('Location for Dropbox-Uploader', already_initialized && !Configuration['db_uploader']['base_filepath'].nil? ? Configuration['db_uploader']['base_filepath'] : DBU_LOCAL_FILEPATH)
+          path.chop! if path.end_with?('/')
+          
+          # If the entered directory exists, clone the repository.
+          if File.directory?(path)
+            valid_path_chosen = true
+            
+            dbu_path = File.join(path, 'Dropbox-Uploader')
+            executable_path = File.join(dbu_path, 'dropbox_uploader.sh')
 
-        # If the entered directory exists, clone the repository.
-        if File.directory?(path)
-          dbu_path = File.join(path, 'Dropbox-Uploader')
-          executable_path = File.join(dbu_path, 'dropbox_uploader.sh')
-
-          if File.directory?(dbu_path)
-            CLIMessage::warning("Using pre-existing Dropbox Uploader at #{ dbu_path }...")
-          else
-            CLIMessage::info_block("Downloading Dropbox Uploader to #{ dbu_path }...", 'Done.', true) do
-              system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ dbu_path }"
+            if File.directory?(dbu_path)
+              CLIMessage::warning("Using pre-existing Dropbox Uploader at #{ dbu_path }...")
+            else
+              CLIMessage::info_block("Downloading Dropbox Uploader to #{ dbu_path }...", 'Done.', true) do
+                system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ dbu_path }"
+              end
             end
+
+            # If the user has never configured Dropbox Uploader, have them do it here.
+            CLIMessage::info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" } unless File.exists?(CONFIG_FILEPATH)
+
+            Configuration::add_section('db_uploader') unless Configuration::section_exists?('db_uploader')
+            Configuration['db_uploader'].merge!('base_filepath' => path, 'dbu_filepath' => dbu_path, 'exe_filepath' => executable_path)
+          else
+            CLIMessage::error("Sorry, but #{ path } isn't a valid directory.")
           end
-
-          # If the user has never configured Dropbox Uploader, have them do it here.
-          CLIMessage::info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" } unless File.exists?(CONFIG_FILEPATH)
-
-          Configuration::add_section('db_uploader') unless Configuration::section_exists?('db_uploader')
-          Configuration['db_uploader'].merge!('base_filepath' => path, 'dbu_filepath' => dbu_path, 'exe_filepath' => executable_path)
-        else
-          CLIMessage::error("Sorry, but #{ path } isn't a valid directory.")
         end
       end
     end
