@@ -42,6 +42,16 @@ class String
   def purple
     colorize(35)
   end
+  
+  #  ----------------------------------------------------
+  #  rchomp method
+  #
+  #  Removes a character from the beginning of a string
+  #  @return String
+  #  ----------------------------------------------------
+  def rchomp(sep = $/)
+    self.start_with?(sep) ? self[sep.size..-1] : self
+  end
 
   #  ----------------------------------------------------
   #  red method
