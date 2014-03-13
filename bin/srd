@@ -35,6 +35,7 @@
 require 'gli'
 require 'methadone'
 require 'sifttter_redux'
+require 'securerandom'
 
 include GLI::App
 include Methadone::CLILogging

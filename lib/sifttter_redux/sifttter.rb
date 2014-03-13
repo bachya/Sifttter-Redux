@@ -5,8 +5,6 @@ module SifttterRedux
   #  Wrapper module for Sifttter itself
   #  ======================================================
   module Sifttter
-    include SifttterRedux::OS
-
     #  ----------------------------------------------------
     #  run_sifttter method
     #
@@ -18,9 +16,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.run(date)
-      uuid_command = 'uuidgen' if OS.mac?
-      uuid_command = 'uuid' if OS.linux?
-      uuid = %x{#{ uuid_command }}.gsub(/-/, '').strip
+      uuid = SecureRandom.uuid.upcase.gsub(/-/, '').strip
 
       date_for_title = date.strftime('%B %d, %Y')
       datestamp = date.to_time.utc.iso8601
