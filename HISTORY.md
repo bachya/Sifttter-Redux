@@ -1,3 +1,7 @@
+# 0.4.5
+
+* Added Methadone logging for prompts
+
 # 0.4.4 (2014-02-28)
 
 * Fixed a prompt error when providing Dropbox-Uploader with a bad path

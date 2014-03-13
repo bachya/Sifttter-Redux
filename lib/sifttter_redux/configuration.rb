@@ -8,6 +8,9 @@ module SifttterRedux
   #  into which they get stored.
   #  ======================================================
   module Configuration
+    #  ====================================================
+    #  Methods
+    #  ====================================================
     #  ----------------------------------------------------
     #  [] method
     #
@@ -29,7 +32,7 @@ module SifttterRedux
     #  []= method
     #
     #  Assigns the passed hash to the section. NOTE THAT THE
-    #  PREVIOUS CONTENTS OF THAT SECTION ARE DELETED.
+    #  PREVIOUS CONTENTS OF THAT SECTION ARE OVERWRITTEN.
     #  @param section_name The section in which to look
     #  @param hash The Hash that gets merged into the section
     #  @return Void

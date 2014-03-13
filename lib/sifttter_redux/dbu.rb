@@ -5,9 +5,15 @@ module SifttterRedux
   #  Wrapper module for the Dropbox Uploader project
   #  ======================================================
   module DBU
+    #  ====================================================
+    #  Constants
+    #  ====================================================
     CONFIG_FILEPATH = File.join(ENV['HOME'], '.dropbox_uploader')
     DEFAULT_MESSAGE = 'RUNNING DROPBOX UPLOADER'
 
+    #  ====================================================
+    #  Methods
+    #  ====================================================
     #  ----------------------------------------------------
     #  download method
     #
@@ -38,13 +44,18 @@ module SifttterRedux
     #  local filesystem.
     #  @return Void
     #  ----------------------------------------------------
-    def self.install_wizard(already_initialized = false)
+    def self.install_wizard(reinit = false)
       valid_path_chosen = false
       
       CLIMessage::section_block('CONFIGURING DROPBOX UPLOADER...') do
         until valid_path_chosen
           # Prompt the user for a location to save Dropbox Uploader.
-          path = CLIMessage::prompt('Location for Dropbox-Uploader', already_initialized && !Configuration['db_uploader']['base_filepath'].nil? ? Configuration['db_uploader']['base_filepath'] : DBU_LOCAL_FILEPATH)
+          if reinit && !Configuration['db_uploader']['base_filepath'].nil?
+            default = Configuration['db_uploader']['base_filepath']
+          else
+            default = DBU_LOCAL_FILEPATH
+          end
+          path = CLIMessage::prompt('Location for Dropbox-Uploader', default)
           path.chop! if path.end_with?('/')
           
           # If the entered directory exists, clone the repository.
@@ -63,9 +74,11 @@ module SifttterRedux
             end
 
             # If the user has never configured Dropbox Uploader, have them do it here.
-            CLIMessage::info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" } unless File.exists?(CONFIG_FILEPATH)
+            unless File.exists?(CONFIG_FILEPATH)
+              CLIMessage::info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" }
+            end
 
-            Configuration::add_section('db_uploader') unless Configuration::section_exists?('db_uploader')
+            Configuration::add_section('db_uploader') unless reinit
             Configuration['db_uploader'].merge!('base_filepath' => path, 'dbu_filepath' => dbu_path, 'exe_filepath' => executable_path)
           else
             CLIMessage::error("Sorry, but #{ path } isn't a valid directory.")
