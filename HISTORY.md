@@ -1,4 +1,10 @@
-# 0.4.5
+# 0.4.6 (2014-03-13)
+
+* Added new error messaaging if Sifttter remote path is invalid
+* Removed dependencies on exernal UUID library
+* Removed OS module (not needed anymore)
+
+# 0.4.5 (2014-03-01)
 
 * Added Methadone logging for prompts
 
