@@ -51,6 +51,11 @@ module SifttterRedux
       time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
 
       files = `find #{ Configuration['sifttter_redux']['sifttter_local_filepath'] } -type f -name "*.txt" | grep -v -i daily | sort`
+      if files.empty?
+        m = "Couldn't download Sifttter files; is #{ Configuration['sifttter_redux']['sifttter_remote_filepath'] } the correct remote filepath?"
+        CLIMessage.error(m)
+        return
+      end
 
       projects = []
       files.split("\n").each do |file|
