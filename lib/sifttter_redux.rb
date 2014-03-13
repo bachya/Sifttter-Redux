@@ -142,7 +142,7 @@ module SifttterRedux
         d = reinit ? Configuration[prompt[:section]][prompt[:key]] : prompt[:default]
         pref = CLIMessage::prompt(prompt[:prompt], d)
 
-        Configuration[prompt[:section]].merge!(prompt[:key] => pref)
+        Configuration[prompt[:section]].merge!(prompt[:key] => File.expand_path(pref))
       end
     end
 
