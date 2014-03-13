@@ -12,17 +12,7 @@ Siftter Redux has several fundamental differences:
 
 # Prerequisites
 
-In addition to Git (which, given you being on this site, I'll assume you have), there are two prerequisites needed to run Sifttter Redux in a *NIX environment:
-
-* Ruby (version 1.9.3 or greater)
-* UUID (required on the Raspberry Pi because it doesn't come with a function to do this by default)
-
-To install on a Debian-esque system:
-
-```
-$ sudo apt-get install ruby
-$ sudo apt-get install uuid
-```
+In addition to Git (which, given you being on this site, I'll assume you have), Ruby (v. 1.9.3 or greater) is needed.
 
 # Installation
 
