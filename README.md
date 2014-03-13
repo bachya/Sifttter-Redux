@@ -97,6 +97,22 @@ Initialization will perform the following steps:
  * The location on your filesystem where Day One files will be temporarily stored
  * The location of your Day One files in Dropbox
 
+## Pathing
+
+Note that when Sifttter Redux asks you for paths, it will ask for "local" and "remote" filepaths. It's important to understand the difference.
+
+### Local Filepaths
+
+Local filepaths are, as you'd expect, filepaths on your local machine. Some examples might be:
+
+* `/tmp/my_data`
+* `/home/bob/ifttt/sifttter_data`
+* `~/sifttter`
+
+### Remote Filepaths
+
+Remote filepaths, on the other hand, are absolute filepaths in your Dropbox folder (*as Dropbox Uploader would see them*). For instance, `/home/bob/Dropbox/apps/sifttter` is *not* a valid remote filepath; rather, `/apps/sifttter` would be correct.
+
 ## Basic Execution
 
 ```
