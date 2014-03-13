@@ -1,9 +1,9 @@
-require 'sifttter_redux/cli_message.rb'
-require 'sifttter_redux/configuration.rb'
-require 'sifttter_redux/date_range_maker.rb'
-require 'sifttter_redux/dbu.rb'
-require 'sifttter_redux/sifttter.rb'
-require 'sifttter_redux/version.rb'
+require 'sifttter_redux/cli_message'
+require 'sifttter_redux/configuration'
+require 'sifttter_redux/constants'
+require 'sifttter_redux/date_range_maker'
+require 'sifttter_redux/dbu'
+require 'sifttter_redux/sifttter'
 
 #  ======================================================
 #  SifttterRedux Module

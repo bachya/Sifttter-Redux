@@ -1,5 +1,7 @@
-# Ensure we require the local version and not one we might have installed already
-require File.join([File.dirname(__FILE__), 'lib', 'sifttter_redux', 'version.rb'])
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'sifttter_redux/constants'
 
 spec = Gem::Specification.new do |s| 
   s.name = 'sifttter-redux'
