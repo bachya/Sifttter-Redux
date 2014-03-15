@@ -65,6 +65,7 @@ pre do |global, command, options, args|
   
   # Set up logging.
   CLIMessage::activate_logging
+  CLIMessage::log_level(Configuration['sifttter_redux']['log_level'])
 
   if File.exists?(SRD_CONFIG_FILEPATH)
     current_version = Gem::Version.new(Configuration['sifttter_redux']['version'])

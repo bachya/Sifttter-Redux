@@ -70,7 +70,7 @@ module SifttterRedux
         else
           default = DBU_LOCAL_FILEPATH
         end
-        path = CLIMessage::prompt_for_filepath('Location for Dropbox-Uploader', default)
+        path = CLIMessage::prompt('Location for Dropbox-Uploader', default)
         path = default if path.empty?
         path.chop! if path.end_with?('/')
         
@@ -199,7 +199,7 @@ module SifttterRedux
 
       pref_prompts.each do |prompt|
         d = reinit ? Configuration[prompt[:section]][prompt[:key]] : prompt[:default]
-        pref = CLIMessage::prompt_for_filepath(prompt[:prompt], d)
+        pref = CLIMessage::prompt(prompt[:prompt], d)
 
         Configuration[prompt[:section]].merge!(prompt[:key] => File.expand_path(pref))
         CLIMessage::debug("Value for #{ prompt[:key] }: #{ pref }")

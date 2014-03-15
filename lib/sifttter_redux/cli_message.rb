@@ -94,6 +94,24 @@ module SifttterRedux
     end
 
     #  ----------------------------------------------------
+    #  log_level method
+    #
+    #  Creates a simple logger to use
+    #  @return Void
+    #  ----------------------------------------------------
+    LOG_LEVELS = {
+      'DEBUG' => Logger::DEBUG,
+      'INFO' => Logger::INFO,
+      'WARN' => Logger::WARN,
+      'ERROR' => Logger::ERROR,
+      'FATAL' => Logger::FATAL,
+      'UNKNOWN' => Logger::UNKNOWN
+    }
+    def self.log_level(level)
+      @@logger.level = LOG_LEVELS[level] if LOG_LEVELS.key?(level)
+    end
+
+    #  ----------------------------------------------------
     #  prompt method
     #
     #  Outputs a prompt, collects the user's response, and
@@ -102,34 +120,7 @@ module SifttterRedux
     #  @param default The default option
     #  @return String
     #  ----------------------------------------------------
-    def self.prompt(prompt, default = nil)
-      print "# #{ prompt } #{ default.nil? ? '' : "[default: #{ default }]:" } ".green
-      choice = $stdin.gets.chomp
-      if choice.empty?
-        r = default
-      else
-        r = choice
-      end
-      @@logger.debug("Answer to \"#{ prompt }\": #{ r }") unless @@logger.nil?
-      r
-    end
-
-    #  ----------------------------------------------------
-    #  prompt_for_filepath method
-    #
-    #  Outputs a prompt, collects the user's response, and
-    #  returns it; adds in readline support for path
-    #  completion.
-    #
-    #  "ruby readline filename tab completion" - William Morgan
-    #  http://masanjin.net/blog/ruby-readline-tab-completion
-    #
-    #  @param prompt The prompt to output
-    #  @param default The default option
-    #  @param start_dir The directory in which to start
-    #  @return String
-    #  ----------------------------------------------------
-    def self.prompt_for_filepath(prompt, default = nil, start_dir = '')
+    def self.prompt(prompt, default = nil, start_dir = '')
       Readline.completion_append_character = nil
       Readline.completion_proc = lambda do |prefix|
         files = Dir["#{start_dir}#{prefix}*"]

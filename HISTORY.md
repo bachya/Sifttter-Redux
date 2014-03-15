@@ -1,3 +1,8 @@
+# 0.4.8 (2014-03-15)
+
+* Fixed a bug in which Sifttter Redux would ignore log level specified in config file
+* Made all prompt entry readline-based (for easier completion options)
+
 # 0.4.7 (2014-03-14)
 
 * Reworked logging to not require Methadone
