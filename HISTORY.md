@@ -1,3 +1,7 @@
+# 0.4.9 (2014-03-15)
+
+* Fixed a bug with importing Logger into CLIMessage
+
 # 0.4.8 (2014-03-15)
 
 * Fixed a bug in which Sifttter Redux would ignore log level specified in config file
