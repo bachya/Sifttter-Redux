@@ -42,9 +42,9 @@ module SifttterRedux
     def download
       if !@local_target.nil? && !@remote_target.nil?
         if @verbose
-          system "#{ @dbu } download \"#{ @remote_target }\" \"#{ @local_target }\""
+          system "#{ @dbu } download #{ @remote_target } #{ @local_target }"
         else
-          exec = `#{ @dbu } download "#{ @remote_target }" "#{ @local_target }"`
+          exec = `#{ @dbu } download #{ @remote_target } #{ @local_target }`
         end
       else
         error_msg = 'Local and remote targets cannot be nil'
@@ -63,9 +63,9 @@ module SifttterRedux
     def upload
       if !@local_target.nil? && !@remote_target.nil?
         if @verbose
-          system "#{ @dbu } upload \"#{ @local_target }\" \"#{ @remote_target }\""
+          system "#{ @dbu } upload #{ @local_target } #{ @remote_target }"
         else
-          exec = `#{ @dbu } upload "#{ @local_target }" "#{ @remote_target }"`
+          exec = `#{ @dbu } upload #{ @local_target }" "#{ @remote_target }`
         end
       else
         error_msg = 'Local and remote targets cannot be nil'

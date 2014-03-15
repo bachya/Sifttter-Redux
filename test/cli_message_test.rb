@@ -1,3 +1,4 @@
+require 'readline'
 require 'test_helper'
 require File.join(File.dirname(__FILE__), '..', 'lib/sifttter_redux/cli_message.rb')
 
@@ -55,6 +56,10 @@ class CLIMessageTest < Test::Unit::TestCase
       answer.puts 'default'
       assert_equal(SifttterRedux::CLIMessage::prompt('Hit enter to give the default response', 'default'), 'default')
     end
+  end
+  
+  def test_prompt_for_filepath
+    assert_equal(SifttterRedux::CLIMessage::prompt_for_filepath('Hit enter to give the default response', 'default'), 'default')
   end
   
   def with_stdin

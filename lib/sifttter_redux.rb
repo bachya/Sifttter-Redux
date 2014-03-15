@@ -1,7 +1,6 @@
 require 'sifttter_redux/cli_message'
 require 'sifttter_redux/configuration'
 require 'sifttter_redux/date_range_maker'
-require 'sifttter_redux/dbu'
 require 'sifttter_redux/dropbox_uploader'
 require 'sifttter_redux/sifttter'
 require 'sifttter_redux/version'

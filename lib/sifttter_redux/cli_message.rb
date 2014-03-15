@@ -137,7 +137,14 @@ module SifttterRedux
           map { |f| File.expand_path(f) }.
           map { |f| File.directory?(f) ? f + "/" : f }
       end
-      Readline.readline("# #{ prompt } #{ default.nil? ? '' : "[default: #{ default }]:" } ".green)
+      choice = Readline.readline("# #{ prompt } #{ default.nil? ? '' : "[default: #{ default }]:" } ".green)
+      if choice.empty?
+        r = default
+      else
+        r = choice
+      end
+      @@logger.debug("Answer to \"#{ prompt }\": #{ r }") unless @@logger.nil?
+      r
     end
 
     #  ----------------------------------------------------
