@@ -48,8 +48,7 @@ module SifttterRedux
 
       files = `find #{ Configuration['sifttter_redux']['sifttter_local_filepath'] } -type f -name "*.txt" | grep -v -i daily | sort`
       if files.empty?
-        m = "Couldn't download Sifttter files; is #{ Configuration['sifttter_redux']['sifttter_remote_filepath'] } the correct remote filepath?"
-        CLIMessage.error(m)
+        CLIMessage::error("No Sifttter files to parse; is #{ Configuration['sifttter_redux']['sifttter_remote_filepath'] } the correct remote filepath?")
         return
       end
 

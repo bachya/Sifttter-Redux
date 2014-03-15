@@ -1,52 +1,53 @@
-require 'methadone'
 require 'test_helper'
 require File.join(File.dirname(__FILE__), '..', 'lib/sifttter_redux/cli_message.rb')
 
-include Methadone::CLILogging
-
 class CLIMessageTest < Test::Unit::TestCase
+  def setup
+    SifttterRedux::CLIMessage::deactivate_logging
+  end
+  
   def test_error_message
-    assert_output('---> ERROR: test'.red + "\n") { SifttterRedux::CLIMessage::error('test', false) }
+    assert_output('# test'.red + "\n") { SifttterRedux::CLIMessage::error('test') }
   end
 
   def test_info_message
-    assert_output('---> INFO: test'.blue + "\n") { SifttterRedux::CLIMessage::info('test', false) }
+    assert_output('# test'.blue + "\n") { SifttterRedux::CLIMessage::info('test') }
   end
 
   def test_info_block_single_line
-    assert_output("---> INFO: start".blue + "body\n" + 'end'.blue + "\n") do
-      SifttterRedux::CLIMessage::info_block('start', 'end', false, false) { puts 'body' }
+    assert_output("# start".blue + "body\n" + 'end'.blue + "\n") do
+      SifttterRedux::CLIMessage::info_block('start', 'end') { puts 'body' }
     end
   end
 
   def test_info_block_multiline
-    assert_output("---> INFO: start".blue + "\nbody\n" + '---> INFO: end'.blue + "\n") do
-      SifttterRedux::CLIMessage::info_block('start', 'end', true, false) { puts 'body' }
+    assert_output("# start".blue + "\nbody\n" + '# end'.blue + "\n") do
+      SifttterRedux::CLIMessage::info_block('start', 'end', true) { puts 'body' }
     end
   end
   
   def test_info_block_no_block
     assert_raise ArgumentError do
-      SifttterRedux::CLIMessage::info_block('start', 'end', true, false)
+      SifttterRedux::CLIMessage::info_block('start', 'end', true)
     end
   end
 
   def test_section_message
-    assert_output('#### test'.purple + "\n") { SifttterRedux::CLIMessage::section('test', false) }
+    assert_output('---> test'.purple + "\n") { SifttterRedux::CLIMessage::section('test') }
   end
 
   def test_section_block_single_line
-    assert_output("#### section".purple + "\nbody\n") do
-      SifttterRedux::CLIMessage::section_block('section', true, false) { puts 'body' }
+    assert_output("---> section".purple + "\nbody\n") do
+      SifttterRedux::CLIMessage::section_block('section', true) { puts 'body' }
     end
   end
 
   def test_success_message
-    assert_output('---> SUCCESS: test'.green + "\n") { SifttterRedux::CLIMessage::success('test', false) }
+    assert_output('# test'.green + "\n") { SifttterRedux::CLIMessage::success('test') }
   end
 
   def test_warning_message
-    assert_output('---> WARNING: test'.yellow + "\n") { SifttterRedux::CLIMessage::warning('test', false) }
+    assert_output('# test'.yellow + "\n") { SifttterRedux::CLIMessage::warning('test') }
   end
   
   def test_prompt
