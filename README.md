@@ -37,7 +37,7 @@ SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-    0.4.7
+    0.4.8
 
 GLOBAL OPTIONS
     --help         - Show this message
