@@ -12,17 +12,7 @@ Siftter Redux has several fundamental differences:
 
 # Prerequisites
 
-In addition to Git (which, given you being on this site, I'll assume you have), there are two prerequisites needed to run Sifttter Redux in a *NIX environment:
-
-* Ruby (version 1.9.3 or greater)
-* UUID (required on the Raspberry Pi because it doesn't come with a function to do this by default)
-
-To install on a Debian-esque system:
-
-```
-$ sudo apt-get install ruby
-$ sudo apt-get install uuid
-```
+In addition to Git (which, given you being on this site, I'll assume you have), Ruby (v. 1.9.3 or greater) is needed.
 
 # Installation
 
@@ -47,7 +37,7 @@ SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-    0.4.1
+    0.4.8
 
 GLOBAL OPTIONS
     --help         - Show this message
@@ -91,11 +81,27 @@ Initialization will perform the following steps:
 
 1. Download [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox-Uploder") to a location of your choice.
 2. Automatically configure Dropbox Uploader.
-3. Collect some user preferences:
+3. Collect some user paths (note that you can use tab completion here!):
  * The location on your filesystem where Sifttter files will be temporarily stored
  * The location of your Sifttter files in Dropbox
  * The location on your filesystem where Day One files will be temporarily stored
  * The location of your Day One files in Dropbox
+
+## Pathing
+
+Note that when Sifttter Redux asks you for paths, it will ask for "local" and "remote" filepaths. It's important to understand the difference.
+
+### Local Filepaths
+
+Local filepaths are, as you'd expect, filepaths on your local machine. Some examples might be:
+
+* `/tmp/my_data`
+* `/home/bob/ifttt/sifttter_data`
+* `~/sifttter`
+
+### Remote Filepaths
+
+Remote filepaths, on the other hand, are absolute filepaths in your Dropbox folder (*as Dropbox Uploader would see them*). For instance, `/home/bob/Dropbox/apps/sifttter` is *not* a valid remote filepath; rather, `/apps/sifttter` would be correct.
 
 ## Basic Execution
 
@@ -403,6 +409,19 @@ Another option is to install the bundled gems to the global gemset:
 ```
 $ bundle install --global
 ```
+
+# Logging
+
+Sifttter Redux logs a lot of good info to `~/.sifttter_redux_log`. It makes use of Ruby's standard log levels:
+
+* DEBUG
+* INFO
+* WARN
+* ERROR
+* FATAL
+* UNKNOWN
+
+If you want to see more or less in your log files, simply change the `log_level` value in `~/.sifttter_redux` to your desired level.
 
 # Known Issues & Future Releases
 
