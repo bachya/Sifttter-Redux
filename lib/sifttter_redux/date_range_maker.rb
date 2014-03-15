@@ -21,7 +21,6 @@ module SifttterRedux
     def self.last_n_days(num_days, include_today = false)
       if num_days < 0
         error = 'Cannot specify a negative number of days'
-        Methadone::CLILogging.error(error)
         fail ArgumentError, error
       end
 
@@ -44,7 +43,6 @@ module SifttterRedux
     def self.last_n_weeks(num_weeks = 0, include_today = false)
       if num_weeks < 0
         error = 'Cannot specify a negative number of weeks'
-        Methadone::CLILogging.error(error)
         fail ArgumentError, error
       end
 
@@ -76,7 +74,6 @@ module SifttterRedux
     def self.range(start_date, end_date, include_today = false)
       if start_date.nil? && !end_date.nil?
         error = "You can't specify -t without specifying -f"
-        Methadone::CLILogging.error(error)
         fail ArgumentError, error
       end
 
@@ -85,7 +82,6 @@ module SifttterRedux
       rescue
         unless start_date.nil?
           error = "Invalid date provided to Chronic: #{ start_date }"
-          Methadone::CLILogging.error(error)
           fail ArgumentError, error
         end
         nil
@@ -96,7 +92,6 @@ module SifttterRedux
       rescue
         unless end_date.nil?
           error = "Invalid date provided to Chronic: #{ end_date }"
-          Methadone::CLILogging.error(error)
           fail ArgumentError, error
         end
         nil
@@ -104,7 +99,6 @@ module SifttterRedux
 
       if chronic_end_date && chronic_start_date > chronic_end_date
         error = 'The start date must be before or equal to the end date'
-        Methadone::CLILogging.error(error)
         fail ArgumentError, error
       end
 
