@@ -23,8 +23,7 @@ Gem::Specification.new do |spec|
   spec.rdoc_options     = ['--charset=UTF-8']
   spec.extra_rdoc_files = %w[README.md HISTORY.md LICENSE]
   
-  spec.add_development_dependency('rake', '~> 0')
-  spec.add_runtime_dependency('chronic', '0.10.2')
-  spec.add_runtime_dependency('gli','2.9.0')
-  spec.add_runtime_dependency('methadone', '1.3.2')
+  s.add_development_dependency('rake', '~> 0')
+  s.add_runtime_dependency('chronic', '0.10.2')
+  s.add_runtime_dependency('gli','2.9.0')
 end

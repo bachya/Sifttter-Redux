@@ -1,3 +1,16 @@
+# 0.4.8 (2014-03-15)
+
+* Fixed a bug in which Sifttter Redux would ignore log level specified in config file
+* Made all prompt entry readline-based (for easier completion options)
+
+# 0.4.7 (2014-03-14)
+
+* Reworked logging to not require Methadone
+* Logging more verbose and configurable in ~/.sifttter_redux
+* Dropbox Uploader updates
+* Added support for path completion when prompting user to enter a filepath
+* Cleaned up error handling to be displayed to user at single point
+
 # 0.4.6 (2014-03-13)
 
 * Added new error messaaging if Sifttter remote path is invalid
