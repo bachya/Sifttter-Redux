@@ -58,10 +58,6 @@ class CLIMessageTest < Test::Unit::TestCase
     end
   end
   
-  def test_prompt_for_filepath
-    assert_equal(SifttterRedux::CLIMessage::prompt_for_filepath('Hit enter to give the default response', 'default'), 'default')
-  end
-  
   def with_stdin
     stdin = $stdin             # remember $stdin
     $stdin, write = IO.pipe    # create pipe assigning its "read end" to $stdin
