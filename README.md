@@ -410,6 +410,19 @@ Another option is to install the bundled gems to the global gemset:
 $ bundle install --global
 ```
 
+# Logging
+
+Sifttter Redux logs a lot of good info to `~/.sifttter_redux_log`. It makes use of Ruby's standard log levels:
+
+* DEBUG
+* INFO
+* WARN
+* ERROR
+* FATAL
+* UNKNOWN
+
+If you want to see more or less in your log files, simply change the `log_level` value in `~/.sifttter_redux` to your desired level.
+
 # Known Issues & Future Releases
 
 Bugs, issues, and enhancement requests (my own or those submitted by others) can be found on the [Issues Page](https://github.com/bachya/Sifttter-Redux/issues "Open Items").
