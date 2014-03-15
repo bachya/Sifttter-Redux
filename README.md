@@ -37,7 +37,7 @@ SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-    0.4.6
+    0.4.7
 
 GLOBAL OPTIONS
     --help         - Show this message
@@ -81,10 +81,10 @@ Initialization will perform the following steps:
 
 1. Download [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox-Uploder") to a location of your choice.
 2. Automatically configure Dropbox Uploader.
-3. Collect some user preferences:
- * The location on your filesystem where Sifttter files will be temporarily stored
+3. Collect some user paths:
+ * The location on your filesystem where Sifttter files will be temporarily stored (**tab completion works here!**)
  * The location of your Sifttter files in Dropbox
- * The location on your filesystem where Day One files will be temporarily stored
+ * The location on your filesystem where Day One files will be temporarily stored (**tab completion works here!**)
  * The location of your Day One files in Dropbox
 
 ## Pathing
