@@ -65,7 +65,7 @@ module SifttterRedux
         if @verbose
           system "#{ @dbu } upload #{ @local_target } #{ @remote_target }"
         else
-          exec = `#{ @dbu } upload #{ @local_target }" "#{ @remote_target }`
+          exec = `#{ @dbu } upload #{ @local_target } #{ @remote_target }`
         end
       else
         error_msg = 'Local and remote targets cannot be nil'

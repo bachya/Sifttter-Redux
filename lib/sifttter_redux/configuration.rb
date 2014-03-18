@@ -23,7 +23,6 @@ module SifttterRedux
         @data[section_name]
       else
         error = "Section does not exist: #{ section_name }"
-        Methadone::CLILogging.error(error)
         fail ArgumentError, error
       end
     end
@@ -43,7 +42,6 @@ module SifttterRedux
         @data[section_name].merge!(hash)
       else
         error = "Parameter is not a Hash: #{ hash }"
-        Methadone::CLILogging.error(error)
         fail ArgumentError, error
       end
     end

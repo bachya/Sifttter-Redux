@@ -50,5 +50,5 @@ class CLIMessageTest < Test::Unit::TestCase
   def test_warning_message
     assert_output('# test'.yellow + "\n") { SifttterRedux::CLIMessage::warning('test') }
   end
-  
+
 end
