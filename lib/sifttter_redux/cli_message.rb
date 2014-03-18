@@ -1,3 +1,4 @@
+require 'logger'
 require 'readline'
 
 module SifttterRedux
@@ -107,6 +108,7 @@ module SifttterRedux
       'FATAL' => Logger::FATAL,
       'UNKNOWN' => Logger::UNKNOWN
     }
+
     def self.log_level(level)
       @@logger.level = LOG_LEVELS[level] if LOG_LEVELS.key?(level)
     end

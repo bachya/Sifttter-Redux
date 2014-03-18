@@ -1,7 +1,7 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'sifttter_redux/constants'
+require 'sifttter_redux/version'
 
 Gem::Specification.new do |spec|   
   spec.name             = 'sifttter-redux'
@@ -23,7 +23,9 @@ Gem::Specification.new do |spec|
   spec.rdoc_options     = ['--charset=UTF-8']
   spec.extra_rdoc_files = %w[README.md HISTORY.md LICENSE]
   
-  s.add_development_dependency('rake', '~> 0')
-  s.add_runtime_dependency('chronic', '0.10.2')
-  s.add_runtime_dependency('gli','2.9.0')
+  spec.add_development_dependency('rake')
+  spec.add_development_dependency('rdoc')
+  spec.add_development_dependency('aruba')
+  spec.add_runtime_dependency('chronic', '0.10.2')
+  spec.add_runtime_dependency('gli','2.9.0')
 end
