@@ -1,3 +1,7 @@
+# 0.5.1 (2014-03-18)
+
+* Fixed a bug regarding missing Methadone references
+
 # 0.5.0 (2014-03-16)
 
 * Fixed a bug where Dropbox Uploader would fail when not in "verbose mode"
