@@ -29,7 +29,7 @@ module SifttterRedux
     end
     
     def method_missing(name, *args, &block)
-      @_data[name.to_sym] || {}
+      @_data[name.to_sym] || @_data.merge!(name.to_sym => {})
     end
 
     def self.add_section(section_name)

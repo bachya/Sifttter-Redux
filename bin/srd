@@ -77,14 +77,13 @@ pre do |global, command, options, args|
       CLIMessage::info("Don't worry; when prompted, your current values for")
       CLIMessage::info("existing config options will be presented (so it'll")
       CLIMessage::info('be easier to fly through the upgrade).')
-      CLIMessage::prompt('Press enter to continue: ')
+      CLIMessage::prompt('Press enter to continue')
       SifttterRedux::init(true)
       exit!(0)
     end
   else
     # Force the user to init if they try to run any command other than `init` first.
-    CLIMessage::info('Initializing Sifttter Redux first...') unless command.name_for_help[0] == 'init'
-    SifttterRedux::init
+    SifttterRedux::init(true)
     exit!(0)
   end
 
@@ -173,11 +172,11 @@ command :init do |c|
 
   c.action do |global_options, options, args|
     CLIMessage::section_block('INITIALIZING...') do
-      if File.exists?(Configuration::config_path) && !options[:s]
-        long_message = "You've already initialized Sifttter Redux. Do it again?"
-        SifttterRedux::init(true) if CLIMessage::prompt(long_message, 'N').downcase == 'y'
+      if options[:s]
+        SifttterRedux::init(true)
       else
-        SifttterRedux::init
+        long_message = "You've already initialized Sifttter Redux. Do it again?"
+        SifttterRedux::init if CLIMessage::prompt(long_message, 'N').downcase == 'y'
       end
     end
   end

@@ -59,13 +59,13 @@ module SifttterRedux
   #  local filesystem.
   #  @return Void
   #  ----------------------------------------------------
-  def self.dbu_install_wizard(reinit = false)
+  def self.dbu_install_wizard(init_from_scratch = false)
     valid_path_chosen = false
     
     CLIMessage::section_block('CONFIGURING DROPBOX UPLOADER...') do
       until valid_path_chosen
         # Prompt the user for a location to save Dropbox Uploader.
-        if reinit && !Configuration::db_uploader[:base_filepath].nil?
+        if init_from_scratch && !Configuration::db_uploader[:base_filepath].nil?
           default = Configuration::db_uploader[:base_filepath]
         else
           default = DBU_LOCAL_FILEPATH
@@ -94,7 +94,7 @@ module SifttterRedux
             CLIMessage::info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" }
           end
 
-          Configuration::add_section(:db_uploader) unless reinit
+          Configuration::add_section(:db_uploader) unless init_from_scratch
           Configuration::db_uploader.merge!({
             base_filepath: path, 
             dbu_filepath: dbu_path,
@@ -158,10 +158,10 @@ module SifttterRedux
   #  collecting all necessary items and info.
   #  @return Void
   #  ----------------------------------------------------
-  def self.init(reinit = false)
-    unless reinit
+  def self.init(init_from_scratch = false)
+    if init_from_scratch
       Configuration::reset
-      Configuration::add_section('sifttter_redux')
+      Configuration::add_section(:sifttter_redux)
     end
 
     Configuration::sifttter_redux.merge!({
@@ -171,7 +171,7 @@ module SifttterRedux
     })
 
     # Run the wizard to download Dropbox Uploader.
-    dbu_install_wizard(reinit = reinit)
+    dbu_install_wizard(init_from_scratch = init_from_scratch)
 
     # Collect other misc. preferences.
     CLIMessage::section_block('COLLECTING PREFERENCES...') do
@@ -203,11 +203,11 @@ module SifttterRedux
       ]
 
       pref_prompts.each do |prompt|
-        d = reinit ? Configuration::send(prompt[:section].to_sym)[prompt[:key]] : prompt[:default]
+        d = init_from_scratch ? prompt[:default] : Configuration::send(prompt[:section])[prompt[:key]]
         pref = CLIMessage::prompt(prompt[:prompt], d)
-
         pref = File.expand_path(pref) if pref.start_with?('~')
-        Configuration::send(prompt[:section].to_sym).merge!(prompt[:key] => pref)
+
+        Configuration::send(prompt[:section]).merge!(prompt[:key] => pref)
         CLIMessage::debug("Value for #{ prompt[:key] }: #{ pref }")
       end
     end
