@@ -1,3 +1,7 @@
+# 0.5.2 (2014-03-18)
+
+* New Configuration management system
+
 # 0.5.1 (2014-03-18)
 
 * Fixed a bug regarding missing Methadone references
