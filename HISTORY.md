@@ -1,3 +1,15 @@
+# 0.5.4 (2014-03-19)
+
+* Fixed several bugs related to configuration management
+
+# 0.5.3 (2014-03-18)
+
+* Fixed regression with gemspec
+
+# 0.5.2 (2014-03-18)
+
+* New Configuration management system
+
 # 0.5.1 (2014-03-18)
 
 * Fixed a bug regarding missing Methadone references

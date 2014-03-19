@@ -23,9 +23,9 @@ Gem::Specification.new do |spec|
   spec.rdoc_options     = ['--charset=UTF-8']
   spec.extra_rdoc_files = %w[README.md HISTORY.md LICENSE]
   
-  spec.add_development_dependency('rake')
-  spec.add_development_dependency('rdoc')
-  spec.add_development_dependency('aruba')
+  spec.add_development_dependency('rake', '10.1.1')
+  spec.add_development_dependency('rdoc', '4.1.1')
+  spec.add_development_dependency('aruba', '0.5.4')
   spec.add_runtime_dependency('chronic', '0.10.2')
   spec.add_runtime_dependency('gli','2.9.0')
 end
