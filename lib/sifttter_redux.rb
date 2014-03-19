@@ -75,7 +75,7 @@ module SifttterRedux
         path.chop! if path.end_with?('/')
         
         # If the entered directory exists, clone the repository.
-        if File.directory?(path)
+        if Dir.exists?(File.expand_path(path))
           valid_path_chosen = true
           
           dbu_path = File.join(path, 'Dropbox-Uploader')
