@@ -59,19 +59,20 @@ switch([:verbose], desc: 'Turns on verbose output')
 #  Pre, Post, and Error
 #  ======================================================
 pre do |global, command, options, args|
+
   # Load SifttterRedux configuration module.
   Configuration::load(SRD_CONFIG_FILEPATH)
-  
+
   # Set up logging.
   CLIMessage::activate_logging
-  CLIMessage::log_level(Configuration['sifttter_redux']['log_level'])
+  CLIMessage::log_level(Configuration::sifttter_redux[:log_level] || Logger::WARN)
 
   if File.exists?(SRD_CONFIG_FILEPATH)
-    current_version = Gem::Version.new(Configuration['sifttter_redux']['version'])
+    current_version = Gem::Version.new(Configuration::sifttter_redux[:version])
     last_config_change_version = Gem::Version.new(NEWEST_CONFIG_VERSION)
 
     # If the config file needs updating, force the user to do that first.
-    if Configuration['sifttter_redux']['version'].nil? || current_version < last_config_change_version
+    if Configuration::sifttter_redux[:version].nil? || current_version < last_config_change_version
       CLIMessage::info('This version needs to make some config changes.')
       CLIMessage::info("Don't worry; when prompted, your current values for")
       CLIMessage::info("existing config options will be presented (so it'll")
@@ -124,10 +125,10 @@ command :exec do |c|
         CLIMessage::info("Creating #{ first_date == second_date ? 'entry' : 'entries' }: #{ date_string }")
 
         # Download Sifttter files from Dropbox.
-        dbu = DropboxUploader.new(Configuration['db_uploader']['exe_filepath'])
+        dbu = DropboxUploader.new(Configuration::db_uploader[:exe_filepath])
         dbu.verbose = SifttterRedux.verbose
-        dbu.local_target = Configuration['sifttter_redux']['sifttter_local_filepath']
-        dbu.remote_target = Configuration['sifttter_redux']['sifttter_remote_filepath']
+        dbu.local_target = Configuration::sifttter_redux[:sifttter_local_filepath]
+        dbu.remote_target = Configuration::sifttter_redux[:sifttter_remote_filepath]
         dbu.message = 'Downloading Sifttter files...'
 
         CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
@@ -140,9 +141,9 @@ command :exec do |c|
         end
 
         # Upload any Day One entries to Dropbox (if there are any).
-        unless Dir[Configuration['sifttter_redux']['dayone_local_filepath'] + '/*'].empty?
-          dbu.local_target = "#{ Configuration['sifttter_redux']['dayone_local_filepath'] }/*"
-          dbu.remote_target = Configuration['sifttter_redux']['dayone_remote_filepath']
+        unless Dir[Configuration::sifttter_redux[:dayone_local_filepath] + '/*'].empty?
+          dbu.local_target = "#{ Configuration::sifttter_redux[:dayone_local_filepath] }/*"
+          dbu.remote_target = Configuration::sifttter_redux[:dayone_remote_filepath]
           dbu.message = 'Uploading Day One entries to Dropbox...'
 
           CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do

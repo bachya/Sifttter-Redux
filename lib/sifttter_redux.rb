@@ -40,8 +40,8 @@ module SifttterRedux
   #  ----------------------------------------------------
   def self.cleanup_temp_files
     dirs = [
-      Configuration['sifttter_redux']['dayone_local_filepath'],
-      Configuration['sifttter_redux']['sifttter_local_filepath']
+      Configuration::sifttter_redux[:dayone_local_filepath],
+      Configuration::sifttter_redux[:sifttter_local_filepath]
     ]
 
     CLIMessage::info_block('Removing temporary local files...') do 
@@ -65,8 +65,8 @@ module SifttterRedux
     CLIMessage::section_block('CONFIGURING DROPBOX UPLOADER...') do
       until valid_path_chosen
         # Prompt the user for a location to save Dropbox Uploader.
-        if reinit && !Configuration['db_uploader']['base_filepath'].nil?
-          default = Configuration['db_uploader']['base_filepath']
+        if reinit && !Configuration::db_uploader[:base_filepath].nil?
+          default = Configuration::db_uploader[:base_filepath]
         else
           default = DBU_LOCAL_FILEPATH
         end
@@ -94,8 +94,12 @@ module SifttterRedux
             CLIMessage::info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" }
           end
 
-          Configuration::add_section('db_uploader') unless reinit
-          Configuration['db_uploader'].merge!('base_filepath' => path, 'dbu_filepath' => dbu_path, 'exe_filepath' => executable_path)
+          Configuration::add_section(:db_uploader) unless reinit
+          Configuration::db_uploader.merge!({
+            base_filepath: path, 
+            dbu_filepath: dbu_path,
+            exe_filepath: executable_path
+          })
         else
           CLIMessage::error("Sorry, but #{ path } isn't a valid directory.")
         end
@@ -159,10 +163,11 @@ module SifttterRedux
       Configuration::reset
       Configuration::add_section('sifttter_redux')
     end
-    Configuration['sifttter_redux'].merge!({
-      'config_location' => Configuration::config_path,
-      'log_level' => 'WARN',
-      'version' => VERSION,
+
+    Configuration::sifttter_redux.merge!({
+      config_location: Configuration::config_path,
+      log_level: 'WARN',
+      version: VERSION,
     })
 
     # Run the wizard to download Dropbox Uploader.
@@ -172,36 +177,37 @@ module SifttterRedux
     CLIMessage::section_block('COLLECTING PREFERENCES...') do
       pref_prompts = [
         {
-          prompt: 'Location for downloaded Sifttter files from Dropbox',
+          prompt: 'Temporary path to download Sifttter files to',
           default: SFT_LOCAL_FILEPATH,
-          key: 'sifttter_local_filepath',
-          section: 'sifttter_redux'
+          key: :sifttter_local_filepath,
+          section: :sifttter_redux
         },
         {
-          prompt: 'Location of Sifttter files in Dropbox',
+          prompt: 'Path to Sifttter files in Dropbox',
           default: SFT_REMOTE_FILEPATH,
-          key: 'sifttter_remote_filepath',
-          section: 'sifttter_redux'
+          key: :sifttter_remote_filepath,
+          section: :sifttter_redux
         },
         {
-          prompt: 'Location for downloaded Day One files from Dropbox',
+          prompt: 'Temporary path to download Day One files to',
           default: DO_LOCAL_FILEPATH,
-          key: 'dayone_local_filepath',
-          section: 'sifttter_redux'
+          key: :dayone_local_filepath,
+          section: :sifttter_redux
         },
         {
-          prompt: 'Location of Day One files in Dropbox',
+          prompt: 'Path to Day One files in Dropbox',
           default: DO_REMOTE_FILEPATH,
-          key: 'dayone_remote_filepath',
-          section: 'sifttter_redux'
+          key: :dayone_remote_filepath,
+          section: :sifttter_redux
         }
       ]
 
       pref_prompts.each do |prompt|
-        d = reinit ? Configuration[prompt[:section]][prompt[:key]] : prompt[:default]
+        d = reinit ? Configuration::send(prompt[:section].to_sym)[prompt[:key]] : prompt[:default]
         pref = CLIMessage::prompt(prompt[:prompt], d)
 
-        Configuration[prompt[:section]].merge!(prompt[:key] => File.expand_path(pref))
+        pref = File.expand_path(pref) if pref.start_with?('~')
+        Configuration::send(prompt[:section].to_sym).merge!(prompt[:key] => pref)
         CLIMessage::debug("Value for #{ prompt[:key] }: #{ pref }")
       end
     end

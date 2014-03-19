@@ -8,92 +8,44 @@ module SifttterRedux
   #  into which they get stored.
   #  ======================================================
   module Configuration
+    extend self
+    
+    @_data = {}
     #  ====================================================
     #  Methods
     #  ====================================================
     #  ----------------------------------------------------
-    #  [] method
+    #  deep_merge! method
     #
-    #  Returns the Hash of data for a particular section.
-    #  @param section_name The section in which to look
-    #  @return Hash
+    #  Deep merges two hashes.
+    #  deep_merge by Stefan Rusterholz;
+    #  see http://www.ruby-forum.com/topic/142809
+    #  @return Void
     #  ----------------------------------------------------
-    def self.[](section_name)
-      if section_exists?(section_name)
-        @data[section_name]
-      else
-        error = "Section does not exist: #{ section_name }"
-        fail ArgumentError, error
-      end
+    def deep_merge!(target, data)
+      merger = proc{|key, v1, v2|
+        Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : v2 }
+      target.merge! data, &merger
     end
     
-    #  ----------------------------------------------------
-    #  []= method
-    #
-    #  Assigns the passed hash to the section. NOTE THAT THE
-    #  PREVIOUS CONTENTS OF THAT SECTION ARE OVERWRITTEN.
-    #  @param section_name The section in which to look
-    #  @param hash The Hash that gets merged into the section
-    #  @return Void
-    #  ----------------------------------------------------
-    def self.[]=(section_name, hash)
-      if hash.is_a?(Hash)
-        @data[section_name] = {}
-        @data[section_name].merge!(hash)
-      else
-        error = "Parameter is not a Hash: #{ hash }"
-        fail ArgumentError, error
-      end
+    def method_missing(name, *args, &block)
+      @_data[name.to_sym] || {}
     end
 
-    #  ----------------------------------------------------
-    #  add_section method
-    #
-    #  Creates a new section in the configuration data.
-    #  @param section_name The section to add
-    #  @return Void
-    #  ----------------------------------------------------
     def self.add_section(section_name)
-      if !self.section_exists?(section_name)
-        @data[section_name] = {}
-      else
-        CLIMessage::warning("Can't create already-existing section: #{ section_name }")
-      end
-    end
-
-    #  ----------------------------------------------------
-    #  config_path method
-    #
-    #  Returns the filepath to the flat configuration file.
-    #  @return String
-    #  ----------------------------------------------------
-    def self.config_path
-      @config_path
-    end
-
-    #  ----------------------------------------------------
-    #  delete_section method
-    #
-    #  Deletes a section from the configuration data.
-    #  @param section_name The section to delete
-    #  @return Void
-    #  ----------------------------------------------------
-    def self.delete_section(section_name)
-      if self.section_exists?(section_name)
-        @data.delete(section_name)
-      else
-        CLIMessage::warning("Can't delete non-existing section: #{ section_name }")
-      end
+      @_data[section_name] = {} unless @_data.key?(section_name)
     end
     
-    #  ----------------------------------------------------
-    #  dump method
-    #
-    #  Returns the data Hash
-    #  @return Hash
-    #  ----------------------------------------------------
+    def self.config_path
+      @_config_path
+    end
+    
+    def self.delete_section(section_name)
+      @_data.delete(section_name) if @_data.key?(section_name)
+    end
+    
     def self.dump
-      @data
+      @_data
     end
 
     #  ----------------------------------------------------
@@ -105,12 +57,11 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.load(path)
-      @config_path = path
-
+      @_config_path = path
+      
       if File.exists?(path)
-        @data = YAML.load_file(path)
-      else
-        @data = {}
+        data = YAML.load_file(path)
+        deep_merge!(@_data, data)
       end
     end
 
@@ -121,7 +72,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.reset
-      @data = {}
+      @_data = {}
     end
 
     #  ----------------------------------------------------
@@ -132,18 +83,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.save
-      File.open(@config_path, 'w') { |f| f.write(@data.to_yaml) }
-    end
-
-    #  ----------------------------------------------------
-    #  section_exists? method
-    #
-    #  Checks for the existance of the passed section.
-    #  @param section_name The section to look for
-    #  @return Bool
-    #  ----------------------------------------------------
-    def self.section_exists?(section_name)
-      @data.key?(section_name)
+      File.open(@_config_path, 'w') { |f| f.write(@_data.to_yaml) }
     end
   end
 end

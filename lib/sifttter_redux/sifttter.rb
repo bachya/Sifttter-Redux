@@ -46,9 +46,9 @@ module SifttterRedux
       date_regex = "(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })"
       time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
 
-      files = `find #{ Configuration['sifttter_redux']['sifttter_local_filepath'] } -type f -name "*.txt" | grep -v -i daily | sort`
+      files = `find #{ Configuration::sifttter_redux[:sifttter_local_filepath] } -type f -name "*.txt" | grep -v -i daily | sort`
       if files.empty?
-        CLIMessage::error("No Sifttter files to parse; is #{ Configuration['sifttter_redux']['sifttter_remote_filepath'] } the correct remote filepath?")
+        CLIMessage::error("No Sifttter files to parse; is #{ Configuration::sifttter_redux[:sifttter_remote_filepath] } the correct remote filepath?")
         return
       end
 
@@ -86,9 +86,9 @@ module SifttterRedux
       		entrytext += project.gsub(/.txt/, ' ') + "\n\n"
       	end
 
-        Dir.mkdir(Configuration['sifttter_redux']['dayone_local_filepath']) if !Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
+        Dir.mkdir(Configuration::sifttter_redux[:dayone_local_filepath]) if !Dir.exists?(Configuration::sifttter_redux[:dayone_local_filepath])
 
-      	fh = File.new(File.expand_path(Configuration['sifttter_redux']['dayone_local_filepath'] + '/' + uuid + '.doentry'), 'w+')
+      	fh = File.new(File.expand_path(Configuration::sifttter_redux[:dayone_local_filepath] + '/' + uuid + '.doentry'), 'w+')
       	fh.puts template.result(binding)
       	fh.close
       	CLIMessage::success("Entry logged for #{ date_for_title }...")
