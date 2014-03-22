@@ -1,3 +1,7 @@
+Given(/^a file located at "(.*?)"$/) do |filepath|
+  expect(File).to exist(filepath)
+end
+
 Given(/^an empty file located at "(.*?)"$/) do |filepath|
   FileUtils.touch(File.expand_path(filepath))
 end

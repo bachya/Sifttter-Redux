@@ -48,8 +48,10 @@ module SifttterRedux
 
       files = `find #{ Configuration::sifttter_redux[:sifttter_local_filepath] } -type f -name "*.txt" | grep -v -i daily | sort`
       if files.empty?
-        CLIMessage::error("No Sifttter files to parse; is #{ Configuration::sifttter_redux[:sifttter_remote_filepath] } the correct remote filepath?")
-        return
+        CLIMessage::error('No Sifttter files to parse...')
+        CLIMessage::error('Is Dropbox Uploader configured correctly?')
+        CLIMessage::error("Is #{ Configuration::sifttter_redux[:sifttter_remote_filepath] } the correct remote filepath?")
+        exit!(1)
       end
 
       projects = []
