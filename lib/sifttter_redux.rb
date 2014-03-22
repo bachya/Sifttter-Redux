@@ -17,6 +17,12 @@ module SifttterRedux
   #  Constants
   #  ====================================================
   #  ----------------------------------------------------
+  #  Descriptions
+  #  ----------------------------------------------------
+  DESCRIPTION = 'A customized IFTTT-to-Day One service that allows for smart installation and automated running on a standalone *NIX device (such as a Raspberry Pi).'
+  SUMMARY = 'Automated IFTTT to Day One engine.'
+
+  #  ----------------------------------------------------
   #  Dropbox Uploader
   #  ----------------------------------------------------
   DBU_CONFIG_FILEPATH = File.join(ENV['HOME'], '.dropbox_uploader')
