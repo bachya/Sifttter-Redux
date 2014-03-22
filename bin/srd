@@ -108,9 +108,9 @@ end
 #  ------------------------------------------------------
 #  exec command
 #
-#  Executes the script.
+#  Executes the app.
 #  ------------------------------------------------------
-desc 'Execute the script'
+desc 'Execute the app'
 command :exec do |c|
   c.flag([:f], desc: 'Run catch-up mode with this start date')
   c.flag([:n], desc: 'Run catch-up mode for the last N days')
@@ -171,9 +171,10 @@ end
 #  ------------------------------------------------------
 #  init command
 #
-#  Initializes the script.
+#  Initializes the app by asking the user for information
+#  needed torun.
 #  ------------------------------------------------------
-desc 'Install and SifttterRedux::initialize dependencies'
+desc 'Install and initialize dependencies'
 command :init do |c|
   c.switch([:s], desc: 'Run init from scratch (i.e., clear out all values from configuration)')
 
