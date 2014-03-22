@@ -4,3 +4,8 @@ rvm:
   - 2.0.0
   - 1.9.3
   - jruby-19mode
+env:
+  - TEST_SUITE=1.ui
+  - TEST_SUITE=2.initialization
+script:
+  - bundle exec cucumber -f progress -r features features/$TEST_SUITE
