@@ -6,6 +6,5 @@ rvm:
   - jruby-19mode
 env:
   - TEST_SUITE=1.ui.feature
-  - TEST_SUITE=2.initialization.feature
 script:
   - bundle exec cucumber -f progress -r features features/$TEST_SUITE
