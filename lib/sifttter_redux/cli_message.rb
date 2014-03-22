@@ -23,7 +23,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.activate_logging
-      @@logger = Logger.new(File.join(ENV['HOME'], '.sifttter_redux_log'))
+      @@logger = Logger.new(SRD_LOG_FILEPATH)
     end
 
     #  ----------------------------------------------------

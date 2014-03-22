@@ -65,7 +65,7 @@ pre do |global, command, options, args|
 
   # Set up logging.
   CLIMessage::activate_logging
-  CLIMessage::log_level(Configuration::sifttter_redux[:log_level] || Logger::DEBUG)
+  CLIMessage::log_level(Configuration::sifttter_redux[:log_level] || Logger::WARN)
 
   if File.exists?(SRD_CONFIG_FILEPATH)
     current_version = Gem::Version.new(Configuration::sifttter_redux[:version])
@@ -177,7 +177,6 @@ end
 desc 'Install and initialize dependencies'
 command :init do |c|
   c.switch([:s], desc: 'Run init from scratch (i.e., clear out all values from configuration)')
-
   c.action do |global_options, options, args|
     CLIMessage::section_block('INITIALIZING...') do
       if options[:s]

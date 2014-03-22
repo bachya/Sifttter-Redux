@@ -16,15 +16,23 @@ module SifttterRedux
   #  ====================================================
   #  Constants
   #  ====================================================
+  #  ----------------------------------------------------
+  #  Dropbox Uploader
+  #  ----------------------------------------------------
   DBU_CONFIG_FILEPATH = File.join(ENV['HOME'], '.dropbox_uploader')
   DBU_LOCAL_FILEPATH = '/usr/local/opt'
-
-  DO_LOCAL_FILEPATH = '/tmp/dayone'
-  DO_REMOTE_FILEPATH = "/Apps/Day\\ One/Journal.dayone/entries"
-
   SFT_LOCAL_FILEPATH = '/tmp/sifttter'
   SFT_REMOTE_FILEPATH = '/Apps/ifttt/sifttter'
 
+  #  ----------------------------------------------------
+  #  Day One Uploader
+  #  ----------------------------------------------------
+  DO_LOCAL_FILEPATH = '/tmp/dayone'
+  DO_REMOTE_FILEPATH = "/Apps/Day\\ One/Journal.dayone/entries"
+
+  #  ----------------------------------------------------
+  #  Local Filepaths
+  #  ----------------------------------------------------
   SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')
   SRD_LOG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux_log')
 
