@@ -208,7 +208,6 @@ module SifttterRedux
         pref = File.expand_path(pref) if pref.start_with?('~')
 
         Configuration::send(prompt[:section]).merge!(prompt[:key] => pref)
-        CLIMessage::debug("Value for #{ prompt[:key] }: #{ pref }")
       end
     end
 

@@ -38,7 +38,7 @@ module SifttterRedux
     #  @return Void
     #  ----------------------------------------------------
     def self.debug(m)
-      @@logger.debug(m.blue) unless @@logger.nil?
+      @@logger.debug(m) unless @@logger.nil?
     end
 
     #  ----------------------------------------------------
@@ -50,7 +50,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.error(m)
       puts "# #{ m }".red
-      @@logger.error(m.red) unless @@logger.nil?
+      @@logger.error(m) unless @@logger.nil?
     end
 
     #  ----------------------------------------------------
@@ -62,7 +62,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.info(m)
       puts "# #{ m }".blue
-      @@logger.debug(m.blue) unless @@logger.nil?
+      @@logger.debug(m) unless @@logger.nil?
     end
 
     #  ----------------------------------------------------
@@ -149,7 +149,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.section(m)
       puts "---> #{ m }".purple
-      @@logger.debug(m.purple) unless @@logger.nil?
+      @@logger.debug(m) unless @@logger.nil?
     end
 
     #  ----------------------------------------------------
@@ -186,7 +186,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.success(m)
       puts "# #{ m }".green
-      @@logger.debug(m.green) unless @@logger.nil?
+      @@logger.debug(m) unless @@logger.nil?
     end
 
     #  ----------------------------------------------------
@@ -198,7 +198,7 @@ module SifttterRedux
     #  ----------------------------------------------------
     def self.warning(m)
       puts "# #{ m }".yellow
-      @@logger.warn(m.yellow) unless @@logger.nil?
+      @@logger.warn(m) unless @@logger.nil?
     end
   end
 end
