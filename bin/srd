@@ -90,6 +90,18 @@ pre do |global, command, options, args|
   true
 end
 
+post do |global,command,options,args|
+  # Post logic here
+  # Use skips_post before a command to skip this
+  # block on that command only
+end
+
+on_error do |exception|
+  CLIMessage::error(exception.to_s)
+  exit!(1)
+  true
+end
+
 #  ======================================================
 #  Commands
 #  ======================================================
@@ -113,49 +125,44 @@ command :exec do |c|
   c.action do |global_options, options, args|
     SifttterRedux.verbose = global_options[:verbose] || options[:verbose]
 
-    begin
-      dates = SifttterRedux::get_dates_from_options(options)
-      unless dates.nil?
-        first_date = dates.first
-        second_date = dates.reverse_each.first
+    dates = SifttterRedux::get_dates_from_options(options)
+    unless dates.nil?
+      first_date = dates.first
+      second_date = dates.reverse_each.first
 
-        date_string = first_date.strftime('%B %d, %Y')
-        date_string << " to #{ second_date.strftime('%B %d, %Y') }" if first_date != second_date
-        CLIMessage::info("Creating #{ first_date == second_date ? 'entry' : 'entries' }: #{ date_string }")
+      date_string = first_date.strftime('%B %d, %Y')
+      date_string << " to #{ second_date.strftime('%B %d, %Y') }" if first_date != second_date
+      CLIMessage::info("Creating #{ first_date == second_date ? 'entry' : 'entries' }: #{ date_string }")
 
-        # Download Sifttter files from Dropbox.
-        dbu = DropboxUploader.new(Configuration::db_uploader[:exe_filepath])
-        dbu.verbose = SifttterRedux.verbose
-        dbu.local_target = Configuration::sifttter_redux[:sifttter_local_filepath]
-        dbu.remote_target = Configuration::sifttter_redux[:sifttter_remote_filepath]
-        dbu.message = 'Downloading Sifttter files...'
+      # Download Sifttter files from Dropbox.
+      dbu = DropboxUploader.new(Configuration::db_uploader[:exe_filepath])
+      dbu.verbose = SifttterRedux.verbose
+      dbu.local_target = Configuration::sifttter_redux[:sifttter_local_filepath]
+      dbu.remote_target = Configuration::sifttter_redux[:sifttter_remote_filepath]
+      dbu.message = 'Downloading Sifttter files...'
+
+      CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+        dbu.download
+      end
+
+      # Process a new Sifttter entry for each date.
+      dates.each do |date|
+        Sifttter::run(date)
+      end
+
+      # Upload any Day One entries to Dropbox (if there are any).
+      unless Dir[Configuration::sifttter_redux[:dayone_local_filepath] + '/*'].empty?
+        dbu.local_target = "#{ Configuration::sifttter_redux[:dayone_local_filepath] }/*"
+        dbu.remote_target = Configuration::sifttter_redux[:dayone_remote_filepath]
+        dbu.message = 'Uploading Day One entries to Dropbox...'
 
         CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-          dbu.download
+          dbu.upload
         end
-
-        # Process a new Sifttter entry for each date.
-        dates.each do |date|
-          Sifttter::run(date)
-        end
-
-        # Upload any Day One entries to Dropbox (if there are any).
-        unless Dir[Configuration::sifttter_redux[:dayone_local_filepath] + '/*'].empty?
-          dbu.local_target = "#{ Configuration::sifttter_redux[:dayone_local_filepath] }/*"
-          dbu.remote_target = Configuration::sifttter_redux[:dayone_remote_filepath]
-          dbu.message = 'Uploading Day One entries to Dropbox...'
-
-          CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-            dbu.upload
-          end
-        end
-
-        # Remove any downloaded local files that we no longer need.
-        SifttterRedux::cleanup_temp_files
       end
-    rescue StandardError => e
-      CLIMessage::error(e.to_s)
-      exit!(1)
+
+      # Remove any downloaded local files that we no longer need.
+      SifttterRedux::cleanup_temp_files
     end
   end
 
