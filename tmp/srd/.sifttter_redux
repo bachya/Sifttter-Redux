@@ -1,0 +1,13 @@
+---
+:sifttter_redux:
+  :config_location: "/Users/abach/Git/sifttter-redux/features/support/../../tmp/srd/.sifttter_redux"
+  :log_level: WARN
+  :version: 0.5.4
+  :sifttter_local_filepath: "/Users/abach/Git/sifttter-redux/features/support/../../tmp/srd/sifttter_download"
+  :sifttter_remote_filepath: "/Apps/ifttt/Sifttter"
+  :dayone_local_filepath: "/Users/abach/Git/sifttter-redux/features/support/../../tmp/srd/day_one_download"
+  :dayone_remote_filepath: "/Apps/Day\\ One/Journal.dayone/entries"
+:db_uploader:
+  :base_filepath: "/usr/local/opt"
+  :dbu_filepath: "/usr/local/opt/Dropbox-Uploader"
+  :exe_filepath: "/usr/local/opt/Dropbox-Uploader/dropbox_uploader.sh"
