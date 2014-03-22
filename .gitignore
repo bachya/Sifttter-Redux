@@ -3,4 +3,5 @@ Gemfile.lock
 .DS_Store
 results.html
 *.gem
+features/2.initialization.feature
 features/3.execution.feature
