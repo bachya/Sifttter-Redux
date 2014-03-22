@@ -1,3 +1,9 @@
+begin
+   require 'Win32/Console/ANSI' if (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+rescue LoadError
+   raise 'You must run `gem install win32console` to use CLI colors on Windows'
+end
+
 require 'logger'
 require 'readline'
 
