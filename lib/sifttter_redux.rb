@@ -10,7 +10,6 @@ require 'sifttter_redux/version'
 #
 #  Wrapper module for all other modules in this project
 #  ======================================================
-
 module SifttterRedux
   attr_accessor :verbose
 
