@@ -1,3 +1,4 @@
+@announce
 Feature: Initialization
   As a user, when I initialize Sifttter Redux,
   I should be guided through the process as
