@@ -8,6 +8,10 @@ require 'sifttter-redux/sifttter'
 module SifttterRedux
   
   class << self
+    # Stores whether initalization has completed.
+    # @return [Boolean]
+    attr_reader :initialized
+    
     # Stores whether verbose output is turned on.
     # @return [Boolean]
     attr_accessor :verbose
@@ -56,7 +60,7 @@ module SifttterRedux
           executable_path = File.join(dbu_path, 'dropbox_uploader.sh')
 
           if File.directory?(dbu_path)
-            messenger.warning("Using pre-existing Dropbox Uploader at #{ dbu_path }...")
+            messenger.warn("Using pre-existing Dropbox Uploader at #{ dbu_path }...")
           else
             messenger.info_block("Downloading Dropbox Uploader to #{ dbu_path }...", 'Done.', true) do
               system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ dbu_path }"
@@ -68,7 +72,7 @@ module SifttterRedux
             messenger.info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" }
           end
 
-          configuration.add_section(:db_uploader) unless from_scratch
+          configuration.add_section(:db_uploader) unless configuration.data.key?(:db_uploader)
           configuration.db_uploader.merge!({
             base_filepath: path, 
             dbu_filepath: dbu_path,
@@ -106,7 +110,7 @@ module SifttterRedux
 
           if _dates.last > Date.today
             long_message = "Ignoring overextended end date and using today's date (#{ Date.today })..."
-            messenger.warning(long_message)
+            messenger.warn(long_message)
             r = (_dates.first..Date.today)
           else
             r = (_dates.first.._dates.last)
@@ -134,15 +138,19 @@ module SifttterRedux
     configuration.sifttter_redux.merge!({
       config_location: configuration.config_path,
       log_level: 'WARN',
-      version: VERSION,
+      version: SifttterRedux::VERSION,
     })
 
     # Run the wizard to download Dropbox Uploader.
     dbu_install_wizard(from_scratch = from_scratch)
 
-    pm = CLIUtils::Prefs.new(SifttterRedux::PREF_FILES['INIT'])
+    pm = CLIUtils::Prefs.new(SifttterRedux::PREF_FILES['INIT'], configuration)
     pm.ask
     configuration.ingest_prefs(pm)
+
+    messenger.debug { "Configuration values after pref collection: #{ configuration.data }" }
+    configuration.save
+    @initialized = true
   end
 
   # Notifies the user that the config file needs to be

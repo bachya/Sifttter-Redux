@@ -1,6 +1,6 @@
 require 'date'
 require 'test_helper'
-require File.join(File.dirname(__FILE__), '..', 'lib/sifttter_redux/date_range_maker.rb')
+require File.join(File.dirname(__FILE__), '..', 'lib/sifttter-redux/date-range-maker.rb')
 
 class DateRangeMakerTest < Test::Unit::TestCase
   def test_today

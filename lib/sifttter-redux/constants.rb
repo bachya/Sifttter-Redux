@@ -5,6 +5,9 @@ module SifttterRedux
   # The default local filepath of the Dropbox-Uploader directory
   DEFAULT_DBU_LOCAL_FILEPATH = '/usr/local/opt'
 
+  # The default message to display when Dropbox Uploader is running
+  DEFAULT_DBU_MESSAGE = 'RUNNING DROPBOX UPLOADER'
+
   # The default local filepath of the Siftter Redux config file
   DEFAULT_SRD_CONFIG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux')
 
@@ -15,7 +18,7 @@ module SifttterRedux
   DESCRIPTION = 'A customized IFTTT-to-Day One service that allows for smart installation and automated running on a standalone *NIX device (such as a Raspberry Pi).'
 
   # The last version to require a config update
-  NEWEST_CONFIG_VERSION = '0.5.4'
+  NEWEST_CONFIG_VERSION = '0.6'
 
   # Hash of preference files
   PREF_FILES = {
