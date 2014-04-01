@@ -3,7 +3,7 @@ require 'rubygems'
 
 def version
   contents = File.read File.expand_path('../lib/sifttter-redux/constants.rb', __FILE__)
-  contents[/VERSION = "([^"]+)"/, 1]
+  contents[/VERSION = '([^']+)'/, 1]
 end
 
 spec = eval(File.read('sifttter-redux.gemspec'))
@@ -27,25 +27,26 @@ Cucumber::Rake::Task.new(:features) do |t|
   t.fork = false
 end
 
-desc "Release Sifttter Redux version #{version}"
+desc "Release Sifttter Redux version #{ version }"
 task :release => :build do
   unless `git branch` =~ /^\* master$/
     puts "You must be on the master branch to release!"
     exit!
   end
   
-  sh "git commit --allow-empty -a -m 'Release #{version}'"
-  sh "git tag v#{version}"
+  sh "git commit --allow-empty -a -m 'Release #{ version }'"
+  sh "git tag v#{ version }"
   sh "git push origin master"
-  sh "git push origin v#{version}"
-  sh "gem push pkg/sifttter-redux-#{version}.gem"
+  sh "git push origin v#{ version }"
+  sh "gem push pkg/sifttter-redux-#{ version }.gem"
 end
 
 desc "Build the gem"
 task :build do
+  p version
   FileUtils.mkdir_p "pkg"
   sh "gem build sifttter-redux.gemspec"
-  FileUtils.mv("./sifttter-redux-#{version}.gem", "pkg")
+  FileUtils.mv("./sifttter-redux-#{ version }.gem", "pkg")
 end
 
 task :default => [:test, :features]
