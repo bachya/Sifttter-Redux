@@ -32,12 +32,14 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #  OTHER DEALINGS IN THE SOFTWARE.
 #--------------------------------------------------------------------
+require 'cliutils'
 require 'gli'
-require 'sifttter_redux'
+require 'sifttter-redux'
 require 'securerandom'
 
+include CLIUtils::Configuration
+include CLIUtils::Messenging
 include GLI::App
-include SifttterRedux
 
 #  ======================================================
 #  App Info
@@ -61,23 +63,23 @@ switch([:verbose], desc: 'Turns on verbose output')
 pre do |global, command, options, args|
 
   # Load SifttterRedux configuration module.
-  Configuration::load(SRD_CONFIG_FILEPATH)
+  load_configuration(DEFAULT_SRD_CONFIG_FILEPATH)
 
   # Set up logging.
-  CLIMessage::activate_logging
-  CLIMessage::log_level(Configuration::sifttter_redux[:log_level] || Logger::WARN)
+  messenger.activate_logging
+  messenger.log_level(Configuration::sifttter_redux[:log_level] || Logger::WARN)
 
-  if File.exists?(SRD_CONFIG_FILEPATH)
+  if File.exists?(DEFAULT_SRD_CONFIG_FILEPATH)
     current_version = Gem::Version.new(Configuration::sifttter_redux[:version])
     last_config_change_version = Gem::Version.new(NEWEST_CONFIG_VERSION)
 
     # If the config file needs updating, force the user to do that first.
     if Configuration::sifttter_redux[:version].nil? || current_version < last_config_change_version
-      CLIMessage::info('This version needs to make some config changes.')
-      CLIMessage::info("Don't worry; when prompted, your current values for")
-      CLIMessage::info("existing config options will be presented (so it'll")
-      CLIMessage::info('be easier to fly through the upgrade).')
-      CLIMessage::prompt('Press enter to continue')
+      messenger.info('This version needs to make some config changes.')
+      messenger.info("Don't worry; when prompted, your current values for")
+      messenger.info("existing config options will be presented (so it'll")
+      messenger.info('be easier to fly through the upgrade).')
+      messenger.prompt('Press enter to continue')
       SifttterRedux::init(true)
       exit!(0)
     end
@@ -97,7 +99,7 @@ post do |global,command,options,args|
 end
 
 on_error do |exception|
-  CLIMessage::error(exception.to_s)
+  messenger.error(exception.to_s)
   exit!(1)
   true
 end
@@ -132,7 +134,7 @@ command :exec do |c|
 
       date_string = first_date.strftime('%B %d, %Y')
       date_string << " to #{ second_date.strftime('%B %d, %Y') }" if first_date != second_date
-      CLIMessage::info("Creating #{ first_date == second_date ? 'entry' : 'entries' }: #{ date_string }")
+      messenger.info("Creating #{ first_date == second_date ? 'entry' : 'entries' }: #{ date_string }")
 
       # Download Sifttter files from Dropbox.
       dbu = DropboxUploader.new(Configuration::db_uploader[:exe_filepath])
@@ -141,7 +143,7 @@ command :exec do |c|
       dbu.remote_target = Configuration::sifttter_redux[:sifttter_remote_filepath]
       dbu.message = 'Downloading Sifttter files...'
 
-      CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+      messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
         dbu.download
       end
 
@@ -156,7 +158,7 @@ command :exec do |c|
         dbu.remote_target = Configuration::sifttter_redux[:dayone_remote_filepath]
         dbu.message = 'Uploading Day One entries to Dropbox...'
 
-        CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+        messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
           dbu.upload
         end
       end
@@ -178,12 +180,12 @@ desc 'Install and initialize dependencies'
 command :init do |c|
   c.switch([:s], desc: 'Run init from scratch (i.e., clear out all values from configuration)')
   c.action do |global_options, options, args|
-    CLIMessage::section_block('INITIALIZING...') do
+    messenger.section_block('INITIALIZING...') do
       if options[:s]
         SifttterRedux::init(true)
       else
         long_message = "You've already initialized Sifttter Redux. Do it again?"
-        SifttterRedux::init if CLIMessage::prompt(long_message, 'N').downcase == 'y'
+        SifttterRedux::init if messenger.prompt(long_message, 'N').downcase == 'y'
       end
     end
   end

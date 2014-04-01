@@ -48,9 +48,9 @@ module SifttterRedux
 
       files = `find #{ Configuration::sifttter_redux[:sifttter_local_filepath] } -type f -name "*.txt" | grep -v -i daily | sort`
       if files.empty?
-        CLIMessage::error('No Sifttter files to parse...')
-        CLIMessage::error('Is Dropbox Uploader configured correctly?')
-        CLIMessage::error("Is #{ Configuration::sifttter_redux[:sifttter_remote_filepath] } the correct remote filepath?")
+        messenger.error('No Sifttter files to parse...')
+        messenger.error('Is Dropbox Uploader configured correctly?')
+        messenger.error("Is #{ Configuration::sifttter_redux[:sifttter_remote_filepath] } the correct remote filepath?")
         exit!(1)
       end
 
@@ -79,7 +79,7 @@ module SifttterRedux
       end
 
       if projects.length <=0
-      	CLIMessage::warning('No entries found...')
+      	messenger.warning('No entries found...')
       end
 
       if projects.length > 0
@@ -93,7 +93,7 @@ module SifttterRedux
       	fh = File.new(File.expand_path(Configuration::sifttter_redux[:dayone_local_filepath] + '/' + uuid + '.doentry'), 'w+')
       	fh.puts template.result(binding)
       	fh.close
-      	CLIMessage::success("Entry logged for #{ date_for_title }...")
+      	messenger.success("Entry logged for #{ date_for_title }...")
       end
     end
   end
