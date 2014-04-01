@@ -1,7 +1,7 @@
-require 'sifttter_redux/constants'
-require 'sifttter_redux/date_range_maker'
-require 'sifttter_redux/dropbox_uploader'
-require 'sifttter_redux/sifttter'
+require 'sifttter-redux/constants'
+require 'sifttter-redux/date-range-maker'
+require 'sifttter-redux/dropbox-uploader'
+require 'sifttter-redux/sifttter'
 
 # The SifttterRedux module, which wraps everything
 # in this gem.
