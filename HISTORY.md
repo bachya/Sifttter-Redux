@@ -1,3 +1,7 @@
+# 0.6.1 (2014-04-02)
+
+* Fixed Aruba tests
+
 # 0.6.0 (2014-04-01)
 
 * Migrated to CLIUtils
