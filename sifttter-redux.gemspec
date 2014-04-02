@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('rdoc', '4.1.1')
   spec.add_development_dependency('aruba', '0.5.4')
   spec.add_runtime_dependency('chronic', '0.10.2')
-  spec.add_runtime_dependency('cliutils', '1.1.0')
+  spec.add_runtime_dependency('cliutils', '~> 0')
   spec.add_runtime_dependency('gli','2.9.0')
 end
