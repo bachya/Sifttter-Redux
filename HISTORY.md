@@ -1,3 +1,7 @@
+# 0.6.2 (2014-04-03)
+
+* Updated to CLIUtils 1.2.1
+
 # 0.6.1 (2014-04-02)
 
 * Fixed Aruba tests
