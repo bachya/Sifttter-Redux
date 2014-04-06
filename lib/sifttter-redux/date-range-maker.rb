@@ -4,7 +4,6 @@ module SifttterRedux
   # DateRangeMaker Module
   # Returns a Range of dates based on supplied parameters
   module DateRangeMaker
-
     # Returns a date range for the last N days (including
     # today's date if specified).
     # @param [Integer} num_days The number of days to look back

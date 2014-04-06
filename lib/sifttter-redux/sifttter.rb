@@ -2,8 +2,6 @@ module SifttterRedux
   # Sifttter Module
   # Wrapper module for Sifttter itself
   module Sifttter
-    # Modified form of Sifttter
-    #
     # Sifttter: An IFTTT-to-Day One Logger by Craig Eley
     # Based on tp-dailylog.rb by Brett Terpstra 2012
     # @param [Date] date The date to use when scanning Sifttter

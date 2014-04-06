@@ -109,8 +109,7 @@ module SifttterRedux
           _dates = DateRangeMaker.range(options[:f], options[:t], options[:i])
 
           if _dates.last > Date.today
-            long_message = "Ignoring overextended end date and using today's date (#{ Date.today })..."
-            messenger.warn(long_message)
+            messenger.warn("Ignoring overextended end date and using today's date (#{ Date.today })...")
             r = (_dates.first..Date.today)
           else
             r = (_dates.first.._dates.last)
