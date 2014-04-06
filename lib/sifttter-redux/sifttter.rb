@@ -85,7 +85,7 @@ module SifttterRedux
       files.split("\n").each do |file|
         file.strip!
         if File.exists?(file)
-          parse_sifttter_file(file, date - 1)
+          parse_sifttter_file(file, date)
         end
       end
       

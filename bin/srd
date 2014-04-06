@@ -32,6 +32,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 #--------------------------------------------------------------------
+require 'archive/zip'
 require 'cliutils'
 require 'gli'
 require 'sifttter-redux'
@@ -186,6 +187,41 @@ command :init do |c|
         long_message = "You've already initialized Sifttter Redux. Do it again?"
         SifttterRedux::init if messenger.prompt(long_message, 'N').downcase == 'y'
       end
+    end
+  end
+end
+
+desc 'Upgrades Sifttter files to the new format'
+command :upgrade do |c|
+  c.switch([:verbose], desc: 'Turns on verbose output')
+  c.action do |global_options, options, args|
+    SifttterRedux.verbose = global_options[:verbose] || options[:verbose]
+
+    # Set the archive filepath and the files that will go into it.
+    filename = "#{ ENV['HOME'] }/sifttter_backup_#{ Time.now.to_i }.zip"
+    sifttter_files = Dir.glob("#{ configuration.sifttter_redux[:sifttter_local_filepath] }/*.txt")
+
+    # Download Sifttter files from Dropbox.
+    dbu = SifttterRedux::DropboxUploader.new(configuration.db_uploader[:exe_filepath])
+    dbu.verbose = SifttterRedux.verbose
+    dbu.local_target = configuration.sifttter_redux[:sifttter_local_filepath]
+    dbu.remote_target = configuration.sifttter_redux[:sifttter_remote_filepath]
+    dbu.message = "Backing up Sifttter files to #{ filename }..."
+
+    messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+      dbu.download
+    end
+    
+    # Archive the Sifttter files.
+    Archive::Zip.archive(filename, sifttter_files)
+
+    # Replace the old scheme with the new one.
+    sifttter_files.each do |file|
+      t = File.read(file)
+      t.gsub!(/^- /, "@begin\n@date ")
+       .gsub!(/ - /, "\n- ")
+       .gsub!(/\s?@done/, '@end')
+      File.open(file, 'w') { |f| f.write(t) }
     end
   end
 end

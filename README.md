@@ -425,11 +425,9 @@ Sifttter Redux logs a lot of good info to `~/.sifttter_redux_log`. It makes use 
 
 If you want to see more or less in your log files, simply change the `log_level` value in `~/.sifttter_redux` to your desired level.
 
-# Known Issues & Future Releases
-
-Bugs, issues, and enhancement requests (my own or those submitted by others) can be found on the [Issues Page](https://github.com/bachya/Sifttter-Redux/issues "Open Items").
-
 # Bugs and Feature Requests
+
+My current roadmap can be found on my [Trello board](https://trello.com/b/z4vl3YxC/sifttter-redux "Sifttter Redux Trello Board")
 
 To report bugs with or suggest features/changes for Sifttter Redux, please use the [Issues Page](http://github.com/bachya/sifttter-redux/issues).
 
