@@ -63,7 +63,7 @@ switch([:verbose], desc: 'Turns on verbose output')
 pre do |global, command, options, args|
 
   # Load SifttterRedux configuration module.
-  load_configuration(SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH)
+  CLIUtils::Configuration.configuration = SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH
   file_logger = Logger.new(SifttterRedux::DEFAULT_SRD_LOG_FILEPATH)
   file_logger.level = LOG_LEVELS[configuration.sifttter_redux[:log_level] || 'DEBUG']
   messenger.attach(LOGFILE: file_logger)
@@ -98,9 +98,9 @@ post do |global,command,options,args|
 end
 
 on_error do |exception|
-  messenger.error(exception.to_s)
-  exit!(1)
-  true
+  # messenger.error(exception.to_s)
+  # exit!(1)
+  # true
 end
 
 #  ======================================================
