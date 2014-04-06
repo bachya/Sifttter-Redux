@@ -1,0 +1,10 @@
+# Logfile created on 2014-03-22 08:12:43 -0600 by logger.rb/44203
+D, [2014-03-22T08:12:43.563366 #13209] DEBUG -- : CONFIGURING DROPBOX UPLOADER...
+D, [2014-03-22T08:12:43.563826 #13209] DEBUG -- : Answer to "Location for Dropbox-Uploader": /usr/local/opt
+W, [2014-03-22T08:12:43.563882 #13209]  WARN -- : Using pre-existing Dropbox Uploader at /usr/local/opt/Dropbox-Uploader...
+D, [2014-03-22T08:12:43.563920 #13209] DEBUG -- : COLLECTING PREFERENCES...
+D, [2014-03-22T08:12:43.564297 #13209] DEBUG -- : Answer to "Temporary path to download Sifttter files to": ~/sifttter_download
+D, [2014-03-22T08:12:43.564661 #13209] DEBUG -- : Answer to "Path to Sifttter files in Dropbox": /Apps/ifttt/Sifttter
+D, [2014-03-22T08:12:43.564995 #13209] DEBUG -- : Answer to "Temporary path to download Day One files to": ~/day_one_download
+D, [2014-03-22T08:12:43.565542 #13209] DEBUG -- : Answer to "Path to Day One files in Dropbox": /Apps/Day\ One/Journal.dayone/entries
+D, [2014-03-22T08:12:43.565605 #13209] DEBUG -- : Configuration values: {:sifttter_redux=>{:config_location=>"/Users/abach/Git/sifttter-redux/features/support/../../tmp/srd/.sifttter_redux", :log_level=>"WARN", :version=>"0.5.4", :sifttter_local_filepath=>"/Users/abach/Git/sifttter-redux/features/support/../../tmp/srd/sifttter_download", :sifttter_remote_filepath=>"/Apps/ifttt/Sifttter", :dayone_local_filepath=>"/Users/abach/Git/sifttter-redux/features/support/../../tmp/srd/day_one_download", :dayone_remote_filepath=>"/Apps/Day\\ One/Journal.dayone/entries"}, :db_uploader=>{:base_filepath=>"/usr/local/opt", :dbu_filepath=>"/usr/local/opt/Dropbox-Uploader", :exe_filepath=>"/usr/local/opt/Dropbox-Uploader/dropbox_uploader.sh"}}

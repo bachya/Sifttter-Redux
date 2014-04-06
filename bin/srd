@@ -1,44 +1,45 @@
 #!/usr/bin/env ruby
 # Encoding: utf-8
 #--------------------------------------------------------------------
-#  Sifttter Redux
+# Sifttter Redux
 #
-#  A modification of Craig Eley's Sifttter that allows for smart
-#  installation on a standalone *NIX device (such as a Raspberry Pi).
+# A modification of Craig Eley's Sifttter that allows for smart
+# installation on a standalone *NIX device (such as a Raspberry Pi).
 #
-#  Sifttter copyright Craig Eley 2014 <http://craigeley.com>
+# Sifttter copyright Craig Eley 2014 <http://craigeley.com>
 #
-#  Copyright (c) 2014
-#  Aaron Bach <bachya1208@gmail.com>
+# Copyright (c) 2014
+# Aaron Bach <bachya1208@gmail.com>
 #
-#  Permission is hereby granted, free of charge, to any person
-#  obtaining a copy of this software and associated documentation
-#  files (the "Software"), to deal in the Software without
-#  restriction, including without limitation the rights to use,
-#  copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the
-#  Software is furnished to do so, subject to the following
-#  conditions:
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
 #
-#  The above copyright notice and this permission notice shall be
-#  included in all copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
 #
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-#  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-#  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-#  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-#  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-#  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-#  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-#  OTHER DEALINGS IN THE SOFTWARE.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
 #--------------------------------------------------------------------
+require 'cliutils'
 require 'gli'
-require 'logger'
-require 'sifttter_redux'
+require 'sifttter-redux'
 require 'securerandom'
 
+include CLIUtils::Configuration
+include CLIUtils::Messenging
 include GLI::App
-include SifttterRedux
 
 #  ======================================================
 #  App Info
@@ -49,7 +50,7 @@ program_desc 'Sifttter Redux
     smart installation and automated running on a standalone
     *NIX device (such as a Raspberry Pi).'
 
-version VERSION
+version SifttterRedux::VERSION
 
 #  ======================================================
 #  Global Flags and Switches
@@ -60,34 +61,45 @@ switch([:verbose], desc: 'Turns on verbose output')
 #  Pre, Post, and Error
 #  ======================================================
 pre do |global, command, options, args|
-  # Load SifttterRedux configuration module.
-  Configuration::load(SRD_CONFIG_FILEPATH)
-  
-  # Set up logging.
-  CLIMessage::activate_logging
-  CLIMessage::log_level(Configuration['sifttter_redux']['log_level'])
 
-  if File.exists?(SRD_CONFIG_FILEPATH)
-    current_version = Gem::Version.new(Configuration['sifttter_redux']['version'])
-    last_config_change_version = Gem::Version.new(NEWEST_CONFIG_VERSION)
+  # Load SifttterRedux configuration module.
+  load_configuration(SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH)
+  file_logger = Logger.new(SifttterRedux::DEFAULT_SRD_LOG_FILEPATH)
+  file_logger.level = LOG_LEVELS[configuration.sifttter_redux[:log_level] || 'DEBUG']
+  messenger.attach(LOGFILE: file_logger)
+
+  if File.exists?(SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH)
+    # Check to see if there is a new config file version
+    # to be installed.
+    c_version = Gem::Version.new(configuration.sifttter_redux[:version])
+    l_version = Gem::Version.new(SifttterRedux::NEWEST_CONFIG_VERSION)
+
+    messenger.debug { "Current gem version: #{ c_version }" }
+    messenger.debug { "Last version with config change: #{ l_version }" }
 
     # If the config file needs updating, force the user to do that first.
-    if Configuration['sifttter_redux']['version'].nil? || current_version < last_config_change_version
-      CLIMessage::info('This version needs to make some config changes.')
-      CLIMessage::info("Don't worry; when prompted, your current values for")
-      CLIMessage::info("existing config options will be presented (so it'll")
-      CLIMessage::info('be easier to fly through the upgrade).')
-      CLIMessage::prompt('Press enter to continue: ')
-      SifttterRedux::init(true)
+    if configuration.sifttter_redux[:version].nil? || c_version < l_version
+      SifttterRedux.update_config_file
       exit!(0)
     end
   else
     # Force the user to init if they try to run any command other than `init` first.
-    CLIMessage::info('Initializing Sifttter Redux first...') unless command.name_for_help[0] == 'init'
-    SifttterRedux::init
+    SifttterRedux.init(true)
     exit!(0)
   end
 
+  true
+end
+
+post do |global,command,options,args|
+  # Post logic here
+  # Use skips_post before a command to skip this
+  # block on that command only
+end
+
+on_error do |exception|
+  messenger.error(exception.to_s)
+  exit!(1)
   true
 end
 
@@ -97,9 +109,9 @@ end
 #  ------------------------------------------------------
 #  exec command
 #
-#  Executes the script.
+#  Executes the app.
 #  ------------------------------------------------------
-desc 'Execute the script'
+desc 'Execute the app'
 command :exec do |c|
   c.flag([:f], desc: 'Run catch-up mode with this start date')
   c.flag([:n], desc: 'Run catch-up mode for the last N days')
@@ -114,49 +126,44 @@ command :exec do |c|
   c.action do |global_options, options, args|
     SifttterRedux.verbose = global_options[:verbose] || options[:verbose]
 
-    begin
-      dates = SifttterRedux::get_dates_from_options(options)
-      unless dates.nil?
-        first_date = dates.first
-        second_date = dates.reverse_each.first
+    dates = SifttterRedux::get_dates_from_options(options)
+    unless dates.nil?
+      first_date = dates.first
+      second_date = dates.reverse_each.first
 
-        date_string = first_date.strftime('%B %d, %Y')
-        date_string << " to #{ second_date.strftime('%B %d, %Y') }" if first_date != second_date
-        CLIMessage::info("Creating #{ first_date == second_date ? 'entry' : 'entries' }: #{ date_string }")
+      date_string = first_date.strftime('%B %d, %Y')
+      date_string << " to #{ second_date.strftime('%B %d, %Y') }" if first_date != second_date
+      messenger.info("Creating #{ first_date == second_date ? 'entry' : 'entries' }: #{ date_string }")
 
-        # Download Sifttter files from Dropbox.
-        dbu = DropboxUploader.new(Configuration['db_uploader']['exe_filepath'])
-        dbu.verbose = SifttterRedux.verbose
-        dbu.local_target = Configuration['sifttter_redux']['sifttter_local_filepath']
-        dbu.remote_target = Configuration['sifttter_redux']['sifttter_remote_filepath']
-        dbu.message = 'Downloading Sifttter files...'
+      # Download Sifttter files from Dropbox.
+      dbu = SifttterRedux::DropboxUploader.new(configuration.db_uploader[:exe_filepath])
+      dbu.verbose = SifttterRedux.verbose
+      dbu.local_target = configuration.sifttter_redux[:sifttter_local_filepath]
+      dbu.remote_target = configuration.sifttter_redux[:sifttter_remote_filepath]
+      dbu.message = 'Downloading Sifttter files...'
 
-        CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-          dbu.download
-        end
-
-        # Process a new Sifttter entry for each date.
-        dates.each do |date|
-          Sifttter::run(date)
-        end
-
-        # Upload any Day One entries to Dropbox (if there are any).
-        unless Dir[Configuration['sifttter_redux']['dayone_local_filepath'] + '/*'].empty?
-          dbu.local_target = "#{ Configuration['sifttter_redux']['dayone_local_filepath'] }/*"
-          dbu.remote_target = Configuration['sifttter_redux']['dayone_remote_filepath']
-          dbu.message = 'Uploading Day One entries to Dropbox...'
-
-          CLIMessage::info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-            dbu.upload
-          end
-        end
-
-        # Remove any downloaded local files that we no longer need.
-        SifttterRedux::cleanup_temp_files
+      messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+        dbu.download
       end
-    rescue StandardError => e
-      CLIMessage::error(e.to_s)
-      exit!(1)
+
+      # Process a new Sifttter entry for each date.
+      dates.each do |date|
+        SifttterRedux::Sifttter.run(date)
+      end
+
+      # Upload any Day One entries to Dropbox (if there are any).
+      unless Dir[configuration.sifttter_redux[:dayone_local_filepath] + '/*'].empty?
+        dbu.local_target = "#{ configuration.sifttter_redux[:dayone_local_filepath] }/*"
+        dbu.remote_target = configuration.sifttter_redux[:dayone_remote_filepath]
+        dbu.message = 'Uploading Day One entries to Dropbox...'
+
+        messenger.info_block(dbu.message || SifttterRedux::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+          dbu.upload
+        end
+      end
+
+      # Remove any downloaded local files that we no longer need.
+      SifttterRedux.cleanup_temp_files
     end
   end
 
@@ -165,22 +172,25 @@ end
 #  ------------------------------------------------------
 #  init command
 #
-#  Initializes the script.
+#  Initializes the app by asking the user for information
+#  needed torun.
 #  ------------------------------------------------------
-desc 'Install and SifttterRedux::initialize dependencies'
+desc 'Install and initialize dependencies'
 command :init do |c|
   c.switch([:s], desc: 'Run init from scratch (i.e., clear out all values from configuration)')
-
   c.action do |global_options, options, args|
-    CLIMessage::section_block('INITIALIZING...') do
-      if File.exists?(Configuration::config_path) && !options[:s]
-        long_message = "You've already initialized Sifttter Redux. Do it again?"
-        SifttterRedux::init(true) if CLIMessage::prompt(long_message, 'N').downcase == 'y'
+    messenger.section_block('INITIALIZING...') do
+      if options[:s]
+        SifttterRedux::init(true)
       else
-        SifttterRedux::init
+        long_message = "You've already initialized Sifttter Redux. Do it again?"
+        SifttterRedux::init if messenger.prompt(long_message, 'N').downcase == 'y'
       end
     end
   end
 end
 
+#  ======================================================
+#  Run!
+#  ======================================================
 exit run(ARGV)

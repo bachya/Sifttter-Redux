@@ -1,8 +1,6 @@
 Gemfile.lock
 .bundle
 .DS_Store
-features
 results.html
-README.rdoc
-Sifttter-Redux.rdoc
 *.gem
+features/3.execution.feature

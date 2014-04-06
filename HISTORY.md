@@ -1,3 +1,39 @@
+# 0.6.2 (2014-04-03)
+
+* Updated to CLIUtils 1.2.1
+
+# 0.6.1 (2014-04-02)
+
+* Fixed Aruba tests
+
+# 0.6.0 (2014-04-01)
+
+* Migrated to CLIUtils
+
+# 0.5.4 (2014-03-19)
+
+* Fixed several bugs related to configuration management
+
+# 0.5.3 (2014-03-18)
+
+* Fixed regression with gemspec
+
+# 0.5.2 (2014-03-18)
+
+* New Configuration management system
+
+# 0.5.1 (2014-03-18)
+
+* Fixed a bug regarding missing Methadone references
+
+# 0.5.0 (2014-03-16)
+
+* Fixed a bug where Dropbox Uploader would fail when not in "verbose mode"
+
+# 0.4.9 (2014-03-15)
+
+* Fixed a bug with importing Logger into CLIMessage
+
 # 0.4.8 (2014-03-15)
 
 * Fixed a bug in which Sifttter Redux would ignore log level specified in config file

@@ -1,23 +1,14 @@
 require 'chronic'
 
 module SifttterRedux
-  #  ======================================================
-  #  Configuration Module
-  #
-  #  Manages any configuration values and the flat file
-  #  into which they get stored.
-  #  ======================================================
+  # DateRangeMaker Module
+  # Returns a Range of dates based on supplied parameters
   module DateRangeMaker
-
-    #  ------------------------------------------------------
-    #  last_n_days method
-    #
-    #  Returns a date range for the last N days (including
-    #  today's date if specified).
-    #  @param num_days The number of days to look back
-    #  @param include_today Should today be included?
-    #  @return Range
-    #  ------------------------------------------------------
+    # Returns a date range for the last N days (including
+    # today's date if specified).
+    # @param [Integer} num_days The number of days to look back
+    # @param [Boolean] include_today Should today be included?
+    # @return [Range]
     def self.last_n_days(num_days, include_today = false)
       if num_days < 0
         error = 'Cannot specify a negative number of days'
@@ -31,15 +22,11 @@ module SifttterRedux
       end
     end
 
-    #  ------------------------------------------------------
-    #  last_n_weeks method
-    #
-    #  Returns a date range for the last N weeks (including
-    #  today's date if specified).
-    #  @param num_days The number of weeks to look back
-    #  @param include_today Should today be included?
-    #  @return Range
-    #  ------------------------------------------------------
+    # Returns a date range for the last N weeks (including
+    # today's date if specified).
+    # @param [Integer] num_days The number of weeks to look back
+    # @param [Boolean] include_today Should today be included?
+    # @return [Range]
     def self.last_n_weeks(num_weeks = 0, include_today = false)
       if num_weeks < 0
         error = 'Cannot specify a negative number of weeks'
@@ -60,17 +47,13 @@ module SifttterRedux
       end
     end
 
-    #  ------------------------------------------------------
-    #  range method
-    #
-    #  Returns a date range for specified start dates and
-    #  end dates. Note that specifying an end date greater
-    #  than today's date will force today to be the end date.
-    #  @param start_date The start date
-    #  @param end_date The end date
-    #  @param options Miscellaneous options hash
-    #  @return Range
-    #  ------------------------------------------------------
+    # Returns a date range for specified start dates and
+    # end dates. Note that specifying an end date greater
+    # than today's date will force today to be the end date.
+    # @param [Start] start_date The start date
+    # @param [Date] end_date The end date
+    # @param [Hash] options Miscellaneous options
+    # @return [Range]
     def self.range(start_date, end_date, include_today = false)
       if start_date.nil? && !end_date.nil?
         error = "You can't specify -t without specifying -f"
@@ -115,22 +98,14 @@ module SifttterRedux
       end
     end
 
-    #  ------------------------------------------------------
-    #  today method
-    #
-    #  Returns a date range for today
-    #  @return Range
-    #  ------------------------------------------------------
+    # Returns a date range for today
+    # @return [Range]
     def self.today
       (Date.today..Date.today)
     end
 
-    #  ------------------------------------------------------
-    #  yesterday method
-    #
-    #  Returns a date range for yesterday
-    #  @return Range
-    #  ------------------------------------------------------
+    # Returns a date range for yesterday
+    # @return [Range]
     def self.yesterday
       (Date.today - 1..Date.today - 1)
     end

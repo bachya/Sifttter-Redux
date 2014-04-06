@@ -1,0 +1,17 @@
+:prompts:
+  - prompt: Where do you want to download Sifttter files to (temporarily)?
+    default: /tmp/sifttter
+    key: sifttter_local_filepath
+    section: sifttter_redux
+  - prompt: Where are your Sifttter files located in Dropbox?
+    default: /Apps/ifttt/sifttter
+    key: sifttter_remote_filepath
+    section: sifttter_redux
+  - prompt: Where do you want to download Day One files to (temporarily)?
+    default: /tmp/dayone
+    key: dayone_local_filepath
+    section: sifttter_redux
+  - prompt: Where are your Day One files located in Dropbox?
+    default: /Apps/Day\ One/Journal.dayone/entries
+    key: dayone_remote_filepath
+    section: sifttter_redux

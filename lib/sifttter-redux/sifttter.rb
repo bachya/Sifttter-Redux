@@ -1,20 +1,11 @@
 module SifttterRedux
-  #  ======================================================
-  #  Sifttter Module
-  #
-  #  Wrapper module for Sifttter itself
-  #  ======================================================
+  # Sifttter Module
+  # Wrapper module for Sifttter itself
   module Sifttter
-    #  ----------------------------------------------------
-    #  run_sifttter method
-    #
-    #  Modified form of Sifttter
-    #
-    #  Sifttter: An IFTTT-to-Day One Logger by Craig Eley
-    #  Based on tp-dailylog.rb by Brett Terpstra 2012
-    #  @param date The date to use when scanning Sifttter
-    #  @return Void
-    #  ----------------------------------------------------
+    # Sifttter: An IFTTT-to-Day One Logger by Craig Eley
+    # Based on tp-dailylog.rb by Brett Terpstra 2012
+    # @param [Date] date The date to use when scanning Sifttter
+    # @return [void]
     def self.run(date)
       uuid = SecureRandom.uuid.upcase.gsub(/-/, '').strip
 
@@ -46,10 +37,12 @@ module SifttterRedux
       date_regex = "(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })"
       time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
 
-      files = `find #{ Configuration['sifttter_redux']['sifttter_local_filepath'] } -type f -name "*.txt" | grep -v -i daily | sort`
+      files = `find #{ configuration.sifttter_redux[:sifttter_local_filepath] } -type f -name "*.txt" | grep -v -i daily | sort`
       if files.empty?
-        CLIMessage::error("No Sifttter files to parse; is #{ Configuration['sifttter_redux']['sifttter_remote_filepath'] } the correct remote filepath?")
-        return
+        messenger.error('No Sifttter files to parse...')
+        messenger.error('Is Dropbox Uploader configured correctly?')
+        messenger.error("Is #{ configuration.sifttter_redux[:sifttter_remote_filepath] } the correct remote filepath?")
+        exit!(1)
       end
 
       projects = []
@@ -77,7 +70,7 @@ module SifttterRedux
       end
 
       if projects.length <=0
-      	CLIMessage::warning('No entries found...')
+      	messenger.warn('No entries found...')
       end
 
       if projects.length > 0
@@ -86,12 +79,12 @@ module SifttterRedux
       		entrytext += project.gsub(/.txt/, ' ') + "\n\n"
       	end
 
-        Dir.mkdir(Configuration['sifttter_redux']['dayone_local_filepath']) if !Dir.exists?(Configuration['sifttter_redux']['dayone_local_filepath'])
+        Dir.mkdir(configuration.sifttter_redux[:dayone_local_filepath]) if !Dir.exists?(configuration.sifttter_redux[:dayone_local_filepath])
 
-      	fh = File.new(File.expand_path(Configuration['sifttter_redux']['dayone_local_filepath'] + '/' + uuid + '.doentry'), 'w+')
+      	fh = File.new(File.expand_path(configuration.sifttter_redux[:dayone_local_filepath] + '/' + uuid + '.doentry'), 'w+')
       	fh.puts template.result(binding)
       	fh.close
-      	CLIMessage::success("Entry logged for #{ date_for_title }...")
+      	messenger.success("Entry logged for #{ date_for_title }...")
       end
     end
   end

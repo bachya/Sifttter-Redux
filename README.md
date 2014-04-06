@@ -1,5 +1,7 @@
-Sifttter Redux [![Build Status](https://travis-ci.org/bachya/Sifttter-Redux.png?branch=master)](https://travis-ci.org/bachya/Sifttter-Redux)
+Sifttter Redux
 ==============
+[![Build Status](https://travis-ci.org/bachya/Sifttter-Redux.png?branch=master)](https://travis-ci.org/bachya/Sifttter-Redux)
+[![Gem Version](https://badge.fury.io/rb/sifttter-redux.png)](http://badge.fury.io/rb/sifttter-redux)
 
 Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal.
 
@@ -37,7 +39,7 @@ SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-    0.4.8
+    0.6.2
 
 GLOBAL OPTIONS
     --help         - Show this message
@@ -454,6 +456,6 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 # Credits
 
 * Craig Eley for [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter") and for giving me the idea for Sifttter Redux
-* Dave Copeland for [GLI](https://github.com/davetron5000/gli "GLI") and [Methadone]("https://github.com/davetron5000/methadone" Methadone)
+* Dave Copeland for [GLI](https://github.com/davetron5000/gli "GLI")
 * Andrea Fabrizi for [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox Uploader")
-* Tom Preston-Werner and Lee Jarvis for [Chronic](https://github.com/mojombo/chronic "Chronic")
+* ~~Tom Preston-Werner~~ (sorry: can't support [harrassment](http://www.businessinsider.com/github-co-founder-suspended-2014-3 "GitHub Founder Tom Preston-Werner Suspended After Harassment Allegations")) ~~and~~ Lee Jarvis for [Chronic](https://github.com/mojombo/chronic "Chronic")
