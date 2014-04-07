@@ -99,9 +99,9 @@ post do |global,command,options,args|
 end
 
 on_error do |exception|
-  # messenger.error(exception.to_s)
-  # exit!(1)
-  # true
+  messenger.error(exception.to_s)
+  exit!(1)
+  true
 end
 
 #  ======================================================
@@ -191,6 +191,12 @@ command :init do |c|
   end
 end
 
+#  ------------------------------------------------------
+#  upgrade command
+#
+#  Upgrades existing Sifttter files to the format needed
+#  by v 1.x.x.
+#  ------------------------------------------------------
 desc 'Upgrades Sifttter files to the new format'
 command :upgrade do |c|
   c.switch([:verbose], desc: 'Turns on verbose output')
@@ -199,7 +205,6 @@ command :upgrade do |c|
 
     # Set the archive filepath and the files that will go into it.
     filename = "#{ ENV['HOME'] }/sifttter_backup_#{ Time.now.to_i }.zip"
-    sifttter_files = Dir.glob("#{ configuration.sifttter_redux[:sifttter_local_filepath] }/*.txt")
 
     # Download Sifttter files from Dropbox.
     dbu = SifttterRedux::DropboxUploader.new(configuration.db_uploader[:exe_filepath])
@@ -211,18 +216,30 @@ command :upgrade do |c|
     messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
       dbu.download
     end
-    
+
     # Archive the Sifttter files.
-    Archive::Zip.archive(filename, sifttter_files)
+    Archive::Zip.archive(filename, configuration.sifttter_redux[:sifttter_local_filepath])
 
     # Replace the old scheme with the new one.
-    sifttter_files.each do |file|
+    Dir.glob(configuration.sifttter_redux[:sifttter_local_filepath] + '/*').each do |file|
       t = File.read(file)
       t.gsub!(/^- /, "@begin\n@date ")
        .gsub!(/ - /, "\n- ")
        .gsub!(/\s?@done/, '@end')
       File.open(file, 'w') { |f| f.write(t) }
     end
+    
+    # Upload the new Sifttter files back to Dropbox.
+    dbu.local_target = "#{ configuration.sifttter_redux[:sifttter_local_filepath] }"
+    dbu.remote_target = Pathname.new(configuration.sifttter_redux[:sifttter_remote_filepath]).dirname.to_s
+    dbu.message = "Uploading revised Sifttter files to Dropbox..."
+    
+    messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
+      dbu.upload
+    end
+    
+    # Remove any downloaded local files that we no longer need.
+    SifttterRedux.cleanup_temp_files
   end
 end
 
