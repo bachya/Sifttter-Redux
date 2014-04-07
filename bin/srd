@@ -226,6 +226,7 @@ command :upgrade do |c|
       t.gsub!(/^- /, "@begin\n@date ")
        .gsub!(/ - /, "\n- ")
        .gsub!(/\s?@done/, '@end')
+      messenger.debug { "Replacing contents of file: #{ file }"}
       File.open(file, 'w') { |f| f.write(t) }
     end
     
