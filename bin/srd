@@ -38,7 +38,7 @@ require 'sifttter-redux'
 require 'securerandom'
 
 include CLIUtils::Configuration
-include CLIUtils::Messenging
+include CLIUtils::Messaging
 include GLI::App
 
 #  ======================================================

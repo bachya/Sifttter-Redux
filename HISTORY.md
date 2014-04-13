@@ -1,3 +1,9 @@
+# 0.6.3 (2014-04-12)
+
+* Updated to CLIUtils 1.3.1
+* Fixed namespacing error
+* Fixed a bug in preference prompts
+
 # 0.6.2 (2014-04-03)
 
 * Updated to CLIUtils 1.2.1
