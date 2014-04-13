@@ -1,3 +1,7 @@
+# 0.6.4 (2014-04-13)
+
+* Now using Configurator's `compare_version`
+
 # 0.6.3 (2014-04-12)
 
 * Updated to CLIUtils 1.3.1

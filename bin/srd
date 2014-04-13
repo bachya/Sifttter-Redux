@@ -69,16 +69,13 @@ pre do |global, command, options, args|
   messenger.attach(LOGFILE: file_logger)
 
   if File.exists?(SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH)
-    # Check to see if there is a new config file version
-    # to be installed.
-    c_version = Gem::Version.new(configuration.sifttter_redux[:version])
-    l_version = Gem::Version.new(SifttterRedux::NEWEST_CONFIG_VERSION)
+    # Set the current and last config versions in the Configurator.
+    configuration.current_version = configuration.sifttter_redux[:version]
+    configuration.last_version = SifttterRedux::NEWEST_CONFIG_VERSION
 
-    messenger.debug { "Current gem version: #{ c_version }" }
-    messenger.debug { "Last version with config change: #{ l_version }" }
-
-    # If the config file needs updating, force the user to do that first.
-    if configuration.sifttter_redux[:version].nil? || c_version < l_version
+    # Compare the two versions and, if needed, update.
+    configuration.compare_version do |c, l|
+      messenger.debug { "Upgrading from #{ c } to #{ l }" }
       SifttterRedux.update_config_file
       exit!(0)
     end
