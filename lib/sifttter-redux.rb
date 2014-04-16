@@ -6,7 +6,6 @@ require 'sifttter-redux/sifttter'
 # The SifttterRedux module, which wraps everything
 # in this gem.
 module SifttterRedux
-  
   class << self
     # Stores whether initalization has completed.
     # @return [Boolean]
@@ -156,7 +155,10 @@ module SifttterRedux
   # re-done and does it.
   # @return [void]
   def self.update_config_file
-    messenger.info("This version needs to make some config changes. Don't worry; when prompted, your current values for existing config options will be presented (so it'll be easier to fly through the upgrade).")
+    m = "This version needs to make some config changes. Don't worry; " \
+        "when prompted, your current values for existing config options " \
+        "will be presented (so it'll be easier to fly through the upgrade)."
+    messenger.info(m)
     messenger.prompt('Press enter to continue')
     SifttterRedux.init(true)
   end

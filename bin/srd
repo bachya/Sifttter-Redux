@@ -44,13 +44,8 @@ include GLI::App
 #  ======================================================
 #  App Info
 #  ======================================================
-program_desc 'Sifttter Redux
-
-    A customized IFTTT-to-Day One service that allows for
-    smart installation and automated running on a standalone
-    *NIX device (such as a Raspberry Pi).'
-
-version SifttterRedux::VERSION
+program_desc(SifttterRedux::DESCRIPTION)
+version(SifttterRedux::VERSION)
 
 #  ======================================================
 #  Global Flags and Switches
@@ -61,7 +56,6 @@ switch([:verbose], desc: 'Turns on verbose output')
 #  Pre, Post, and Error
 #  ======================================================
 pre do |global, command, options, args|
-
   # Load SifttterRedux configuration module.
   load_configuration(SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH)
   file_logger = Logger.new(SifttterRedux::DEFAULT_SRD_LOG_FILEPATH)
@@ -84,7 +78,6 @@ pre do |global, command, options, args|
     SifttterRedux.init(true)
     exit!(0)
   end
-
   true
 end
 
