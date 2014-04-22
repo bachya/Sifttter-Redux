@@ -3,7 +3,32 @@ Sifttter Redux
 [![Build Status](https://travis-ci.org/bachya/Sifttter-Redux.svg?branch=master)](https://travis-ci.org/bachya/Sifttter-Redux)
 [![Gem Version](https://badge.fury.io/rb/sifttter-redux.svg)](http://badge.fury.io/rb/sifttter-redux)
 
-Siftter Redux is a modification of Craig Eley's [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"), a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and place it in a [Day One](http://dayoneapp.com, "Day One") journal.
+# Upgrading From 0.x.x to 1.0.0?
+
+Version 1.0.0 uses a new schema that allows for any type of Markdown. Using
+version 1.0.0, Sifttter files need to follow this format:
+
+```
+@begin
+@date April 21, 2014
+**Any** sort of *Markdown* goes here...
+@end
+```
+
+Note that a new command has been introduced that attempts to upgrade to this
+new format. **Although the command backs up your current Sifttter files, you
+are strongly encouraged to make a separate, manual backup.**
+
+```Bash
+$ srd upgrade
+```
+
+# Intro
+
+Siftter Redux is a modification of Craig Eley's
+[Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter"),
+a script to collect information from [IFTTT](http://www.ifttt.com "IFTTT") and
+place it in a [Day One](http://dayoneapp.com, "Day One") journal.
 
 Siftter Redux has several fundamental differences:
 
@@ -14,7 +39,8 @@ Siftter Redux has several fundamental differences:
 
 # Prerequisites
 
-In addition to Git (which, given you being on this site, I'll assume you have), Ruby (v. 1.9.3 or greater) is needed.
+In addition to Git (which, given you being on this site, I'll assume you have),
+Ruby (v. 1.9.3 or greater) is needed.
 
 # Installation
 
@@ -52,7 +78,8 @@ COMMANDS
     init - Install and initialize dependencies
 ```
 
-Note that each command's options can be revealed by adding the `--help` switch after the command. For example:
+Note that each command's options can be revealed by adding the `--help` switch
+after the command. For example:
 
 ```
 $ srd exec --help
@@ -81,7 +108,7 @@ $ srd init
 
 Initialization will perform the following steps:
 
-1. Download [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox-Uploder") to a location of your choice.
+1. Download [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox-Uploder")to a location of your choice.
 2. Automatically configure Dropbox Uploader.
 3. Collect some user paths (note that you can use tab completion here!):
  * The location on your filesystem where Sifttter files will be temporarily stored
@@ -91,11 +118,13 @@ Initialization will perform the following steps:
 
 ## Pathing
 
-Note that when Sifttter Redux asks you for paths, it will ask for "local" and "remote" filepaths. It's important to understand the difference.
+Note that when Sifttter Redux asks you for paths, it will ask for "local" and
+"remote" filepaths. It's important to understand the difference.
 
 ### Local Filepaths
 
-Local filepaths are, as you'd expect, filepaths on your local machine. Some examples might be:
+Local filepaths are, as you'd expect, filepaths on your local machine. Some
+examples might be:
 
 * `/tmp/my_data`
 * `/home/bob/ifttt/sifttter_data`
@@ -103,7 +132,10 @@ Local filepaths are, as you'd expect, filepaths on your local machine. Some exam
 
 ### Remote Filepaths
 
-Remote filepaths, on the other hand, are absolute filepaths in your Dropbox folder (*as Dropbox Uploader would see them*). For instance, `/home/bob/Dropbox/apps/sifttter` is *not* a valid remote filepath; rather, `/apps/sifttter` would be correct.
+Remote filepaths, on the other hand, are absolute filepaths in your Dropbox
+folder (*as Dropbox Uploader would see them*). For instance,
+`/home/bob/Dropbox/apps/sifttter` is *not* a valid remote filepath; rather,
+`/apps/sifttter` would be correct.
 
 ## Basic Execution
 
@@ -121,9 +153,12 @@ $ srd exec
 
 ## "Catch-up" Mode
 
-Sometimes, events occur that prevent Sifttter Redux from running (power loss to your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up" mode can be used to collect any valid journal on or before today's date.
+Sometimes, events occur that prevent Sifttter Redux from running (power loss to
+  your device, a bad Cron job, etc.). In this case, Sifttter Redux's "catch-up"
+  mode can be used to collect any valid journal on or before today's date.
 
-There are many ways to use this mode (note that "today" in these examples is **February 15, 2014**):
+There are many ways to use this mode (note that "today" in these examples is
+**February 15, 2014**):
 
 ### Yesterday Catch-up
 
@@ -143,7 +178,8 @@ $ srd exec -y
 
 ### Last "N" Days Catch-up
 
-Sifttter Redux allows you to specify the number of days back it should look for new entries:
+Sifttter Redux allows you to specify the number of days back it should look for
+new entries:
 
 ```
 $ srd exec -n 3
@@ -180,7 +216,9 @@ $ srd exec -n 12
 #### EXECUTION COMPLETE!
 ```
 
-Note that this option goes until yesterday ("yesterday" because you might not be ready to have today's entries scanned). If you'd rather include today's date, you can always add the `-i` switch:
+Note that this option goes until yesterday ("yesterday" because you might not be
+ready to have today's entries scanned). If you'd rather include today's date, you
+can always add the `-i` switch:
 
 ```
 $ srd exec -i -n 3
@@ -199,7 +237,8 @@ $ srd exec -i -n 3
 
 ### Last "N" Weeks Catch-up
 
-Sifttter Redux also allows you to specify a number of weeks back that should be scanned for new entries:
+Sifttter Redux also allows you to specify a number of weeks back that should be
+scanned for new entries:
 
 ```
 $ srd exec -w 1
@@ -312,7 +351,8 @@ $ srd exec -f 2014-02-01 -t 2014-02-12
 #### EXECUTION COMPLETE!
 ```
 
-Even more simply, to create entries from a specific point until yesterday ("yesterday" because you might not be ready to have today's entries scanned):
+Even more simply, to create entries from a specific point until yesterday
+("yesterday" because you might not be ready to have today's entries scanned):
 
 ```
 $ srd exec -f 2014-02-01
@@ -367,7 +407,7 @@ $ srd exec -i -f 2014-02-01
 
 Two notes to be aware of:
 
-* `-f` and `-t` are *inclusive* parameters, meaning that when specified, those dates will be included when searching for Siftter data.
+* `-f` and `-t` are *inclusive* parameters, meaning that when specified, thosedates will be included when searching for Siftter data.
 * Although you can specify `-f` by itself, you cannot specify `-t` by itself.
 
 Sifttter Redux makes use of the excellent [Chronic gem](https://github.com/mojombo/chronic "Chronic"), which provides natural language parsing for dates and times. This means that you can run commands with more "human" dates:
@@ -392,9 +432,13 @@ See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Ch
 
 # Cron Job
 
-By installing an entry to a `crontab`, Sifttter Redux can be run automatically on a schedule. The aim of this project was to use a Raspberry Pi; as such, the instructions below are specifically catered to that platform. That said, it should be possible to install and configure on any *NIX platform.
+By installing an entry to a `crontab`, Sifttter Redux can be run automatically
+on a schedule. The aim of this project was to use a Raspberry Pi; as such, the
+instructions below are specifically catered to that platform. That said, it
+should be possible to install and configure on any *NIX platform.
 
-One issue that arises is the loading of the bundled gems; because cron runs in a limited environment, it does not automatically know where to find installed gems.
+One issue that arises is the loading of the bundled gems; because cron runs in a
+limited environment, it does not automatically know where to find installed gems.
 
 ## Using RVM
 
@@ -414,7 +458,8 @@ $ bundle install --global
 
 # Logging
 
-Sifttter Redux logs a lot of good info to `~/.sifttter_redux_log`. It makes use of Ruby's standard log levels:
+Sifttter Redux logs a lot of good info to `~/.sifttter_redux_log`. It makes use
+of Ruby's standard log levels:
 
 * DEBUG
 * INFO
@@ -423,15 +468,15 @@ Sifttter Redux logs a lot of good info to `~/.sifttter_redux_log`. It makes use 
 * FATAL
 * UNKNOWN
 
-If you want to see more or less in your log files, simply change the `log_level` value in `~/.sifttter_redux` to your desired level.
-
-# Known Issues & Future Releases
-
-Bugs, issues, and enhancement requests (my own or those submitted by others) can be found on the [Issues Page](https://github.com/bachya/Sifttter-Redux/issues "Open Items").
+If you want to see more or less in your log files, simply change the `log_level`
+value in `~/.sifttter_redux` to your desired level.
 
 # Bugs and Feature Requests
 
-To report bugs with or suggest features/changes for Sifttter Redux, please use the [Issues Page](http://github.com/bachya/sifttter-redux/issues).
+My current roadmap can be found on my [Trello board](https://trello.com/b/z4vl3YxC/sifttter-redux "Sifttter Redux Trello Board")
+
+To report bugs with or suggest features/changes for Sifttter Redux, please use
+the [Issues Page](http://github.com/bachya/sifttter-redux/issues).
 
 Contributions are welcome and encouraged. To contribute:
 
@@ -447,11 +492,22 @@ Contributions are welcome and encouraged. To contribute:
 
 Copyright © 2014 Aaron Bach <bachya1208@gmail.com>
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the 'Software'), to deal in the
+Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # Credits
 

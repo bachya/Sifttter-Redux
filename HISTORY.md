@@ -1,3 +1,9 @@
+# 1.0.0 (2014-04-21)
+
+* Added new Sifttter file format (which allows for any Markdown)
+* Added `srd upgrade` to upgrade to new format
+* Lots of bugfixes
+
 # 0.6.4 (2014-04-13)
 
 * Now using Configurator's `compare_version`

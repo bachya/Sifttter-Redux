@@ -18,7 +18,7 @@ module SifttterRedux
   DESCRIPTION = 'A customized IFTTT-to-Day One service that allows for smart installation and automated running on a standalone *NIX device (such as a Raspberry Pi).'
 
   # The last version to require a config update
-  NEWEST_CONFIG_VERSION = '0.6'
+  NEWEST_CONFIG_VERSION = '1.0.0'
 
   # Hash of preference files
   PREF_FILES = {
@@ -29,5 +29,5 @@ module SifttterRedux
   SUMMARY = 'Automated IFTTT to Day One engine.'
 
   # The Gem's version
-  VERSION = '0.6.4'
+  VERSION = '1.0.0'
 end
