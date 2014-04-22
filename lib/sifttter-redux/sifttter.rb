@@ -50,7 +50,7 @@ module SifttterRedux
       date_regex = "(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })"
       time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
       entry_regex = /@begin\n@date\s#{ date_regex }(?: at (.*?)\n)?(.*?)@end/m
-      
+
       contents = File.read(filepath)
       cur_entries = contents.scan(entry_regex)
       unless cur_entries.empty?
@@ -70,10 +70,10 @@ module SifttterRedux
       datestamp = date.to_time.utc.iso8601
       starred = false
 
-      
+
       output_dir = configuration.sifttter_redux[:dayone_local_filepath]
       Dir.mkdir(output_dir) unless Dir.exists?(output_dir)
-      
+
       files = `find #{ configuration.sifttter_redux[:sifttter_local_filepath] } -type f -name "*.txt" | grep -v -i daily | sort`
       if files.empty?
         messenger.error('No Sifttter files to parse...')
@@ -81,18 +81,18 @@ module SifttterRedux
         messenger.error("Is #{ configuration.sifttter_redux[:sifttter_remote_filepath] } the correct remote filepath?")
         exit!(1)
       end
-      
+
       files.split("\n").each do |file|
         file.strip!
         if File.exists?(file)
           parse_sifttter_file(file, date)
         end
       end
-      
+
       if @entries.length > 0
         entrytext = "# Things done on #{ date_for_title }\n"
         @entries.each do |key, value|
-          entrytext += '### ' + key.gsub(/.txt/, '') + "\n\n"
+          entrytext += '### ' + key.gsub(/.txt/, '').gsub(/_/, ' ').upcase + "\n\n"
           value.each { |v| entrytext += "#{ v[1] }\n" }
           entrytext += "\n"
         end

@@ -1,3 +1,7 @@
+# 1.0.1 (2014-04-22)
+
+* Fixed a bug in which entry titles were not being cased properly
+
 # 1.0.0 (2014-04-21)
 
 * Added new Sifttter file format (which allows for any Markdown)
