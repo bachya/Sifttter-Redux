@@ -219,11 +219,11 @@ command :upgrade do |c|
     Archive::Zip.archive(filename, configuration.sifttter_redux[:sifttter_local_filepath])
 
     # Replace the old scheme with the new one.
-    Dir.glob(configuration.sifttter_redux[:sifttter_local_filepath] + '/*').each do |file|
+    Dir.glob(configuration.sifttter_redux[:sifttter_local_filepath] + '/*.txt').each do |file|
       t = File.read(file)
       t.gsub!(/^- /, "@begin\n@date ")
-       .gsub!(/ - /, "\n- ")
-       .gsub!(/\s?@done/, '@end')
+      t.gsub!(/ - /, "\n- ")
+      t.gsub!(/\s?@done/, '@end')
       messenger.debug { "Replacing contents of file: #{ file }"}
       File.open(file, 'w') { |f| f.write(t) }
     end
