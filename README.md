@@ -473,7 +473,8 @@ value in `~/.sifttter_redux` to your desired level.
 
 # Bugs and Feature Requests
 
-My current roadmap can be found on my [Trello board](https://trello.com/b/z4vl3YxC/sifttter-redux "Sifttter Redux Trello Board")
+My current roadmap can be found on my
+[Trello board](https://trello.com/b/z4vl3YxC/sifttter-redux "Sifttter Redux Trello Board").
 
 To report bugs with or suggest features/changes for Sifttter Redux, please use
 the [Issues Page](http://github.com/bachya/sifttter-redux/issues).
