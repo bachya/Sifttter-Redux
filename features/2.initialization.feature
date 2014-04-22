@@ -53,7 +53,7 @@ Feature: Initialization
     When I run `srd init` interactively
       And I type ""
     Then the exit status should be 0
-    
+
   Scenario: Reinitialization (accept)
     Given a file located at "/tmp/srd/.sifttter_redux" with the contents:
     """
@@ -97,8 +97,8 @@ Feature: Initialization
         base_filepath: "/usr/local/opt"
         dbu_filepath: "/usr/local/opt/Dropbox-Uploader"
         exe_filepath: "/usr/local/opt/Dropbox-Uploader/dropbox_uploader.sh"
-      """  
-  
+      """
+
   Scenario: Reinitialization (from scratch)
     Given no file located at "/tmp/srd/.sifttter_redux"
       And an empty file located at "/tmp/srd/.dropbox_uploader"

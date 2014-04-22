@@ -39,7 +39,7 @@ require 'sifttter-redux'
 require 'securerandom'
 
 include CLIUtils::Configuration
-include CLIUtils::Messenging
+include CLIUtils::Messaging
 include GLI::App
 
 #  ======================================================
@@ -64,7 +64,7 @@ switch([:verbose], desc: 'Turns on verbose output')
 pre do |global, command, options, args|
 
   # Load SifttterRedux configuration module.
-  CLIUtils::Configuration.configuration = SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH
+  load_configuration(SifttterRedux::DEFAULT_SRD_CONFIG_FILEPATH)
   file_logger = Logger.new(SifttterRedux::DEFAULT_SRD_LOG_FILEPATH)
   file_logger.level = LOG_LEVELS[configuration.sifttter_redux[:log_level] || 'DEBUG']
   messenger.attach(LOGFILE: file_logger)
@@ -180,13 +180,11 @@ desc 'Install and initialize dependencies'
 command :init do |c|
   c.switch([:s], desc: 'Run init from scratch (i.e., clear out all values from configuration)')
   c.action do |global_options, options, args|
-    messenger.section_block('INITIALIZING...') do
-      if options[:s]
-        SifttterRedux::init(true)
-      else
-        long_message = "You've already initialized Sifttter Redux. Do it again?"
-        SifttterRedux::init if messenger.prompt(long_message, 'N').downcase == 'y'
-      end
+    if options[:s]
+      SifttterRedux::init(true)
+    else
+      long_message = "You've already initialized Sifttter Redux. Do it again?"
+      SifttterRedux::init if messenger.prompt(long_message, 'N').downcase == 'y'
     end
   end
 end
@@ -229,16 +227,16 @@ command :upgrade do |c|
       messenger.debug { "Replacing contents of file: #{ file }"}
       File.open(file, 'w') { |f| f.write(t) }
     end
-    
+
     # Upload the new Sifttter files back to Dropbox.
     dbu.local_target = "#{ configuration.sifttter_redux[:sifttter_local_filepath] }"
     dbu.remote_target = Pathname.new(configuration.sifttter_redux[:sifttter_remote_filepath]).dirname.to_s
     dbu.message = "Uploading revised Sifttter files to Dropbox..."
-    
+
     messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
       dbu.upload
     end
-    
+
     # Remove any downloaded local files that we no longer need.
     SifttterRedux.cleanup_temp_files
   end

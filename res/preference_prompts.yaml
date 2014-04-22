@@ -1,17 +1,17 @@
 prompts:
-  - prompt: Where do you want to download Sifttter files to (temporarily)?
+  - prompt_text: Where do you want to download Sifttter files to (temporarily)?
     default: /tmp/sifttter
     config_key: sifttter_local_filepath
     config_section: sifttter_redux
-  - prompt: Where are your Sifttter files located in Dropbox?
+  - prompt_text: Where are your Sifttter files located in Dropbox?
     default: /Apps/ifttt/sifttter
     config_key: sifttter_remote_filepath
     config_section: sifttter_redux
-  - prompt: Where do you want to download Day One files to (temporarily)?
+  - prompt_text: Where do you want to download Day One files to (temporarily)?
     default: /tmp/dayone
     config_key: dayone_local_filepath
     config_section: sifttter_redux
-  - prompt: Where are your Day One files located in Dropbox?
+  - prompt_text: Where are your Day One files located in Dropbox?
     default: /Apps/Day\ One/Journal.dayone/entries
     config_key: dayone_remote_filepath
     config_section: sifttter_redux
