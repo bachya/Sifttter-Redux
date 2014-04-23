@@ -108,7 +108,8 @@ $ srd init
 
 Initialization will perform the following steps:
 
-1. Download [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox-Uploder")to a location of your choice.
+1. Download [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox-Uploder")
+to a location of your choice.
 2. Automatically configure Dropbox Uploader.
 3. Collect some user paths (note that you can use tab completion here!):
  * The location on your filesystem where Sifttter files will be temporarily stored
@@ -407,10 +408,14 @@ $ srd exec -i -f 2014-02-01
 
 Two notes to be aware of:
 
-* `-f` and `-t` are *inclusive* parameters, meaning that when specified, thosedates will be included when searching for Siftter data.
+* `-f` and `-t` are *inclusive* parameters, meaning that when specified, those
+dates will be included when searching for Siftter data.
 * Although you can specify `-f` by itself, you cannot specify `-t` by itself.
 
-Sifttter Redux makes use of the excellent [Chronic gem](https://github.com/mojombo/chronic "Chronic"), which provides natural language parsing for dates and times. This means that you can run commands with more "human" dates:
+Sifttter Redux makes use of the excellent
+[Chronic gem](https://github.com/mojombo/chronic "Chronic"), which provides
+natural language parsing for dates and times. This means that you can run
+commands with more "human" dates:
 
 ```
 $ srd exec -f "last monday" -t "yesterday"
@@ -428,7 +433,8 @@ $ srd exec -f "last monday" -t "yesterday"
 #### EXECUTION COMPLETE!
 ```
 
-See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Chronic Examples") for more examples.
+See [Chronic's Examples section](https://github.com/mojombo/chronic#examples "Chronic Examples")
+for more examples.
 
 # Cron Job
 
@@ -512,7 +518,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # Credits
 
-* Craig Eley for [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter") and for giving me the idea for Sifttter Redux
+* Craig Eley for [Sifttter](http://craigeley.com/post/72565974459/sifttter-an-ifttt-to-day-one-logger "Sifttter")
+and for giving me the idea for Sifttter Redux
 * Dave Copeland for [GLI](https://github.com/davetron5000/gli "GLI")
 * Andrea Fabrizi for [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader "Dropbox Uploader")
-* ~~Tom Preston-Werner~~ (sorry: can't support [harrassment](http://www.businessinsider.com/github-co-founder-suspended-2014-3 "GitHub Founder Tom Preston-Werner Suspended After Harassment Allegations")) ~~and~~ Lee Jarvis for [Chronic](https://github.com/mojombo/chronic "Chronic")
+* ~~Tom Preston-Werner~~ (sorry: can't
+support [harrassment](http://www.businessinsider.com/github-co-founder-suspended-2014-3 "GitHub Founder Tom Preston-Werner Suspended After Harassment Allegations"))
+~~and~~ Lee Jarvis for [Chronic](https://github.com/mojombo/chronic "Chronic")
