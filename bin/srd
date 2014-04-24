@@ -104,6 +104,7 @@ end
 #  ------------------------------------------------------
 desc 'Execute the app'
 command :exec do |c|
+  c.flag([:d], desc: 'Run catch-up mode with a particular date')
   c.flag([:f], desc: 'Run catch-up mode with this start date')
   c.flag([:n], desc: 'Run catch-up mode for the last N days')
   c.flag([:t], desc: 'Run catch-up mode with this end date (must also have -f)')

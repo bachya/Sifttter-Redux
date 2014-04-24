@@ -1,3 +1,9 @@
+# 1.0.2 (2014-04-22)
+
+* Added `-d` flag to catch up a specific date
+* Added an error message for instances where Dropbox Uploader might be misconfigured
+* Small bugfixes
+
 # 1.0.1 (2014-04-22)
 
 * Fixed a bug in which entry titles were not being cased properly

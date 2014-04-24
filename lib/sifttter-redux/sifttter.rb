@@ -70,7 +70,6 @@ module SifttterRedux
       datestamp = date.to_time.utc.iso8601
       starred = false
 
-
       output_dir = configuration.sifttter_redux[:dayone_local_filepath]
       Dir.mkdir(output_dir) unless Dir.exists?(output_dir)
 

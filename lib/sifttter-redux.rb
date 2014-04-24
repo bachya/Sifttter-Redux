@@ -87,9 +87,14 @@ module SifttterRedux
   # @param [Hash] options GLI command line options
   # @return [Range]
   def self.get_dates_from_options(options)
-    if options[:c] || options[:n] || options[:w] || options[:y] || options[:f] || options[:t]
+    if options[:c] || options[:n] || options[:w] || 
+       options[:y] || options[:f] || options[:t] ||
+       options[:d]
       # Yesterday
       r = DateRangeMaker.yesterday if options[:y]
+
+      # Specific date
+      r = DateRangeMaker.range(options[:d], options[:d]) if options[:d]
 
       # Current Week
       r = DateRangeMaker.last_n_weeks(0, options[:i]) if options[:c]
