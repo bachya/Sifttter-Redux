@@ -29,5 +29,5 @@ module SifttterRedux
   SUMMARY = 'Automated IFTTT to Day One engine.'
 
   # The Gem's version
-  VERSION = '1.0.1'
+  VERSION = '1.0.2'
 end
