@@ -15,14 +15,20 @@ module SifttterRedux
   DEFAULT_SRD_LOG_FILEPATH = File.join(ENV['HOME'], '.sifttter_redux_log')
 
   # The Gem's description
-  DESCRIPTION = 'A customized IFTTT-to-Day One service that allows for smart installation and automated running on a standalone *NIX device (such as a Raspberry Pi).'
+  DESCRIPTION = 'A customized IFTTT-to-Day One service that allows for smart installation and ' \
+  'automated running on a standalone *NIX device (such as a Raspberry Pi).'
 
   # The last version to require a config update
   NEWEST_CONFIG_VERSION = '1.0.0'
 
-  # Hash of preference files
-  PREF_FILES = {
-    'INIT' => File.join(File.dirname(__FILE__), '..', '..', 'res/preference_prompts.yaml')
+  # Hash of custom Pref behaviors
+  PREF_BEHAVIORS = {
+    DROPBOX_OAUTH: File.join(File.dirname(__FILE__), '..', '..', 'lib/sifttter_redux/pref_behaviors/dropbox_oauth.rb')
+  }
+
+  # Hash of Prefs
+  PREF_PROMPT_FILES = {
+    INIT: File.join(File.dirname(__FILE__), '..', '..', 'lib/sifttter_redux/pref_prompts/default.yaml')
   }
 
   # The Gem's summary

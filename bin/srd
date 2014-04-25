@@ -34,7 +34,9 @@
 #--------------------------------------------------------------------
 require 'archive/zip'
 require 'cliutils'
+require 'dropbox-api'
 require 'gli'
+require 'launchy'
 require 'sifttter-redux'
 require 'securerandom'
 

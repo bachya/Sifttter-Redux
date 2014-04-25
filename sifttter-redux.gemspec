@@ -29,5 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency('archive-zip', '0.6.0')
   spec.add_runtime_dependency('chronic', '0.10.2')
   spec.add_runtime_dependency('cliutils', '~> 2')
+  spec.add_runtime_dependency('dropbox-api', '~> 0.4')
   spec.add_runtime_dependency('gli','2.9.0')
+  spec.add_runtime_dependency('launchy', '2.4.2')
 end

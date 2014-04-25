@@ -1,7 +1,9 @@
-require 'sifttter-redux/constants'
-require 'sifttter-redux/date-range-maker'
-require 'sifttter-redux/dropbox-uploader'
-require 'sifttter-redux/sifttter'
+require 'sifttter_redux/constants'
+require 'sifttter_redux/date_range_maker'
+require 'sifttter_redux/dropbox/dropbox_base'
+require 'sifttter_redux/dropbox/dropbox_local'
+require 'sifttter_redux/dropbox/dropbox_remote'
+require 'sifttter_redux/sifttter'
 
 # The SifttterRedux module, which wraps everything
 # in this gem.
@@ -36,50 +38,38 @@ module SifttterRedux
   # local filesystem.
   # @param [Boolean] from_scratch
   # @return [void]
-  def self.dbu_install_wizard(from_scratch = false)
-    valid_path_chosen = false
-
-    until valid_path_chosen
-      # Prompt the user for a location to save Dropbox Uploader.
-      if from_scratch && !configuration.db_uploader[:base_filepath].nil?
-        default = configuration.db_uploader[:base_filepath]
-      else
-        default = DEFAULT_DBU_LOCAL_FILEPATH
-      end
-      path = messenger.prompt('Location for Dropbox-Uploader', default)
-      path = default if path.empty?
-      path.chop! if path.end_with?('/')
-
-      # If the entered directory exists, clone the repository.
-      if Dir.exists?(File.expand_path(path))
-        valid_path_chosen = true
-
-        dbu_path = File.join(path, 'Dropbox-Uploader')
-        executable_path = File.join(dbu_path, 'dropbox_uploader.sh')
-
-        if File.directory?(dbu_path)
-          messenger.warn("Using pre-existing Dropbox Uploader at #{ dbu_path }...")
-        else
-          messenger.info_block("Downloading Dropbox Uploader to #{ dbu_path }...", 'Done.', true) do
-            system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ dbu_path }"
-          end
-        end
-
-        # If the user has never configured Dropbox Uploader, have them do it here.
-        unless File.exists?(DEFAULT_DBU_CONFIG_FILEPATH)
-          messenger.info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" }
-        end
-
-        configuration.add_section(:db_uploader) unless configuration.data.key?(:db_uploader)
-        configuration.db_uploader.merge!({
-          base_filepath: path,
-          dbu_filepath: dbu_path,
-          exe_filepath: executable_path
-        })
-      else
-        messenger.error("Sorry, but #{ path } isn't a valid directory.")
-      end
-    end
+  def self.install_dropbox(from_scratch = false)
+    # messenger.section('INITIALIZING DROPBOX')
+    # pm = CLIUtils::Prefs.new(SifttterRedux::PREF_PROMPT_FILES['DB'], configuration)
+    # pm.ask
+    # configuration.ingest_prefs(pm)
+    #
+    # m = "Now, we'll attempt to ask Dropbox for permission to access " \
+    # "your newly created app. During this process, you will be taken back " \
+    # "to the Drobpbox website to authorize Sifttter Redux to access."
+    # messenger.info(m)
+    # messenger.prompt('Press enter to continue')
+    #
+    # tokens = _request_dropbox_tokens
+    # if !tokens.empty?
+    #   url = "https://www2.dropbox.com/1/oauth/authorize?oauth_token=#{ tokens[:oauth_token].token }"
+    #   Launchy.open(url) do |exception|
+    #     puts "Failed to open #{ url }: #{ exception }"
+    #     return
+    #   end
+    #
+    #   m = "Now, as a last step, we'll attempt to retrieve token data and store it " \
+    #   "(so that you are logged into Dropbox going forward)."
+    #   messenger.info(m)
+    #   messenger.prompt('Press enter to continue')
+    #   messenger.info_block('Requesting access token...') do
+    #     result = tokens[:request_token].get_access_token(:oauth_verifier => tokens[:oauth_token])
+    #     configuration.dropbox[:oauth_access_token] = result.token
+    #     configuration.dropbox[:oauth_access_secret] = result.secret
+    #   end
+    # else
+    #   raise 'There was an error getting tokens from Dropbopx'
+    # end
   end
 
   # Creates a date range from the supplied command line
@@ -87,7 +77,7 @@ module SifttterRedux
   # @param [Hash] options GLI command line options
   # @return [Range]
   def self.get_dates_from_options(options)
-    if options[:c] || options[:n] || options[:w] || 
+    if options[:c] || options[:n] || options[:w] ||
        options[:y] || options[:f] || options[:t] ||
        options[:d]
       # Yesterday
@@ -141,9 +131,10 @@ module SifttterRedux
     })
 
     # Run the wizard to download Dropbox Uploader.
-    dbu_install_wizard(from_scratch = from_scratch)
+    install_dropbox(from_scratch = from_scratch)
 
-    pm = CLIUtils::Prefs.new(SifttterRedux::PREF_FILES['INIT'], configuration)
+    messenger.section('INITIALIZING SIFTTTER REDUX')
+    pm = CLIUtils::Prefs.new(SifttterRedux::PREF_PROMPT_FILES['INIT'], configuration)
     pm.ask
     configuration.ingest_prefs(pm)
 
@@ -161,6 +152,34 @@ module SifttterRedux
         "will be presented (so it'll be easier to fly through the upgrade)."
     messenger.info(m)
     messenger.prompt('Press enter to continue')
-    SifttterRedux.init(true)
+    init(true)
+  end
+
+  private
+
+  def self._request_dropbox_tokens
+    h = {}
+    oauth_token = ''
+    request_token = ''
+
+    messenger.info_block('Requesting permission to Dropbox...') do
+      Dropbox::API::Config.app_key    = configuration.dropbox[:key]
+      Dropbox::API::Config.app_secret = configuration.dropbox[:secret]
+      if configuration.dropbox[:permission_type] == 'Sandbox'
+        Dropbox::API::Config.mode = 'sandbox'
+      else
+        Dropbox::API::Config.mode = 'dropbox'
+      end
+
+      consumer = Dropbox::API::OAuth.consumer(:authorize)
+      request_token = consumer.get_request_token
+      token = request_token.token
+      secret = request_token.secret
+      request_token.authorize_url
+      hash = { oauth_token: token, oauth_token_secret: secret}
+      oauth_token = OAuth::RequestToken.from_hash(consumer, hash)
+      h.merge!(request_token: request_token, oauth_token: oauth_token)
+    end
+    h
   end
 end

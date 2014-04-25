@@ -1,0 +1,84 @@
+prompts:
+  # DROPBOX PROMPTS
+  - prompt_text: Do you want to use Dropbox locally or remotely?
+    config_key: dropbox_type
+    config_section: dropbox
+    default: local
+    options: ['local', 'remote']
+    validators:
+      - non_nil
+  - prompt_text: What is your Dropbox app's API key?
+    config_key: key
+    config_section: dropbox
+    pre:
+      message: |+
+        Let's first open the Dropbox website and create a new app. Once there:
+          1) Click on "Create App".
+          2) Click on "Dropbox API App".
+          3) Click on "Files and Datastores".
+          4) Choose the appropriate access restrictions for your Dropbox folder.
+          5) Input your desired app name.
+      action:
+        name: open_url
+        parameters:
+          url: https://www2.dropbox.com/developers/apps
+    prereqs:
+      - config_key: dropbox_type
+        config_value: remote
+    validators:
+      - non_nil
+  - prompt_text: What is your Dropbox app's API secret?
+    config_key: secret
+    config_section: dropbox
+    prereqs:
+      - config_key: dropbox_type
+        config_value: remote
+    validators:
+      - non_nil
+  - prompt_text: What is your permission mode (sandbox or dropbox)?
+    config_key: permission_type
+    config_section: dropbox
+    default: dropbox
+    options: ['sandbox', 'dropbox']
+    prereqs:
+      - config_key: dropbox_type
+        config_value: remote
+    validators:
+      - non_nil
+  # SIFTTTER REDUX PROMPTS
+  - prompt_text: Where do you want to download Sifttter files to (temporarily)?
+    config_key: sifttter_local_filepath
+    config_section: sifttter_redux
+    default: /tmp/sifttter
+    prereqs:
+      - config_key: dropbox_type
+        config_value: remote
+    validators:
+      - non_nil
+  - prompt_text: Where are your Sifttter files located in Dropbox?
+    config_key: sifttter_remote_filepath
+    config_section: sifttter_redux
+    default: /Apps/ifttt/sifttter
+    prereqs:
+      - config_key: dropbox_type
+        config_value: remote
+    validators:
+      - non_nil
+  - prompt_text: Where do you want to download Day One files to (temporarily)?
+    config_key: dayone_local_filepath
+    config_section: sifttter_redux
+    default: /tmp/dayone
+    prereqs:
+      - config_key: dropbox_type
+        config_value: remote
+    validators:
+      - non_nil
+  - prompt_text: Where are your Day One files located in Dropbox?
+    config_key: dayone_remote_filepath
+    config_section: sifttter_redux
+    default: /Apps/Day\ One/Journal.dayone/entries
+    prereqs:
+      - config_key: dropbox_type
+        config_value: remote
+    validators:
+      - non_nil
