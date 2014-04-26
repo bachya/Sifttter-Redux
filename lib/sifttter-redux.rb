@@ -134,7 +134,7 @@ module SifttterRedux
     install_dropbox(from_scratch = from_scratch)
 
     messenger.section('INITIALIZING SIFTTTER REDUX')
-    pm = CLIUtils::Prefs.new(SifttterRedux::PREF_PROMPT_FILES['INIT'], configuration)
+    pm = CLIUtils::Prefs.new(SifttterRedux::PREF_PROMPT_FILES[:INIT], configuration)
     pm.ask
     configuration.ingest_prefs(pm)
 

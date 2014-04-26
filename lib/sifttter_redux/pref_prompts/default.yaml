@@ -40,6 +40,13 @@ prompts:
     config_section: dropbox
     default: dropbox
     options: ['sandbox', 'dropbox']
+    post:
+      message: |
+        Now, we'll attempt to ask Dropbox for permission to access your newly
+        created app. During this process, you will be taken back to the Drobpbox
+        website to authorize Sifttter Redux to access.
+      action:
+        name: '%{SifttterRedux::PREF_BEHAVIORS[:DROPBOX_OAUTH]}'
     prereqs:
       - config_key: dropbox_type
         config_value: remote
