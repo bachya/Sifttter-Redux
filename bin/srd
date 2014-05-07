@@ -70,12 +70,13 @@ pre do |global, command, options, args|
 
     # Compare the two versions and, if needed, update.
     configuration.compare_version do |c, l|
-      messenger.debug { "Upgrading from #{ c } to #{ l }" }
+      messenger.debug("Upgrading from #{ c } to #{ l }")
       SifttterRedux.update_config_file
       exit!(0)
     end
   else
     # Force the user to init if they try to run any command other than `init` first.
+    messenger.info('You need to initialize Sifttter Redux first!')
     SifttterRedux.init(true)
     exit!(0)
   end
@@ -89,9 +90,9 @@ post do |global,command,options,args|
 end
 
 on_error do |exception|
-  messenger.error(exception.to_s)
-  exit!(1)
-  true
+  # messenger.error(exception.to_s)
+  # exit!(1)
+  # true
 end
 
 #  ======================================================
@@ -134,9 +135,9 @@ command :exec do |c|
       dbu.remote_target = configuration.sifttter_redux[:sifttter_remote_filepath]
       dbu.message = 'Downloading Sifttter files...'
 
-      messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-        dbu.download
-      end
+      messenger.info(dbu.message || dbu::DEFAULT_MESSAGE)
+      dbu.download
+      messenger.info('Done.')
 
       # Process a new Sifttter entry for each date.
       dates.each do |date|
@@ -149,9 +150,9 @@ command :exec do |c|
         dbu.remote_target = configuration.sifttter_redux[:dayone_remote_filepath]
         dbu.message = 'Uploading Day One entries to Dropbox...'
 
-        messenger.info_block(dbu.message || SifttterRedux::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-          dbu.upload
-        end
+        messenger.info(dbu.message || dbu::DEFAULT_MESSAGE)
+        dbu.upload
+        messenger.info('Done.')
       end
 
       # Remove any downloaded local files that we no longer need.
@@ -202,9 +203,9 @@ command :upgrade do |c|
     dbu.remote_target = configuration.sifttter_redux[:sifttter_remote_filepath]
     dbu.message = "Backing up Sifttter files to #{ filename }..."
 
-    messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-      dbu.download
-    end
+    messenger.info(dbu.message || dbu::DEFAULT_MESSAGE)
+    dbu.download
+    messenger.info('Done.')
 
     # Archive the Sifttter files.
     Archive::Zip.archive(filename, configuration.sifttter_redux[:sifttter_local_filepath])
@@ -215,7 +216,7 @@ command :upgrade do |c|
       t.gsub!(/^- /, "@begin\n@date ")
       t.gsub!(/ - /, "\n- ")
       t.gsub!(/\s?@done/, '@end')
-      messenger.debug { "Replacing contents of file: #{ file }"}
+      messenger.debug("Replacing contents of file: #{ file }")
       File.open(file, 'w') { |f| f.write(t) }
     end
 
@@ -224,9 +225,9 @@ command :upgrade do |c|
     dbu.remote_target = Pathname.new(configuration.sifttter_redux[:sifttter_remote_filepath]).dirname.to_s
     dbu.message = "Uploading revised Sifttter files to Dropbox..."
 
-    messenger.info_block(dbu.message || dbu::DEFAULT_MESSAGE, 'Done.', SifttterRedux.verbose) do
-      dbu.upload
-    end
+    messenger.info(dbu.message || dbu::DEFAULT_MESSAGE)
+    dbu.upload
+    messenger.info('Done.')
 
     # Remove any downloaded local files that we no longer need.
     SifttterRedux.cleanup_temp_files

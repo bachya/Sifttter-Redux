@@ -24,11 +24,10 @@ module SifttterRedux
       configuration.sifttter_redux[:sifttter_local_filepath]
     ]
 
-    messenger.info_block('Removing temporary local files...') do
-      dirs.each do |d|
-        FileUtils.rm_rf(d)
-        messenger.debug("Removed directory: #{ d }")
-      end
+    messenger.info('Removing temporary local files...')
+    dirs.each do |d|
+      FileUtils.rm_rf(d)
+      messenger.debug("Removed directory: #{ d }")
     end
   end
 
@@ -60,14 +59,15 @@ module SifttterRedux
         if File.directory?(dbu_path)
           messenger.warn("Using pre-existing Dropbox Uploader at #{ dbu_path }...")
         else
-          messenger.info_block("Downloading Dropbox Uploader to #{ dbu_path }...", 'Done.', true) do
-            system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ dbu_path }"
-          end
+          messenger.info("Downloading Dropbox Uploader to #{ dbu_path }...")
+          system "git clone https://github.com/andreafabrizi/Dropbox-Uploader.git #{ dbu_path }"
+          messenger.info('Done.')
         end
 
         # If the user has never configured Dropbox Uploader, have them do it here.
         unless File.exists?(DEFAULT_DBU_CONFIG_FILEPATH)
-          messenger.info_block('Initializing Dropbox Uploader...') { system "#{ executable_path }" }
+          messenger.info('Initializing Dropbox Uploader...')
+          system "#{ executable_path }"
         end
 
         configuration.add_section(:db_uploader) unless configuration.data.key?(:db_uploader)
@@ -87,7 +87,7 @@ module SifttterRedux
   # @param [Hash] options GLI command line options
   # @return [Range]
   def self.get_dates_from_options(options)
-    if options[:c] || options[:n] || options[:w] || 
+    if options[:c] || options[:n] || options[:w] ||
        options[:y] || options[:f] || options[:t] ||
        options[:d]
       # Yesterday
@@ -120,7 +120,7 @@ module SifttterRedux
       r = DateRangeMaker.today
     end
 
-    messenger.debug { "Date range: #{ r }" }
+    messenger.debug("Date range: #{ r }")
     r
   end
 
@@ -129,6 +129,8 @@ module SifttterRedux
   # @param [Boolean] from_scratch
   # @return [void]
   def self.init(from_scratch = false)
+    messenger.section('INITIALIZING...')
+
     if from_scratch
       configuration.reset
       configuration.add_section(:sifttter_redux)
@@ -147,7 +149,7 @@ module SifttterRedux
     pm.ask
     configuration.ingest_prefs(pm)
 
-    messenger.debug {"Collected configuration values: #{ configuration.data }" }
+    messenger.debug("Collected configuration values: #{ configuration.data }")
     configuration.save
     @initialized = true
   end

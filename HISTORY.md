@@ -1,3 +1,8 @@
+# 1.0.3 (2014-05-05)
+
+* Fixed a bug in which HTML entities from IFTTT could cause srd to fail
+* Bumped CLIUtils version to 2.2.3
+
 # 1.0.2 (2014-04-22)
 
 * Added `-d` flag to catch up a specific date

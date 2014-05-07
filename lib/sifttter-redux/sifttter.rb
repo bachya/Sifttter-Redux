@@ -1,3 +1,5 @@
+require 'htmlentities'
+
 module SifttterRedux
   # Sifttter Module
   # Used to examine Sifttter data and create
@@ -49,13 +51,14 @@ module SifttterRedux
 
       date_regex = "(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })"
       time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
-      entry_regex = /@begin\n@date\s#{ date_regex }(?: at (.*?)\n)?(.*?)@end/m
+      entry_regex = /@begin\n@date\s#{ date_regex }(?: at (#{ time_regex }?)\n)?(.*?)@end/m
 
       contents = File.read(filepath)
       cur_entries = contents.scan(entry_regex)
+      p cur_entries
       unless cur_entries.empty?
         @entries.merge!(title => []) unless @entries.key?(title)
-        cur_entries.each { |e| @entries[title] << [e[0], e[1].strip] }
+        cur_entries.each { |e| p e; @entries[title] << [e[0], e[1].strip] }
       end
     end
 
@@ -89,10 +92,13 @@ module SifttterRedux
       end
 
       if @entries.length > 0
+
         entrytext = "# Things done on #{ date_for_title }\n"
         @entries.each do |key, value|
+          p value
+          coder = HTMLEntities.new
           entrytext += '### ' + key.gsub(/.txt/, '').gsub(/_/, ' ').upcase + "\n\n"
-          value.each { |v| entrytext += "#{ v[1] }\n" }
+          value.each { |v| entrytext += "#{ coder.encode(v[1]) }\n" }
           entrytext += "\n"
         end
 

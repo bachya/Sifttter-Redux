@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency('chronic', '0.10.2')
   spec.add_runtime_dependency('cliutils', '~> 2')
   spec.add_runtime_dependency('gli','2.9.0')
+  spec.add_runtime_dependency('htmlentities','4.3.1')
 end
