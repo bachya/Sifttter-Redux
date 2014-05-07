@@ -1,3 +1,7 @@
+# 1.0.4 (2014-05-06)
+
+* Fixed a bug where date range without and end date would incorrectly include today's date
+
 # 1.0.3 (2014-05-05)
 
 * Fixed a bug in which HTML entities from IFTTT could cause srd to fail

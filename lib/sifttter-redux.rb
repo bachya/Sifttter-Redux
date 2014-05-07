@@ -113,7 +113,7 @@ module SifttterRedux
           messenger.warn("Ignoring overextended end date and using today's date (#{ Date.today })...")
           r = (_dates.first..Date.today)
         else
-          r = (_dates.first.._dates.last)
+          r = _dates
         end
       end
     else

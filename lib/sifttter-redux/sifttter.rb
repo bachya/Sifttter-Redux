@@ -55,10 +55,9 @@ module SifttterRedux
 
       contents = File.read(filepath)
       cur_entries = contents.scan(entry_regex)
-      p cur_entries
       unless cur_entries.empty?
         @entries.merge!(title => []) unless @entries.key?(title)
-        cur_entries.each { |e| p e; @entries[title] << [e[0], e[1].strip] }
+        cur_entries.each { |e| @entries[title] << [e[0], e[1].strip] }
       end
     end
 
@@ -95,7 +94,6 @@ module SifttterRedux
 
         entrytext = "# Things done on #{ date_for_title }\n"
         @entries.each do |key, value|
-          p value
           coder = HTMLEntities.new
           entrytext += '### ' + key.gsub(/.txt/, '').gsub(/_/, ' ').upcase + "\n\n"
           value.each { |v| entrytext += "#{ coder.encode(v[1]) }\n" }
