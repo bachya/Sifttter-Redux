@@ -49,7 +49,7 @@ SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-    1.0.4
+   1.0.5 
 
 GLOBAL OPTIONS
     --help         - Show this message
@@ -191,6 +191,22 @@ To create an entry for yesterday:
 
 ```
 $ srd exec -y
+#### EXECUTING...
+---> INFO: Creating entry for February 14, 2014...
+---> INFO: Downloading Sifttter files...DONE.
+---> SUCCESS: Entry logged for February 14, 2014...
+---> INFO: Uploading Day One entries to Dropbox...DONE.
+---> INFO: Removing downloaded Day One files...DONE.
+---> INFO: Removing downloaded Sifttter files...DONE.
+#### EXECUTION COMPLETE!
+```
+
+### Catch-up for a Specific Date
+
+To create an entry for specific date:
+
+```
+$ srd exec -d 2014-02-14
 #### EXECUTING...
 ---> INFO: Creating entry for February 14, 2014...
 ---> INFO: Downloading Sifttter files...DONE.

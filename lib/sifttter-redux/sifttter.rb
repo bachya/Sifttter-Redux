@@ -49,9 +49,9 @@ module SifttterRedux
     def parse_sifttter_file(filepath, date)
       title = File.basename(filepath).gsub(/^.*?\/([^\/]+)$/, "\\1") + "\n"
 
-      date_regex = "(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })"
-      time_regex = "(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})"
-      entry_regex = /@begin\n@date\s#{ date_regex }(?: at (#{ time_regex }?)\n)?(.*?)@end/m
+      date_regex = /(?:#{ date.strftime("%B") } 0?#{ date.strftime("%-d") }, #{ date.strftime("%Y") })/
+      time_regex = /(?:\d{1,2}:\d{1,2}\s?[AaPpMm]{2})/
+      entry_regex = /@begin\n@date\s#{ date_regex }(?: at (#{ time_regex }?)\n)?(.*?)\n@end/m
 
       contents = File.read(filepath)
       cur_entries = contents.scan(entry_regex)
@@ -96,7 +96,7 @@ module SifttterRedux
         @entries.each do |key, value|
           coder = HTMLEntities.new
           entrytext += '### ' + key.gsub(/.txt/, '').gsub(/_/, ' ').upcase + "\n\n"
-          value.each { |v| entrytext += "#{ coder.encode(v[1]) }\n" }
+          value.each { |v| entrytext += "#{ coder.encode(v[1].gsub(/%time%/, v[0])) }\n" }
           entrytext += "\n"
         end
 
