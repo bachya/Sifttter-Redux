@@ -5,23 +5,7 @@ Sifttter Redux
 
 # Upgrading From 0.x.x to 1.0.0?
 
-Version 1.0.0 uses a new schema that allows for any type of Markdown. Using
-version 1.0.0, Sifttter files need to follow this format:
-
-```
-@begin
-@date April 21, 2014
-**Any** sort of *Markdown* goes here...
-@end
-```
-
-Note that a new command has been introduced that attempts to upgrade to this
-new format. **Although the command backs up your current Sifttter files, you
-are strongly encouraged to make a separate, manual backup.**
-
-```Bash
-$ srd upgrade
-```
+Make sure you read the [IFTTT Template](#ifttt-template) section.
 
 # Intro
 
