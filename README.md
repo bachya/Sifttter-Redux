@@ -100,6 +100,46 @@ COMMAND OPTIONS
     -y             - Run catch-up mode for yesterday
 ```
 
+## IFTTT Template
+
+Version 1.0.0+ uses a new schema that allows for any type of Markdown. Thus, Sifttter
+files from IFTTT need to follow this format:
+
+```
+@begin
+@date April 21, 2014 at 12:34PM
+**Any** sort of *Markdown* goes here...
+@end
+```
+
+Whereas the previous Sifttter Redux only allowed output of bulleted lists, this new 
+template style allows you to include *any* Markdown, making output like tables possibe.
+
+### Upgrade Command
+
+Note that a new command has been introduced that attempts to upgrade to this
+new format. **Although the command backs up your current Sifttter files, you
+are strongly encouraged to make a separate, manual backup.**
+
+```Bash
+$ srd upgrade
+```
+
+### Template Tokens
+
+IFTTT templates can make use of the following tokens:
+
+* `%time%`: the time the entry was created
+
+As an example, to include the entry time in a template:
+
+```
+@begin
+@date April 21, 2014 at 12:34PM
+- %time%: My text goes here...
+@end
+```
+
 ## Initialization
 
 ```
