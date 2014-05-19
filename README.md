@@ -49,7 +49,7 @@ SYNOPSIS
     srd [global options] command [command options] [arguments...]
 
 VERSION
-   1.0.5 
+   1.0.6
 
 GLOBAL OPTIONS
     --help         - Show this message

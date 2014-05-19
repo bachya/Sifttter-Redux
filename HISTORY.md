@@ -1,3 +1,7 @@
+# 1.0.5 (2014-05-19)
+
+* Small addition to show date of unfound entries
+
 # 1.0.4 (2014-05-06)
 
 * Fixed a bug where date range without and end date would incorrectly include today's date

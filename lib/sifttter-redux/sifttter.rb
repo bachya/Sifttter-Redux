@@ -106,7 +106,7 @@ module SifttterRedux
         fh.close
         messenger.success("Entry logged for #{ date_for_title }...")
       else
-        messenger.warn('No entries found...')
+        messenger.warn("No entries found for #{ date_for_title }...")
       end
     end
   end
